@@ -14,6 +14,12 @@ Things learned and things to remember for my Megacade
 
 - Avoid plugging in a keyboard with a trackpad/mouse
   - Can cause trackball games to confuse which device to use
+- Mortal Kombat 11 buttons were not working
+  - I was told to turn off the Wii bar sensor and that fixed my issue
+  - We only turn Wii bar on for Wii games now
+- How to add old Wii remotes I've always had
+  - The Wii sensor bar has a pair button
+  - The Wii remotes have a pair button behind the batter flap
 - The power "switch" is an arcade button. I was expecting a toggle switch, I've never seen an arcade button act as a power switch but there you go.
   - Hold down power button to force a shutdown when machine is unresponsive
 - Check IR sensors on left and right of Tv screen
