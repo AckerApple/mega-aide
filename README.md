@@ -61,7 +61,8 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
 
 - 📺 I had a HDMI 2 with audio splitter, lets call it, added so I could connect additional devices and play audio through main speakers. It works but at half volume on any device I try. I have reviewed every LG tv setting on Tv and on every device. I cannot achieve high volume through megacade speakers from additional device
 -  💪 How do I map Smash Bros (latest one in there) buttons to my Megacade buttons? Only XBox controllers work
-- None of the items in "Movies" will play
+- 🎬 ❌ None of the items in "Movies" will play
+  - The unite group gave me a reply: `Because there were no movies on Omega when given to Dave. Dave has since put them back on, but that’s on him to guide you. Give him a call.`
 
 <a id="_issues_with_answers_to_perform"></a>
 
