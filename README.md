@@ -12,6 +12,8 @@ Things learned and things to remember for my Megacade
 <a id="_first_time_needs_to_know"></a>
 ## 👀 First time needs to know
 
+- Avoid plugging in a keyboard with a trackpad/mouse
+  - Can cause trackball games to confuse which device to use
 - The power "switch" is an arcade button. I was expecting a toggle switch, I've never seen an arcade button act as a power switch but there you go.
   - Hold down power button to force a shutdown when machine is unresponsive
 - Check IR sensors on left and right of Tv screen
@@ -39,7 +41,7 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
 > 👀 The solution below is for when you know the lights are working, they just don't work during attract mode
 
 1. Exit to Windows
-2. Find the LEDBlinky app `LEDBlinkyanimationAnimationEditor.exe`
+2. Find the LEDBlinky app `LEDBlinkyAnimationEditor.exe`
   - On my machine, the app was in a Desktop folder shortcut labeled `LEDBlinky License goes here`
   - App should open with a main display that has a visual map of your buttons
 3. To start fixing your attract mode animation, tap the "Animation" menu at top
@@ -59,6 +61,7 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
 
 - 📺 I had a HDMI 2 with audio splitter, lets call it, added so I could connect additional devices and play audio through main speakers. It works but at half volume on any device I try. I have reviewed every LG tv setting on Tv and on every device. I cannot achieve high volume through megacade speakers from additional device
 -  💪 How do I map Smash Bros (latest one in there) buttons to my Megacade buttons? Only XBox controllers work
+- None of the items in "Movies" will play
 
 <a id="_issues_with_answers_to_perform"></a>
 
