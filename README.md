@@ -4,9 +4,31 @@ Things learned and things to remember for my Megacade
 👀 Documentation intended for Megacade with Omega drive built after 2021
 
 **Table of contents**
+- [👀 First time needs to know](#_first_time_needs_to_know)
 - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
 - [🎯 Issues chasing to fix](#_issues_chasing_to_fix)
 - [⚡️ Issues with answers to perform](#_issues_with_answers_to_perform)
+
+<a id="_first_time_needs_to_know"></a>
+## 👀 First time needs to know
+
+- The power "switch" is an arcade button. I was expecting a toggle switch, I've never seen an arcade button act as a power switch but there you go.
+  - Hold down power button to force a shutdown when machine is unresponsive
+- Check IR sensors on left and right of Tv screen
+  - Space is so small that they get damaged
+  - Called EHA and was sent, free of charge, replacement
+- The BigBox main menu unlock code was `1111` for my machine
+- To fix arcade button mapping issues
+  - Press player 1 + joystick right
+  - Trackball issues? Goto controller settings
+    - find Track X and Track Y and set them one at a time
+    - For Track X roll trackball left and then right only
+    - For Track Y roll trackball up and then down only
+- Buck hunter arcade, aka Big Buck Hunter HD, only works 1 player
+  - It so looks like player 2 will work but gun won't fire during gameplay
+  - Feel lucky, most Megacades don't even work 1 player before 2022 (Omega drive allows 1 Player)
+- I have Gun4IR and the app was on the Windows start menu
+  - Use it to test, config, and then "upload settings" with every change
 
 <a id="_fix_skipped_lights_during_attract_mode"></a>
 
