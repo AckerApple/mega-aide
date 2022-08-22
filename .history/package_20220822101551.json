@@ -1,0 +1,20 @@
+{
+  "name": "megacade",
+  "version": "0.0.0",
+  "description": "Things learned and things to remember for my Megacade",
+  "scripts": {
+    "save": "git add . && git commit -m \"update\" && git push",
+    "deploy": "npm run save"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AckerApple/megacade.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AckerApple/megacade/issues"
+  },
+  "homepage": "https://github.com/AckerApple/megacade#readme"
+}
