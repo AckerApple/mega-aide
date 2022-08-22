@@ -63,6 +63,7 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
 -  💪 How do I map Smash Bros (latest one in there) buttons to my Megacade buttons? Only XBox controllers work
 - 🎬 ❌ None of the items in "Movies" will play
   - The unite group gave me a reply: `Because there were no movies on Omega when given to Dave. Dave has since put them back on, but that’s on him to guide you. Give him a call.`
+  - Contacted Dave and he mentioned a new drive coming out with more games and movies. May just wait for that. Hate to have broken movies folder. Will give this issue some more time.
 
 <a id="_issues_with_answers_to_perform"></a>
 
