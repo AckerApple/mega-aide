@@ -5,7 +5,9 @@ Things learned and things to remember for my Megacade
 
 **Table of contents**
 - [👀 First time needs to know](#_first_time_needs_to_know)
-- [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
+- [✅ Fixed issues](_fixed_issues)
+  - [🕹 Diagonals not working](#_diagonals_not_ working)
+  - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
 - [🎯 Issues chasing to fix](#_issues_chasing_to_fix)
 - [⚡️ Issues with answers to perform](#_issues_with_answers_to_perform)
 
@@ -38,8 +40,17 @@ Things learned and things to remember for my Megacade
 - I have Gun4IR and the app was on the Windows start menu
   - Use it to test, config, and then "upload settings" with every change
 
-<a id="_fix_skipped_lights_during_attract_mode"></a>
+<a id="_fixed_issues"></a>
+# ✅ Fixed issues
 
+<a id="_diagonals_not_ working"></a>
+## 🕹 Diagonals not working
+
+If your players are not allowing Diagonals, open the panel and move the restrictor plates (round dials that turn with 4 spring loaded screws). They are normally all set to 8-way for the 4 players normal joysticks but they may be turned to 4-way for some reason.
+
+[j-stick-ball-top](https://www.ultimarc.com/arcade-controls/joysticks/j-stik-ball-top/)
+
+<a id="_fix_skipped_lights_during_attract_mode"></a>
 ## 💡 Fix skipped lights during attract mode
 
 When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits untouched for a short time, it goes into an attract mode where the lighting "dances". If during this attract mode some lights are not lighting, such as my machine an entire joystick was not lighting, perform the following steps:
@@ -65,6 +76,8 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
 
 ## 🎯 Issues chasing to fix
 
+- 🕹 The left players cannot move diagonally
+  - Player 1 and 4 cannot move diagonal while Player 2 and 3 can
 - 📺 I had a HDMI 2 with audio splitter, lets call it, added so I could connect additional devices and play audio through main speakers. It works but at half volume on any device I try. I have reviewed every LG tv setting on Tv and on every device. I cannot achieve high volume through megacade speakers from additional device
 -  💪 How do I map Smash Bros (latest one in there) buttons to my Megacade buttons? Only XBox controllers work
 - 🎬 ❌ None of the items in "Movies" will play
