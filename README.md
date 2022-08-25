@@ -17,31 +17,29 @@ Things learned and things to remember for my Megacade
 <a id="_first_time_needs_to_know"></a>
 ## 👀 First time needs to know
 
-- Avoid plugging in a keyboard with a trackpad/mouse
+- ⌨️ 🐭 ❌ Avoid plugging in a keyboard with a trackpad/mouse
   - Can cause trackball games to confuse which device to use
-- Mortal Kombat 11 buttons were not working
+- 🥷 Mortal Kombat 11 buttons were not working
   - I was told to turn off the Wii bar sensor and that fixed my issue
   - We only turn Wii bar on for Wii games now
-- How to add old Wii remotes I've always had
+- ⚡️ The power "switch" is an arcade button. I was expecting a toggle switch, I've never seen an arcade button act as a power switch but there you go.
+  - Hold down power button to force a shutdown when machine is unresponsive
+- 🔫 Have Gun4Ir?
+  - Check IR sensors on left and right of Tv screen for damage
+    - Space is so small that they get damaged
+    - Mine was broke. Called EHA and was sent, free of charge, replacement
+  - The Gun4ir application was on the Windows start menu
+    - Use it to test, config, and then "upload settings" with every change
+    - Recommend moving icon to more convenient location like desktop
+    - Recommend opening this app and not trust that the settings were done yet. The auto "detect" button seems to work well
+- 🔓 The BigBox main menu "unlock" code was `1111` for my machine
+- How to pair/add old Wii remotes I've always had
   - The Wii sensor bar has a pair button
   - The Wii remotes have a pair button behind the batter flap
-- The power "switch" is an arcade button. I was expecting a toggle switch, I've never seen an arcade button act as a power switch but there you go.
-  - Hold down power button to force a shutdown when machine is unresponsive
-- Check IR sensors on left and right of Tv screen
-  - Space is so small that they get damaged
-  - Called EHA and was sent, free of charge, replacement
-- The BigBox main menu unlock code was `1111` for my machine
-- To fix arcade button mapping issues
-  - Press player 1 + joystick right
-  - Trackball issues? Goto controller settings
-    - find Track X and Track Y and set them one at a time
-    - For Track X roll trackball left and then right only
-    - For Track Y roll trackball up and then down only
 - Buck hunter arcade, aka Big Buck Hunter HD, only works 1 player
   - It so looks like player 2 will work but gun won't fire during gameplay
-  - Feel lucky, most Megacades don't even work 1 player before 2022 (Omega drive allows 1 Player)
-- I have Gun4IR and the app was on the Windows start menu
-  - Use it to test, config, and then "upload settings" with every change
+  - Feel lucky, most Megacades don't even work 1 player before 2022
+  - Omega drive allows 1 Player as it comes with a game patch
 
 <a id="_how_to_map_buttons"></a>
 ## 🕹 How to map buttons
@@ -55,6 +53,21 @@ For instance, Nintendo Switch Super Smash Brothers Ultimate only worked from the
   - 👾 Second option, is the emulator maybe listed there and using it often takes you to emulator to perform configurations
   - 🔦 You may have to figure out on your own where the emulator is within the operating system and open it manually
     - a list of known [👾 Emulator apps is here](#_emulator_apps) to help you figure out what to open
+
+### Fix Mame arcade button mappings
+- While in the game, press player 1 + joystick right
+
+###  Trackball issues?
+
+- [YouTube video direct timeline link](https://youtu.be/sLVBmAuJigY?t=346) to Mame mappings for Trackball
+- While in the game, press player 1 + joystick right
+- 👉 Goto input settings
+- 🔦 Find Track X and Track Y and set them one at a time
+- For Track X, roll trackball left and then right only
+- For Track Y, roll trackball up and then down only
+- Close menus, should be good to go
+- HIGHLY recommended to run USB wire of trackball directly into computer
+
 
 <a id="_emulator_apps"></a>
 ## 👾 Emulator apps
