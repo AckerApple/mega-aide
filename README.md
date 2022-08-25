@@ -35,11 +35,15 @@ Things learned and things to remember for my Megacade
 - 🔓 The BigBox main menu "unlock" code was `1111` for my machine
 - How to pair/add old Wii remotes I've always had
   - The Wii sensor bar has a pair button
-  - The Wii remotes have a pair button behind the batter flap
-- Buck hunter arcade, aka Big Buck Hunter HD, only works 1 player
+  - The Wii remotes have a pair button behind the battery flap
+- 🦌 Buck hunter arcade, aka Big Buck Hunter HD, only works 1 player
   - It so looks like player 2 will work but gun won't fire during gameplay
   - Feel lucky, most Megacades don't even work 1 player before 2022
   - Omega drive allows 1 Player as it comes with a game patch
+- 💡 If you have lighted buttons, they do a good job of lighting by default but typically you will want to learn how to set the lighting by platform if not by some games
+  - The lighting apps are fairly easily to navigate and are on the desktop
+- 🕹 Many is not most games required controller mapping
+  - See where I have learned how to map things [below](#_how_to_map_buttons)
 
 <a id="_how_to_map_buttons"></a>
 ## 🕹 How to map buttons
