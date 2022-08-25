@@ -129,23 +129,23 @@ This process revolves around using a super great [Launchbox plugin](https://foru
 
 **Steps**
 1. [Goto the autostart plugin download page](https://forums.launchbox-app.com/files/file/3267-big-box-auto-play/)
-  - launchbox-app.com requires signup or signin to download
-  - If you don't easily see a download button, you are not signed
-  - Signup is painless
-  - If in the far future you cannot get the file, try [filing an issue here](https://github.com/AckerApple/megacade/issues) and maybe I can help
+    - launchbox-app.com requires signup or signin to download
+    - If you don't easily see a download button, you are not signed in
+    - Signup is painless
+    - If in the far future you cannot get the file, try [filing an issue here](https://github.com/AckerApple/megacade/issues) and maybe I can help
 2. Download the autostart plugin
 3. Unzip the autostart plugin
-  - ![📷 unzip the autostart plugin image should show here](assets/images/autostart/paste-files.png)
+    - ![📷 unzip the autostart plugin image should show here](assets/images/autostart/paste-files.png)
 4. Open LaunchBox, NOT the one that launch on startup
-  - I've never opened this launchbox app until adding this pluging so attaching screen cap
-  - ![📷 open launchbox app image should show here](assets/images/autostart/open-launchbox.png)
+    - I've never opened this launchbox app until adding this pluging so attaching screen cap
+    - ![📷 open launchbox app image should show here](assets/images/autostart/open-launchbox.png)
 5. Goto the tools menu in LaunchBox
-  - ![📷 open launchbox tools image should show here](assets/images/autostart/goto-launchbox-tools.png)
+    - ![📷 open launchbox tools image should show here](assets/images/autostart/goto-launchbox-tools.png)
 6. Set your settings into the autostart
-  - ☑️ Be sure to check the box "Select Game" otherwise video marquee may not come on
-  - ![📷 autostart menu image should show here](assets/images/autostart/autostart-menu.png)
+    - ☑️ Be sure to check the box "Select Game" otherwise video marquee may not come on
+    - ![📷 autostart menu image should show here](assets/images/autostart/autostart-menu.png)
 7. Restart machine or just your main BigBox... Whatever you do, Enjoy!
-  - ![📷 autostart menu image should show here](assets/images/autostart/SmashBrosStartup.png)
+    - ![📷 autostart menu image should show here](assets/images/autostart/SmashBrosStartup.png)
 
 <a id="_fix_skipped_lights_during_attract_mode"></a>
 ## 💡 Fix skipped lights during attract mode
