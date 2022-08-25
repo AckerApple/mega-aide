@@ -134,7 +134,7 @@ This process revolves around using a super great [Launchbox plugin](https://foru
     - Signup is painless
     - If in the far future you cannot get the file, try [filing an issue here](https://github.com/AckerApple/megacade/issues) and maybe I can help
 2. Download the autostart plugin
-3. Unzip the autostart plugin
+3. Unzip the autostart plugin into `LaunchBox/Plugins`
     - ![📷 unzip the autostart plugin image should show here](assets/images/autostart/paste-files.png)
 4. Open LaunchBox, NOT the one that launch on startup
     - I've never opened this launchbox app until adding this pluging so attaching screen cap
