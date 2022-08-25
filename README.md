@@ -5,10 +5,13 @@ Things learned and things to remember for my Megacade
 
 **Table of contents**
 - [👀 First time needs to know](#_first_time_needs_to_know)
+- [🕹 How to map buttons](#_how_to_map_buttons)
+- [👾 Emulator apps](#_emulator_apps)
 - [✅ Fixed issues](_fixed_issues)
   - [🕹 Diagonals not working](#_diagonals_not_ working)
   - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
 - [🎯 Issues chasing to fix](#_issues_chasing_to_fix)
+  - [💥 LaunchBox to startup into a specific game](#_launchbox_to_startup_into_a_specific_game)
 - [⚡️ Issues with answers to perform](#_issues_with_answers_to_perform)
 
 <a id="_first_time_needs_to_know"></a>
@@ -40,10 +43,34 @@ Things learned and things to remember for my Megacade
 - I have Gun4IR and the app was on the Windows start menu
   - Use it to test, config, and then "upload settings" with every change
 
+<a id="_how_to_map_buttons"></a>
+## 🕹 How to map buttons
+
+For instance, Nintendo Switch Super Smash Brothers Ultimate only worked from the game controllers but I wanted to map to Megacade joystick/button console.
+
+1. 👉 Goto the game needing mapping in LaunchBox/BigBox
+2. 🪙 Press the Player 1 coin button
+3. 🧾 A dedicated menu for the game itself should be presented
+  - 🍀 If lucky, the second menu item is typically a configure menu item
+  - 👾 Second option, is the emulator maybe listed there and using it often takes you to emulator to perform configurations
+  - 🔦 You may have to figure out on your own where the emulator is within the operating system and open it manually
+    - a list of known [👾 Emulator apps is here](#_emulator_apps) to help you figure out what to open
+
+<a id="_emulator_apps"></a>
+## 👾 Emulator apps
+
+Sometimes Big Box doesn't launch the emulator when asked (Flip Box) or it doesn't list the emulater. Here are a few of the apps that allow you to configure the inputs
+
+| System | Emulator Name |
+|--- | --- |
+| 🟥 Nintendo Switch | yuzu |
+| 💠 PlayStation 3 | PCS3 |
+| 🔴 Dreamcast | redream |
+
 <a id="_fixed_issues"></a>
 # ✅ Fixed issues
 
-<a id="_diagonals_not_ working"></a>
+<a id="_diagonals_not_working"></a>
 ## 🕹 Diagonals not working
 
 If your players are not allowing Diagonals, open the panel and move the restrictor plates (round dials that turn with 4 spring loaded screws). They are normally all set to 8-way for the 4 players normal joysticks but they may be turned to 4-way for some reason.
@@ -73,16 +100,27 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
 7. Save when complete and get back into big box and test your attract mode lighting, should be working now
 
 <a id="_issues_chasing_to_fix"></a>
-
 ## 🎯 Issues chasing to fix
 
-- 🕹 The left players cannot move diagonally
-  - Player 1 and 4 cannot move diagonal while Player 2 and 3 can
 - 📺 I had a HDMI 2 with audio splitter, lets call it, added so I could connect additional devices and play audio through main speakers. It works but at half volume on any device I try. I have reviewed every LG tv setting on Tv and on every device. I cannot achieve high volume through megacade speakers from additional device
--  💪 How do I map Smash Bros (latest one in there) buttons to my Megacade buttons? Only XBox controllers work
 - 🎬 ❌ None of the items in "Movies" will play
   - The unite group gave me a reply: `Because there were no movies on Omega when given to Dave. Dave has since put them back on, but that’s on him to guide you. Give him a call.`
   - Contacted Dave and he mentioned a new drive coming out with more games and movies. May just wait for that. Hate to have broken movies folder. Will give this issue some more time.
+
+<a id="_launchbox_to_startup_into_a_specific_game"></a>
+### 💥 LaunchBox to startup into a specific game
+- Use case: My house guests can turn on Megacade and get right into a game without the hassle of learning the menus
+- 🔎 Internet searches reveal seemingly no one has figured it out
+- 🔎 Github searches show quite a lot for LaunchBox plugins
+  - [Some interesting code examples here](https://github.com/slipsystem/LaunchBox-Plugin-Examples#interfaces-2)
+- When game exited it should go right into LaunchBox
+- 🎁 LaunchBox itself has a plugin system that with events that sounds promising
+  - [SystemEventTypes](https://pluginapi.launchbox-app.com/html/3e3603e5-bab6-e510-689c-ee35c0f5f694.htm) Class has the event `BigBoxStartupCompleted`
+  - [Plugins Namespace](https://pluginapi.launchbox-app.com/html/9c73b065-c834-0d8b-4255-0050ef68ab42.htm)
+  - 
+- 🤖 A automation script that presses keyboard keys and waits between presses is here
+  - https://forums.launchbox-app.com/topic/62549-big-box-auto-launch-into-specific-game-at-startup/
+  - I think this is a bad approach that will need maintenance over time and not work we 
 
 <a id="_issues_with_answers_to_perform"></a>
 
