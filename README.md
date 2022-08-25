@@ -12,8 +12,8 @@ Things learned and things to remember for my Megacade
 - [✅ Fixed issues](_fixed_issues)
   - [🕹 Diagonals not working](#_diagonals_not_working)
   - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
+- [💥 LaunchBox to startup into a specific game](#_launchbox_to_startup_into_a_specific_game)
 - [🎯 Issues chasing to fix](#_issues_chasing_to_fix)
-  - [💥 LaunchBox to startup into a specific game](#_launchbox_to_startup_into_a_specific_game)
 - [⚡️ Issues with answers to perform](#_issues_with_answers_to_perform)
 
 <a id="_first_time_needs_to_know"></a>
@@ -113,6 +113,40 @@ If your players are not allowing Diagonals, open the panel and move the restrict
 
 [j-stick-ball-top](https://www.ultimarc.com/arcade-controls/joysticks/j-stik-ball-top/)
 
+
+<a id="_launchbox_to_startup_into_a_specific_game"></a>
+### 💥 LaunchBox to startup into a specific game
+
+Use cases:
+- At my house, guests can turn on Megacade and get right into a game without learning menus
+- You want the art package on megacade to match power on game
+- You want the startup process to have a few workflows
+  - You want the matching marquee to show to show with startup game
+  - You have light up buttons and/or joysticks and want them to match the startup game
+  - exiting game goes back into Launchbox
+
+This process revolves around using a super great [Launchbox plugin](https://forums.launchbox-app.com/files/file/3267-big-box-auto-play/)
+
+**Steps**
+1. [Goto the autostart plugin download page](https://forums.launchbox-app.com/files/file/3267-big-box-auto-play/)
+  - launchbox-app.com requires signup or signin to download
+  - If you don't easily see a download button, you are not signed
+  - Signup is painless
+  - If in the far future you cannot get the file, try [filing an issue here](https://github.com/AckerApple/megacade/issues) and maybe I can help
+2. Download the autostart plugin
+3. Unzip the autostart plugin
+  - ![📷 unzip the autostart plugin image should show here](assets/images/autostart/paste-files.png)
+4. Open LaunchBox, NOT the one that launch on startup
+  - I've never opened this launchbox app until adding this pluging so attaching screen cap
+  - ![📷 open launchbox app image should show here](assets/images/autostart/open-launchbox.png)
+5. Goto the tools menu in LaunchBox
+  - ![📷 open launchbox tools image should show here](assets/images/autostart/goto-launchbox-tools.png)
+6. Set your settings into the autostart
+  - ☑️ Be sure to check the box "Select Game" otherwise video marquee may not come on
+  - ![📷 autostart menu image should show here](assets/images/autostart/autostart-menu.png)
+7. Restart machine or just your main BigBox... Whatever you do, Enjoy!
+  - ![📷 autostart menu image should show here](assets/images/autostart/SmashBrosStartup.png)
+
 <a id="_fix_skipped_lights_during_attract_mode"></a>
 ## 💡 Fix skipped lights during attract mode
 
@@ -145,22 +179,6 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
 - 🎬 ❌ None of the items in "Movies" will play
   - The unite group gave me a reply: `Because there were no movies on Omega when given to Dave. Dave has since put them back on, but that’s on him to guide you. Give him a call.`
   - Contacted Dave and he mentioned a new drive coming out with more games and movies. May just wait for that. Hate to have broken movies folder. Will give this issue some more time.
-
-<a id="_launchbox_to_startup_into_a_specific_game"></a>
-### 💥 LaunchBox to startup into a specific game
-- Use case: My house guests can turn on Megacade and get right into a game without the hassle of learning the menus
-- [BEST resource is a LaunchBox plugin](https://forums.launchbox-app.com/files/file/3267-big-box-auto-play/)
-- 🔎 Internet searches reveal seemingly no one has figured it out
-- 🔎 Github searches show quite a lot for LaunchBox plugins
-  - [Some interesting code examples here](https://github.com/slipsystem/LaunchBox-Plugin-Examples#interfaces-2)
-- When game exited it should go right into LaunchBox
-- 🎁 LaunchBox itself has a plugin system that with events that sounds promising
-  - [SystemEventTypes](https://pluginapi.launchbox-app.com/html/3e3603e5-bab6-e510-689c-ee35c0f5f694.htm) Class has the event `BigBoxStartupCompleted`
-  - [Plugins Namespace](https://pluginapi.launchbox-app.com/html/9c73b065-c834-0d8b-4255-0050ef68ab42.htm)
-  - 
-- 🤖 A automation script that presses keyboard keys and waits between presses is here
-  - https://forums.launchbox-app.com/topic/62549-big-box-auto-launch-into-specific-game-at-startup/
-  - I think this is a bad approach that will need maintenance over time and not work we 
 
 <a id="_issues_with_answers_to_perform"></a>
 
