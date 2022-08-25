@@ -8,7 +8,7 @@ Things learned and things to remember for my Megacade
 - [🕹 How to map buttons](#_how_to_map_buttons)
 - [👾 Emulator apps](#_emulator_apps)
 - [✅ Fixed issues](_fixed_issues)
-  - [🕹 Diagonals not working](#_diagonals_not_ working)
+  - [🕹 Diagonals not working](#_diagonals_not_working)
   - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
 - [🎯 Issues chasing to fix](#_issues_chasing_to_fix)
   - [💥 LaunchBox to startup into a specific game](#_launchbox_to_startup_into_a_specific_game)
