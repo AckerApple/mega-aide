@@ -19,16 +19,22 @@ Things learned and things to remember for my Megacade
 <a id="_first_time_needs_to_know"></a>
 ## 👀 First time needs to know
 
+- ⚡️ The power "switch" is an arcade button. I was expecting a toggle switch, I've never seen an arcade button act as a power switch but there you go.
+  - Hold down power button to force a shutdown when machine is unresponsive
 - I had an exit button added, it works most everywhere but not everywhere
   - Be prepared to use trackball and left mouse button to exit those games
   - Or grab a keyboard
 - ⌨️ 🐭 ❌ Avoid plugging in a keyboard with a trackpad/mouse
   - Can cause trackball games to confuse which device to use
+- 💡 Do you have LEDBlinky controlled lights?
+  - 💡 🕹 Do you have light up joysticks and they don't light up in games?
+    - The joysticks may not be mapped to light up during game play
+  - Use the LEDBlinky apps on the desktop. One app is to assign lights to joystick
+    - Its a little complex at first but manageable
+    - [🔗 📺 Direct timeline link](https://www.youtube.com/watch?v=29QG7Bd9mKw) to in-depth LEDBlinky controller app tutorial
 - 🥷 Mortal Kombat 11 buttons were not working
   - I was told to turn off the Wii bar sensor and that fixed my issue
   - We only turn Wii bar on for Wii games now
-- ⚡️ The power "switch" is an arcade button. I was expecting a toggle switch, I've never seen an arcade button act as a power switch but there you go.
-  - Hold down power button to force a shutdown when machine is unresponsive
 - 🔫 Have Gun4Ir?
   - Check IR sensors on left and right of Tv screen for damage
     - Space is so small that they get damaged
