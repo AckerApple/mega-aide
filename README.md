@@ -6,6 +6,8 @@ Things learned and things to remember for my Megacade
 **Table of contents**
 - [👀 First time needs to know](#_first_time_needs_to_know)
 - [🕹 How to map buttons](#_how_to_map_buttons)
+  - [Mame arcade button mappings](#mame_arcade_button_mappings)
+  - [⚪️ Trackball mapping](#_trackball_mapping)
 - [👾 Emulator apps](#_emulator_apps)
 - [✅ Fixed issues](_fixed_issues)
   - [🕹 Diagonals not working](#_diagonals_not_working)
@@ -36,6 +38,10 @@ Things learned and things to remember for my Megacade
 - How to pair/add old Wii remotes I've always had
   - The Wii sensor bar has a pair button
   - The Wii remotes have a pair button behind the battery flap
+- ⛳️ Golden Tee Complete 2006 is the latest golf in game that series, that the machine comes with
+  - 📺 Two YouTube videos exist about getting new golf on
+  - https://www.youtube.com/watch?v=9yEuSIpGc4Q
+  - https://www.youtube.com/watch?v=VBP0wVxuuAM
 - 🦌 Buck hunter arcade, aka Big Buck Hunter HD, only works 1 player
   - It so looks like player 2 will work but gun won't fire during gameplay
   - Feel lucky, most Megacades don't even work 1 player before 2022
@@ -58,12 +64,16 @@ For instance, Nintendo Switch Super Smash Brothers Ultimate only worked from the
   - 🔦 You may have to figure out on your own where the emulator is within the operating system and open it manually
     - a list of known [👾 Emulator apps is here](#_emulator_apps) to help you figure out what to open
 
-### Fix Mame arcade button mappings
+<a id="#mame_arcade_button_mappings"></a>
+### Mame arcade button mappings
 - While in the game, press player 1 + joystick right
 
-###  Trackball issues?
+<a id="#_trackball_mapping"></a>
+### ⚪️ Trackball mapping
 
-- [YouTube video direct timeline link](https://youtu.be/sLVBmAuJigY?t=346) to Mame mappings for Trackball
+These steps are also helpful when your trackball stops working
+
+- [📺 YouTube video direct timeline link](https://youtu.be/sLVBmAuJigY?t=346) to Mame mappings for Trackball
 - While in the game, press player 1 + joystick right
 - 👉 Goto input settings
 - 🔦 Find Track X and Track Y and set them one at a time
