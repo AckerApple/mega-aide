@@ -19,6 +19,9 @@ Things learned and things to remember for my Megacade
 <a id="_first_time_needs_to_know"></a>
 ## 👀 First time needs to know
 
+- I had an exit button added, it works most everywhere but not everywhere
+  - Be prepared to use trackball and left mouse button to exit those games
+  - Or grab a keyboard
 - ⌨️ 🐭 ❌ Avoid plugging in a keyboard with a trackpad/mouse
   - Can cause trackball games to confuse which device to use
 - 🥷 Mortal Kombat 11 buttons were not working
