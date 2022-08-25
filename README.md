@@ -138,6 +138,9 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
 <a id="_issues_chasing_to_fix"></a>
 ## 🎯 Issues chasing to fix
 
+- Cannot play xBox games on the Megacade console joysticks/buttons
+  - xEmu application allows me to set inputs to keyboard but I cannot remap the keys
+  - I can only set one player to the keyboard. Keyboard cannot be shared across players
 - 📺 I had a HDMI 2 with audio splitter, lets call it, added so I could connect additional devices and play audio through main speakers. It works but at half volume on any device I try. I have reviewed every LG tv setting on Tv and on every device. I cannot achieve high volume through megacade speakers from additional device
 - 🎬 ❌ None of the items in "Movies" will play
   - The unite group gave me a reply: `Because there were no movies on Omega when given to Dave. Dave has since put them back on, but that’s on him to guide you. Give him a call.`
@@ -146,6 +149,7 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
 <a id="_launchbox_to_startup_into_a_specific_game"></a>
 ### 💥 LaunchBox to startup into a specific game
 - Use case: My house guests can turn on Megacade and get right into a game without the hassle of learning the menus
+- [BEST resource is a LaunchBox plugin](https://forums.launchbox-app.com/files/file/3267-big-box-auto-play/)
 - 🔎 Internet searches reveal seemingly no one has figured it out
 - 🔎 Github searches show quite a lot for LaunchBox plugins
   - [Some interesting code examples here](https://github.com/slipsystem/LaunchBox-Plugin-Examples#interfaces-2)
