@@ -11,6 +11,7 @@ Things learned and things to remember for my Megacade
 - [👾 Emulator apps](#_emulator_apps)
 - [✅ Fixed issues](_fixed_issues)
   - [🕹 Diagonals not working](#_diagonals_not_working)
+  - [☄️ Dragonball z opens in small window](_dragonball_z_opens_in_small_window)
   - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
 - [💥 LaunchBox to startup into a specific game](#_launchbox_to_startup_into_a_specific_game)
 - [🎯 Issues chasing to fix](#_issues_chasing_to_fix)
@@ -113,6 +114,13 @@ If your players are not allowing Diagonals, open the panel and move the restrict
 
 [j-stick-ball-top](https://www.ultimarc.com/arcade-controls/joysticks/j-stik-ball-top/)
 
+
+<a id="_dragonball_z_opens_in_small_window"></a>
+### ☄️ Dragonball Z opens in small window
+
+Use the in game main menu but make sure you then navigate into the game to have the settings saved.
+
+The in game options menu does in fact work, however if you just exit game immediately, it does not save. I had to edit the options, go one step in the game, I then set the graphic options again on the map area options menu, and then I backed out of the game (not a hard exit). And now the setting seems to go full screen on open!
 
 <a id="_launchbox_to_startup_into_a_specific_game"></a>
 ### 💥 LaunchBox to startup into a specific game
