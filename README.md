@@ -11,7 +11,7 @@ Things learned and things to remember for my Megacade
 - [👾 Emulator apps](#_emulator_apps)
 - [✅ Fixed issues](_fixed_issues)
   - [🕹 Diagonals not working](#_diagonals_not_working)
-  - [☄️ Dragonball z opens in small window](_dragonball_z_opens_in_small_window)
+  - [☄️ Dragonball z opens in small window](#_dragonball_z_opens_in_small_window)
   - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
 - [💥 LaunchBox to startup into a specific game](#_launchbox_to_startup_into_a_specific_game)
 - [🎯 Issues chasing to fix](#_issues_chasing_to_fix)
