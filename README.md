@@ -75,11 +75,11 @@ For instance, Nintendo Switch Super Smash Brothers Ultimate only worked from the
   - 🔦 You may have to figure out on your own where the emulator is within the operating system and open it manually
     - a list of known [👾 Emulator apps is here](#_emulator_apps) to help you figure out what to open
 
-<a id="#mame_arcade_button_mappings"></a>
+<a id="mame_arcade_button_mappings"></a>
 ### Mame arcade button mappings
 - While in the game, press player 1 + joystick right
 
-<a id="#_trackball_mapping"></a>
+<a id="_trackball_mapping"></a>
 ### ⚪️ Trackball mapping
 
 These steps are also helpful when your trackball stops working
@@ -116,7 +116,7 @@ If your players are not allowing Diagonals, open the panel and move the restrict
 [j-stick-ball-top](https://www.ultimarc.com/arcade-controls/joysticks/j-stik-ball-top/)
 
 
-<a id="#_game_plays_too_fast"></a>
+<a id="_game_plays_too_fast"></a>
 ### 🏃 Game plays too fast
 
 1. Goto Nvidia Control Panel app
