@@ -75,7 +75,7 @@ For instance, Nintendo Switch Super Smash Brothers Ultimate only worked from the
   - 🔦 You may have to figure out on your own where the emulator is within the operating system and open it manually
     - a list of known [👾 Emulator apps is here](#_emulator_apps) to help you figure out what to open
 
-<a id="mame_arcade_button_mappings"></a>
+<a id="#mame_arcade_button_mappings"></a>
 ### Mame arcade button mappings
 - While in the game, press player 1 + joystick right
 
