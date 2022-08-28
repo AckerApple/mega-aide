@@ -11,6 +11,7 @@ Things learned and things to remember for my Megacade
 - [👾 Emulator apps](#_emulator_apps)
 - [✅ Fixed issues](_fixed_issues)
   - [🕹 Diagonals not working](#_diagonals_not_working)
+  - [⠇ Menus and side effect during game play](#_menus_and_side_effect_during_game_play)
   - [🏃 Game plays too fast](#_game_plays_too_fast)
   - [☄️ Dragonball z opens in small window](#_dragonball_z_opens_in_small_window)
   - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
@@ -28,6 +29,11 @@ Things learned and things to remember for my Megacade
   - Or grab a keyboard
 - ⌨️ 🐭 ❌ Avoid plugging in a keyboard with a trackpad/mouse
   - Can cause trackball games to confuse which device to use
+- My lower cabinet ring light was only one color (not change colors)
+  - 🪫 The remote was not working. The battery in remote was dead on arrival
+    - 🔋 I was able to replace with 2032 watch battery I had on hand
+  - Ring light remote could change to dance mode but it always went back to solid color
+    - ✅ I just needed to hold the lock button down for about 5 seconds to lock it in
 - 💡 Do you have LEDBlinky controlled lights?
   - 💡 🕹 Do you have light up joysticks and they don't light up in games?
     - The joysticks may not be mapped to light up during game play
@@ -115,6 +121,13 @@ If your players are not allowing Diagonals, open the panel and move the restrict
 
 [j-stick-ball-top](https://www.ultimarc.com/arcade-controls/joysticks/j-stik-ball-top/)
 
+
+<a id="_menus_and_side_effect_during_game_play"></a>
+### ⠇ Menus and side effect during game play
+
+Most emulators have hotkeys. To fix odd menus and action from occurring, change or turn off hot keys in the appropriate emulator's application settings.
+
+### 🏃 Game plays too fast
 
 <a id="_game_plays_too_fast"></a>
 ### 🏃 Game plays too fast
