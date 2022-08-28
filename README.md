@@ -11,6 +11,7 @@ Things learned and things to remember for my Megacade
 - [👾 Emulator apps](#_emulator_apps)
 - [✅ Fixed issues](_fixed_issues)
   - [🕹 Diagonals not working](#_diagonals_not_working)
+  - [🏃 Game place too fast](#_game_place_too_fast)
   - [☄️ Dragonball z opens in small window](#_dragonball_z_opens_in_small_window)
   - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
 - [💥 LaunchBox to startup into a specific game](#_launchbox_to_startup_into_a_specific_game)
@@ -114,6 +115,20 @@ If your players are not allowing Diagonals, open the panel and move the restrict
 
 [j-stick-ball-top](https://www.ultimarc.com/arcade-controls/joysticks/j-stik-ball-top/)
 
+
+<a id="#_game_place_too_fast"></a>
+### 🏃 Game place too fast
+
+Keywords: speed twice too fast framerate nvidia aliens tecnoparrot ui
+
+1. Goto Nvidia Control Panel app
+2. Manage 3D settings
+3. Program settins tab
+4. Add the exe or whatever opens the game
+    - If you recently opened, just use the "Recently used" category and find application
+5. then Max Frame Rate, typically to 60
+    - I could not type in the field, I choose 58 as only value I could scroll to
+6. Reopen app, you should be all set
 
 <a id="_dragonball_z_opens_in_small_window"></a>
 ### ☄️ Dragonball Z opens in small window
