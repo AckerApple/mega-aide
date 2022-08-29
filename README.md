@@ -11,7 +11,8 @@ Things learned and things to remember for my Megacade
 - [👾 Emulator apps](#_emulator_apps)
 - [✅ Fixed issues](_fixed_issues)
   - [🕹 Diagonals not working](#_diagonals_not_working)
-  - [⠇ Menus and side effect during game play](#_menus_and_side_effect_during_game_play)
+  - [🦜 TeknoParrot fails to open game](#_teknoparrot_fails_to_open_game)
+_ - [⠇ Menus and side effect during game play](#_menus_and_side_effect_during_game_play)
   - [🏃 Game plays too fast](#_game_plays_too_fast)
   - [☄️ Dragonball z opens in small window](#_dragonball_z_opens_in_small_window)
   - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
@@ -121,6 +122,16 @@ If your players are not allowing Diagonals, open the panel and move the restrict
 
 [j-stick-ball-top](https://www.ultimarc.com/arcade-controls/joysticks/j-stik-ball-top/)
 
+<a id="_teknoparrot_fails_to_open_game"></a>
+### 🦜 TeknoParrot fails to open game
+
+Most likely the issue is that your Visuall C++ needs updating
+
+1. Download the microsoft [zip file here](https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/)
+2. Unzip the downloaded file somewhere onto your arcade machine
+3. To install, run the included install_all.bat with admin privileges
+    - right click, "Run as administrator"
+4. Restart and enjoy
 
 <a id="_menus_and_side_effect_during_game_play"></a>
 ### ⠇ Menus and side effect during game play
