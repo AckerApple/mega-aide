@@ -12,7 +12,7 @@ Things learned and things to remember for my Megacade
 - [✅ Fixed issues](_fixed_issues)
   - [🕹 Diagonals not working](#_diagonals_not_working)
   - [🦜 TeknoParrot fails to open game](#_teknoparrot_fails_to_open_game)
-_ - [⠇ Menus and side effect during game play](#_menus_and_side_effect_during_game_play)
+  - [⠇ Menus and side effect during game play](#_menus_and_side_effect_during_game_play)
   - [🏃 Game plays too fast](#_game_plays_too_fast)
   - [☄️ Dragonball z opens in small window](#_dragonball_z_opens_in_small_window)
   - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
