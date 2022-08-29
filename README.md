@@ -138,7 +138,6 @@ Most likely the issue is that your Visuall C++ needs updating
 
 Most emulators have hotkeys. To fix odd menus and action from occurring, change or turn off hot keys in the appropriate emulator's application settings.
 
-### 🏃 Game plays too fast
 
 <a id="_game_plays_too_fast"></a>
 ### 🏃 Game plays too fast
