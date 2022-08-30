@@ -4,23 +4,25 @@ Things learned and things to remember for my Megacade
 👀 Documentation intended for Megacade with Omega drive built after 2021
 
 **Table of contents**
-- [👀 First time needs to know](#_first_time_needs_to_know)
-- [🕹 How to map buttons](#_how_to_map_buttons)
-  - [Mame arcade button mappings](#mame_arcade_button_mappings)
-  - [⚪️ Trackball mapping](#_trackball_mapping)
-- [👾 Emulator apps](#_emulator_apps)
-- [✅ Fixed issues](_fixed_issues)
-  - [🕹 Diagonals not working](#_diagonals_not_working)
-  - [🦜 TeknoParrot fails to open game](#_teknoparrot_fails_to_open_game)
-  - [⠇ Menus and side effect during game play](#_menus_and_side_effect_during_game_play)
-  - [🏃 Game plays too fast](#_game_plays_too_fast)
-  - [☄️ Dragonball z opens in small window](#_dragonball_z_opens_in_small_window)
-  - [💡 Fix skipped lights during attract mode](#_fix_skipped_lights_during_attract_mode)
-- [💥 LaunchBox to startup into a specific game](#_launchbox_to_startup_into_a_specific_game)
-- [🎯 Issues chasing to fix](#_issues_chasing_to_fix)
-- [⚡️ Issues with answers to perform](#_issues_with_answers_to_perform)
+- [👀 First time needs to know](#-first-time-needs-to-know)
+- [🕹 How to map buttons](#-how-to-map-buttons)
+  - [Mame arcade button mappings](#mame-arcade-button-mappings)
+  - [⚪️ Trackball mapping](#-trackball-mapping)
+- [👾 Emulator apps](#-emulator-apps)
+- [✅ Fixed issues](-fixed-issues)
+  - [🕹 Diagonals not working](#-diagonals-not-working)
+  - [🦜 TeknoParrot fails to open game](#-teknoparrot-fails-to-open-game)
+  - [⠇ Menus and side effect during game play](#-menus-and-side-effect-during-game-play)
+  - [🏃 Game plays too fast](#-game-plays-too-fast)
+  - [☄️ Dragonball z opens in small window](#-dragonball-z-opens-in-small-window)
+  - [💡 Fix skipped lights during attract mode](#-fix-skipped-lights-during-attract-mode)
+- [💥 LaunchBox to startup into a specific game](#-launchbox-to-startup-into-a-specific-game)
+- [🎯 Issues chasing to fix](#-issues-chasing-to-fix)
+- [⚡️ Issues with answers to perform](#-issues-with-answers-to-perform)
+- [🧩 Certain games](#-certain-games)
 
-<a id="_first_time_needs_to_know"></a>
+
+<a id="-first-time-needs-to-know"></a>
 ## 👀 First time needs to know
 
 - ⚡️ The power "switch" is an arcade button. I was expecting a toggle switch, I've never seen an arcade button act as a power switch but there you go.
@@ -67,9 +69,9 @@ Things learned and things to remember for my Megacade
 - 💡 If you have lighted buttons, they do a good job of lighting by default but typically you will want to learn how to set the lighting by platform if not by some games
   - The lighting apps are fairly easily to navigate and are on the desktop
 - 🕹 Many is not most games required controller mapping
-  - See where I have learned how to map things [below](#_how_to_map_buttons)
+  - See where I have learned how to map things [below](#-how-to-map-buttons)
 
-<a id="_how_to_map_buttons"></a>
+<a id="-how-to-map-buttons"></a>
 ## 🕹 How to map buttons
 
 For instance, Nintendo Switch Super Smash Brothers Ultimate only worked from the game controllers but I wanted to map to Megacade joystick/button console.
@@ -80,13 +82,13 @@ For instance, Nintendo Switch Super Smash Brothers Ultimate only worked from the
   - 🍀 If lucky, the second menu item is typically a configure menu item
   - 👾 Second option, is the emulator maybe listed there and using it often takes you to emulator to perform configurations
   - 🔦 You may have to figure out on your own where the emulator is within the operating system and open it manually
-    - a list of known [👾 Emulator apps is here](#_emulator_apps) to help you figure out what to open
+    - a list of known [👾 Emulator apps is here](#-emulator-apps) to help you figure out what to open
 
-<a id="#mame_arcade_button_mappings"></a>
+<a id="#mame-arcade-button-mappings"></a>
 ### Mame arcade button mappings
 - While in the game, press player 1 + joystick right
 
-<a id="_trackball_mapping"></a>
+<a id="-trackball-mapping"></a>
 ### ⚪️ Trackball mapping
 
 These steps are also helpful when your trackball stops working
@@ -101,7 +103,7 @@ These steps are also helpful when your trackball stops working
 - HIGHLY recommended to run USB wire of trackball directly into computer
 
 
-<a id="_emulator_apps"></a>
+<a id="-emulator-apps"></a>
 ## 👾 Emulator apps
 
 Sometimes Big Box doesn't launch the emulator when asked (Flip Box) or it doesn't list the emulater. Here are a few of the apps that allow you to configure the inputs
@@ -112,34 +114,34 @@ Sometimes Big Box doesn't launch the emulator when asked (Flip Box) or it doesn'
 | 💠 PlayStation 3 | PCS3 |
 | 🔴 Dreamcast | redream |
 
-<a id="_fixed_issues"></a>
+<a id="-fixed-issues"></a>
 # ✅ Fixed issues
 
-<a id="_diagonals_not_working"></a>
+<a id="-diagonals-not-working"></a>
 ## 🕹 Diagonals not working
 
 If your players are not allowing Diagonals, open the panel and move the restrictor plates (round dials that turn with 4 spring loaded screws). They are normally all set to 8-way for the 4 players normal joysticks but they may be turned to 4-way for some reason.
 
 [j-stick-ball-top](https://www.ultimarc.com/arcade-controls/joysticks/j-stik-ball-top/)
 
-<a id="_teknoparrot_fails_to_open_game"></a>
+<a id="-teknoparrot-fails-to-open-game"></a>
 ### 🦜 TeknoParrot fails to open game
 
 Most likely the issue is that your Visuall C++ needs updating
 
 1. Download the microsoft [zip file here](https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/)
 2. Unzip the downloaded file somewhere onto your arcade machine
-3. To install, run the included install_all.bat with admin privileges
+3. To install, run the included install-all.bat with admin privileges
     - right click, "Run as administrator"
 4. Restart and enjoy
 
-<a id="_menus_and_side_effect_during_game_play"></a>
+<a id="-menus-and-side-effect-during-game-play"></a>
 ### ⠇ Menus and side effect during game play
 
 Most emulators have hotkeys. To fix odd menus and action from occurring, change or turn off hot keys in the appropriate emulator's application settings.
 
 
-<a id="_game_plays_too_fast"></a>
+<a id="-game-plays-too-fast"></a>
 ### 🏃 Game plays too fast
 
 1. Goto Nvidia Control Panel app
@@ -154,14 +156,14 @@ Most emulators have hotkeys. To fix odd menus and action from occurring, change 
 > Above keywords: speed pace twice too fast framerate nvidia aliens batman tecnoparrot ui
 
 
-<a id="_dragonball_z_opens_in_small_window"></a>
+<a id="-dragonball-z-opens-in-small-window"></a>
 ### ☄️ Dragonball Z opens in small window
 
 Use the in game main menu but make sure you then navigate into the game to have the settings saved.
 
 The in game options menu does in fact work, however if you just exit game immediately, it does not save. I had to edit the options, go one step in the game, I then set the graphic options again on the map area options menu, and then I backed out of the game (not a hard exit). And now the setting seems to go full screen on open!
 
-<a id="_launchbox_to_startup_into_a_specific_game"></a>
+<a id="-launchbox-to-startup-into-a-specific-game"></a>
 ### 💥 LaunchBox to startup into a specific game
 
 Use cases:
@@ -194,7 +196,7 @@ This process revolves around using a super great [Launchbox plugin](https://foru
 7. Restart machine or just your main BigBox... Whatever you do, Enjoy!
     - ![📷 autostart menu image should show here](assets/images/autostart/SmashBrosStartup.png)
 
-<a id="_fix_skipped_lights_during_attract_mode"></a>
+<a id="-fix-skipped-lights-during-attract-mode"></a>
 ## 💡 Fix skipped lights during attract mode
 
 When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits untouched for a short time, it goes into an attract mode where the lighting "dances". If during this attract mode some lights are not lighting, such as my machine an entire joystick was not lighting, perform the following steps:
@@ -216,7 +218,7 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
   - You can navigate frame by frame, you can add frames
 7. Save when complete and get back into big box and test your attract mode lighting, should be working now
 
-<a id="_issues_chasing_to_fix"></a>
+<a id="-issues-chasing-to-fix"></a>
 ## 🎯 Issues chasing to fix
 
 - Cannot play xBox games on the Megacade console joysticks/buttons
@@ -227,7 +229,7 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
   - The unite group gave me a reply: `Because there were no movies on Omega when given to Dave. Dave has since put them back on, but that’s on him to guide you. Give him a call.`
   - Contacted Dave and he mentioned a new drive coming out with more games and movies. May just wait for that. Hate to have broken movies folder. Will give this issue some more time.
 
-<a id="_issues_with_answers_to_perform"></a>
+<a id="-issues-with-answers-to-perform"></a>
 
 ## ⚡️ Issues with answers to perform
 
@@ -235,3 +237,41 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
   - `get your Motherboard drivers installed. Don't trust that EHA did that. Also run a direct USB cable from the trackball to the computer and bypass any hub. I had the same problem for years until I installed the MB drivers. Also, don't get an external keyboard with a touchpad. That can jack things up. If you do all of that it will be pretty solid until you unplug something. But it's going to be far more solid after you do all of the above`
 - 💾 How do I save and load states to pick a game right back up?  
   - `For the emulators I’ve played (NES, SNES, TG-16, Genesis, Sega CD) F1 in game brings up the menu which includes save/load states`
+
+<a id="-certain-games"></a>
+### 🧩 Certain games
+
+Some games do not come on EHA Omega drive or some are outdated. Here are some Acker Apple must haves.
+
+- 🗡 [The Legend of Zelda Links Awakening](https://roms2.cdnrobot.xyz/Tha/The-Legend-of-Zelda-Links-Awakening-NSP-ROMSLAB.rar?download_token=5bc8a10c305ba8cd6ae88acdc166ba089393f021c573239c42082f2aa45a9f46) for Nintendo Switch
+
+🟡 Baby PAC-man
+
+EHA Megacade comes with a Baby PAC-man. However, it is/was v1.1 and has issues including no two player button. The latest, as of 8-30-2022, is now v1.5 and has plenty of fixes and a two player button. Baby PAC-man is a pretty rare machine with both a ROM game and physical pinball, making it a bit more complicated to emulate. Follow these steps below:
+
+- [download link](https://vpuniverse.com/files/file/6134-vr-room-baby-pacman-bally-1982/)
+  - requires signup/signin
+  - download page has multiple downloads, choose the latest
+- In VPX Preferences -> Configure Keys, Nudge and DOF
+  - ☐ make sure "Disable B2S" is unchecked
+  - ☑ "Capture External DMD" is checked
+  - ☑ "Capture Backglass/PUI" is checked (optional options)
+    - not all version have this nor need it
+    - v7 visual pinball confirmed working
+- In game, press the "F1" key
+  - ☑ Make sure "Show DMD/Display window" is checked
+  - ☑ "Use External DMD" is unchecked
+  - Restart table
+- Now, a stand alone maze screen should be displaying somewhere
+  - Find it, and drag it to a place of your choosing
+  - You can resize by right-click on it and add border then resize and remove border
+- 😡 If the stand alone maze screen keeps being put in background and not viewable
+  - Drag the maze to another screen
+  - EHA owners, a monitor assist app is docked in the bottom right corner of screen
+    - Go into the app
+    - Find the option to add a quick key to move your mouse to another screen
+    - Start to drag the DMD screen and then use the hot key
+      - separate display should now have your Baby PAC-man maze on it
+
+Keywords: baby pac man visual pinball issues help two player button dmd maze screen
+![Baby PAC-man image](https://cdn.vpuniverse.com/monthly_2021_04/20210414202436_1.jpg.55dd06502e7dedfb9c6f6687e6642c5b.jpg)
