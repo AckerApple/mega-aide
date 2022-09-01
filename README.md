@@ -15,6 +15,7 @@ Things learned and things to remember for my Megacade
   - [⠇ Menus and side effect during game play](#-menus-and-side-effect-during-game-play)
   - [🏃 Game plays too fast](#-game-plays-too-fast)
   - [☄️ Dragonball z opens in small window](#-dragonball-z-opens-in-small-window)
+  - [Atari 5200 blue screen](#atari-5200-blue-screen)
   - [💡 Fix skipped lights during attract mode](#-fix-skipped-lights-during-attract-mode)
 - [💥 LaunchBox to startup into a specific game](#-launchbox-to-startup-into-a-specific-game)
 - [🎯 Issues chasing to fix](#-issues-chasing-to-fix)
@@ -162,6 +163,17 @@ Most emulators have hotkeys. To fix odd menus and action from occurring, change 
 Use the in game main menu but make sure you then navigate into the game to have the settings saved.
 
 The in game options menu does in fact work, however if you just exit game immediately, it does not save. I had to edit the options, go one step in the game, I then set the graphic options again on the map area options menu, and then I backed out of the game (not a hard exit). And now the setting seems to go full screen on open!
+
+<a id="atari-5200-blue-screen"></a>
+### Atari 5200 blue screen
+
+It possible LaunchBox is using the wrong core.
+
+1. Go into Launchbox, click the menu on the top left, tools, manage, emulators.
+2. In there click on retroarch and then the edit button on the bottom of the screen 
+3. Then on the left side click on associated platforms.
+4. Find Atari 5200 and change the core from atari800_libretro to a5200_libretro
+5. Click the OK button at the bottom and you should be good
 
 <a id="-launchbox-to-startup-into-a-specific-game"></a>
 ### 💥 LaunchBox to startup into a specific game
