@@ -5,8 +5,8 @@
 **Yellow Cable**
 | Wire | Label | Joystick Label | Alias |
 | --- | --- | --- | --- |
-| 1   | N/A | N/A | red wire |
-| 2   | ⚡️ Power | N/A | |
+| 1   | ⚡️ Power | | red wire |
+| 2   |  | | used as power on usb joystick |
 | 3   | ⬅️ P1-Left | J1 AL | |
 | 4   | ⬇️ P1-Down | J1 AD | |
 | 5   | P1-B1 | J1 K3 | north |
@@ -19,14 +19,14 @@
 | 12  | P2-B2 | J2 K4 | east |
 | 13  | P2-B3 | J2 L1 | |
 | 14  | 🔄 RESET | J1 SE/K9 | SELECT |
-| 15  | N/A | | |
-| 16  | Positive | | |
+| 15  | | | |
+| 16  | | | |
 
 **Grey Cable**
 | Wire | Label | Joystick Label | Alias |
 | --- | --- | --- | --- |
-| 1   | N/A |  | red wire |
-| 2   | ⚡️ POWER |  | |
+| 1   | ⚡️ POWER |  | orange wire |
+| 2   |  |  | used as power on usb joystick |
 | 3   | ⬆️ P1-U | J1 AU | |
 | 4   | ➡️ P1-R | J1 AR | |
 | 5   | P1-B4 | J1 K1 | west |
@@ -38,8 +38,8 @@
 | 11  | P2-B4 | J2 K1 | west |
 | 12  | P2-B5 | J2 K2 | south |
 | 13  | P2-B6 | J2 R1 | |
-| 14  | N/A | | |
-| 15  | N/A | | |
-| 16  | N/A | | |
+| 14  | | | |
+| 15  | | | |
+| 16  | | | |
 
 ![annotated wiring photo](assets/images/MIDWAY_BE_wiring/JOY1n2.png)
