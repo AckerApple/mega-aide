@@ -41,3 +41,5 @@
 | 14  | N/A | | |
 | 15  | N/A | | |
 | 16  | N/A | | |
+
+![annotated wiring photo](assets/images/MIDWAY_BE_wiring/JOY1n2.png)
