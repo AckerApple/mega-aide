@@ -59,6 +59,17 @@ Things learned and things to remember for my Megacade
 - How to pair/add old Wii remotes I've always had
   - The Wii sensor bar has a pair button
   - The Wii remotes have a pair button behind the battery flap
+- 💡 If you have lighted buttons, they do a good job of lighting by default but typically you will want to learn how to set the lighting by platform if not by some games
+  - The lighting apps are fairly easily to navigate and are on the desktop
+- 🕹 Many is not most games required controller mapping
+  - See where I have learned how to map things [below](#-how-to-map-buttons)
+
+<a id="-individual-games"></a>
+## 🎲 Individual games
+
+- 🎱 Pool nation is on of the best trackball pool games
+  - In order to share the trackball, before selecting Player 2 character press escape and now player two will share trackball
+  - [more here](https://steamcommunity.com/sharedfiles/filedetails/?id=187242390)
 - ⛳️ Golden Tee Complete 2006 is the latest golf in game that series, that the machine comes with
   - 📺 Two YouTube videos exist about getting new golf on
   - https://www.youtube.com/watch?v=9yEuSIpGc4Q
@@ -67,10 +78,6 @@ Things learned and things to remember for my Megacade
   - It so looks like player 2 will work but gun won't fire during gameplay
   - Feel lucky, most Megacades don't even work 1 player before 2022
   - Omega drive allows 1 Player as it comes with a game patch
-- 💡 If you have lighted buttons, they do a good job of lighting by default but typically you will want to learn how to set the lighting by platform if not by some games
-  - The lighting apps are fairly easily to navigate and are on the desktop
-- 🕹 Many is not most games required controller mapping
-  - See where I have learned how to map things [below](#-how-to-map-buttons)
 
 <a id="-how-to-map-buttons"></a>
 ## 🕹 How to map buttons
