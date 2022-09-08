@@ -220,11 +220,11 @@ This process revolves around using a super great [Launchbox plugin](https://foru
 <a id="-fix-attract-mode-out-of-memory-issue"></a>
 ## 🧠 Fix attract mode out of memory issue
 
-In early versions of Omega, if you left LaunchBox in attract mode for great than about 5 hours, an out of memory issue would occur.
+In early versions of Omega, if you left LaunchBox idle/untouched in attract mode for great than about 5 hours, an out of memory issue would occur.
 
 > Your system is running out of memory (RAM) and LaunchBox cannot continue.
 
-The fix is easy, I can now leave my machine on overnight. An exe can be downloaded and it patches Omega software.
+The fix is easy, I have left me machine on overnight to test. An patching exe file can be downloaded and it repairs the issue.
 
 - 💾 [original patch file download](https://mega.nz/file/H55GQRTa#mqUN6TjAZONtbBgEFiNEiq2y9Aj3iZvHC9XYhKaughg) provided by Robert Bracero
   - ⏳ 💾 [backup of file stored here on github](assets/images/attract-memory-issue/Omega_memory_leak_fix.exe) provided by Acker Apple
