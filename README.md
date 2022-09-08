@@ -17,6 +17,7 @@ Things learned and things to remember for my Megacade
   - [🏃 Game plays too fast](#-game-plays-too-fast)
   - [☄️ Dragonball z opens in small window](#-dragonball-z-opens-in-small-window)
   - [Atari 5200 blue screen](#atari-5200-blue-screen)
+  - [🧠 Fix attract mode out of memory issue](#-fix-attract-mode-out-of-memory-issue)
   - [💡 Fix skipped lights during attract mode](#-fix-skipped-lights-during-attract-mode)
 - [💥 LaunchBox to startup into a specific game](#-launchbox-to-startup-into-a-specific-game)
 - [🎯 Issues chasing to fix](#-issues-chasing-to-fix)
@@ -215,6 +216,26 @@ This process revolves around using a super great [Launchbox plugin](https://foru
     - ![📷 autostart menu image should show here](assets/images/autostart/autostart-menu.png)
 7. Restart machine or just your main BigBox... Whatever you do, Enjoy!
     - ![📷 autostart menu image should show here](assets/images/autostart/SmashBrosStartup.png)
+
+<a id="-fix-attract-mode-out-of-memory-issue"></a>
+## 🧠 Fix attract mode out of memory issue
+
+In early versions of Omega, if you left LaunchBox in attract mode for great than about 5 hours, an out of memory issue would occur.
+
+> Your system is running out of memory (RAM) and LaunchBox cannot continue.
+
+The fix is easy, I can now leave my machine on overnight. An exe can be downloaded and it patches Omega software.
+
+- 💾 [original patch file download](https://mega.nz/file/H55GQRTa#mqUN6TjAZONtbBgEFiNEiq2y9Aj3iZvHC9XYhKaughg) provided by Robert Bracero
+  - ⏳ 💾 [backup of file stored here on github](assets/images/attract-memory-issue/Omega_memory_leak_fix.exe) provided by Acker Apple
+
+Original found comment of patch file
+![facebook comment](assets/images/attract-memory-issue/FaceBookComment.png)
+
+See screen captures of the process below
+![step 1](assets/images/attract-memory-issue/PastedGraphic-8.png)
+![step 2](assets/images/attract-memory-issue/PastedGraphic-9.png)
+![step 3](assets/images/attract-memory-issue/PastedGraphic-10.png)
 
 <a id="-fix-skipped-lights-during-attract-mode"></a>
 ## 💡 Fix skipped lights during attract mode
