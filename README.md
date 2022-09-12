@@ -158,10 +158,10 @@ CASE: The default Nintendo 64 emulator does not show any side bezel art. If you 
 3. Set what you want as default
   - Be very careful. You can break many systems messing around in there.
 
-[Step1.jpeg](assets/images/default-emulator/Step1.jpeg)
-[Step2.jpeg](assets/images/default-emulator/Step2.jpeg)
-[Step3.jpeg](assets/images/default-emulator/Step3.jpeg)
-[Step4.jpeg](assets/images/default-emulator/Step4.jpeg)
+![Step1.jpeg](assets/images/default-emulator/Step1.jpeg)
+![Step2.jpeg](assets/images/default-emulator/Step2.jpeg)
+![Step3.jpeg](assets/images/default-emulator/Step3.jpeg)
+![Step4.jpeg](assets/images/default-emulator/Step4.jpeg)
 
 <a id="-menus-and-side-effect-during-game-play"></a>
 ### ⠇ Menus and side effect during game play
