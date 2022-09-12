@@ -248,6 +248,8 @@ The fix is easy, I have left me machine on overnight to test. An patching exe fi
 - 💾 [original patch file download](https://mega.nz/file/H55GQRTa#mqUN6TjAZONtbBgEFiNEiq2y9Aj3iZvHC9XYhKaughg) provided by Robert Bracero
   - ⏳ 💾 [backup of file stored here on github](assets/images/attract-memory-issue/Omega_memory_leak_fix.exe) provided by Acker Apple
 
+> Do note that the patch update appears to come with an Omega crash recovery monitoring software. This software was being overly sensitive and detecting crashing when none had occurred. I no longer wanted the crash monitoring software and just renaming the `.exe` file made it stop launching on start and everything has been perfect for awhile now.
+
 Original found comment of patch file
 ![facebook comment](assets/images/attract-memory-issue/FaceBookComment.png)
 
