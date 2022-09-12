@@ -151,13 +151,14 @@ Most likely the issue is that your Visuall C++ needs updating
 
 CASE: The default Nintendo 64 emulator does not show any side bezel art. If you just switch the default emulator then every N64 game will look better when opened
 
-> 4 screen captures of this process below
+> 5 screen captures of this process below
 
 1. Open Launchbox app (not the BigBox main app)
 2. Goto 🛠 tools > manage emulators > retroarch > cores
 3. Set what you want as default
   - Be very careful. You can break many systems messing around in there.
 
+![Step0][assets/images/autostart/open-launchbox.png]
 ![Step1.jpeg](assets/images/default-emulator/Step1.jpeg)
 ![Step2.jpeg](assets/images/default-emulator/Step2.jpeg)
 ![Step3.jpeg](assets/images/default-emulator/Step3.jpeg)
