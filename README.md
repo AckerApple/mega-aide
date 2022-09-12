@@ -13,6 +13,7 @@ Things learned and things to remember for my Megacade
 - [✅ Fixed issues](-fixed-issues)
   - [🕹 Diagonals not working](#-diagonals-not-working)
   - [🦜 TeknoParrot fails to open game](#-teknoparrot-fails-to-open-game)
+  - [🔀 Change default emulator used](#-change-default-emulator-used)
   - [⠇ Menus and side effect during game play](#-menus-and-side-effect-during-game-play)
   - [🏃 Game plays too fast](#-game-plays-too-fast)
   - [☄️ Dragonball z opens in small window](#-dragonball-z-opens-in-small-window)
@@ -144,6 +145,23 @@ Most likely the issue is that your Visuall C++ needs updating
 3. To install, run the included install-all.bat with admin privileges
     - right click, "Run as administrator"
 4. Restart and enjoy
+
+<a id="-change-default-emulator-used"></a>
+### 🔀 Change default emulator used
+
+CASE: The default Nintendo 64 emulator does not show any side bezel art. If you just switch the default emulator then every N64 game will look better when opened
+
+> 4 screen captures of this process below
+
+1. Open Launchbox app (not the BigBox main app)
+2. Goto 🛠 tools > manage emulators > retroarch > cores
+3. Set what you want as default
+  - Be very careful. You can break many systems messing around in there.
+
+[Step1.jpeg](assets/images/default-emulator/Step1.jpeg)
+[Step2.jpeg](assets/images/default-emulator/Step2.jpeg)
+[Step3.jpeg](assets/images/default-emulator/Step3.jpeg)
+[Step4.jpeg](assets/images/default-emulator/Step4.jpeg)
 
 <a id="-menus-and-side-effect-during-game-play"></a>
 ### ⠇ Menus and side effect during game play
@@ -286,6 +304,16 @@ Some games do not come on EHA Omega drive or some are outdated. Here are some Ac
 
 - [🗡 The Legend of Zelda Links Awakening](https://roms2.cdnrobot.xyz/Tha/The-Legend-of-Zelda-Links-Awakening-NSP-ROMSLAB.rar?download_token=5bc8a10c305ba8cd6ae88acdc166ba089393f021c573239c42082f2aa45a9f46) for Nintendo Switch
 - [💪 Super Smash Bros](https://nxbrew.com/super-smash-bros-ultimate-switch-nsp-update/)
+
+🧟‍♀️ House of the Dead remake
+
+If no guns or if two player does not work, perform the following:
+
+Once you install HOTD Remake for your PC, download the following patch files and copy them into the root of game folder and then press F1 to setup your light guns. That's it! 
+
+[download the patch here](https://drive.google.com/file/d/14-IuuFHCZj5t83AfX7LJoAS8DBVHn7sX/view)
+
+[📺 YouTube video related to patch](https://www.youtube.com/watch?v=UD_w0S_955o)
 
 🟡 Baby PAC-man
 
