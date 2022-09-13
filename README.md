@@ -23,7 +23,11 @@ Things learned and things to remember for my Megacade
 - [🎯 Issues chasing to fix](#-issues-chasing-to-fix)
 - [⚡️ Issues with answers to perform](#-issues-with-answers-to-perform)
 - [🧩 Individual games](#-individual-games)
-  - [🍄 Mario 64](-mario-64)
+  - [🗡 The Legend of Zelda Links Awakening](#-individual-games)
+  - [💪 Super Smash Bros](#-individual-games)
+  - [⛳️ Golden Tee Complete 2006](#-individual-games)
+  - [🦌 Buck hunter arcade](#-individual-games)
+  - [🍄 Mario 64](-mario-64)(#-individual-games)
   - [🧟‍♀️ House of the Dead remake](-🧟‍♀️-house-of-the-dead-remake)
   - [🟡 Baby PAC-man](-baby-pac-man)
 
