@@ -308,6 +308,29 @@ Some games do not come on EHA Omega drive or some are outdated. Here are some Ac
 - [🗡 The Legend of Zelda Links Awakening](https://roms2.cdnrobot.xyz/Tha/The-Legend-of-Zelda-Links-Awakening-NSP-ROMSLAB.rar?download_token=5bc8a10c305ba8cd6ae88acdc166ba089393f021c573239c42082f2aa45a9f46) for Nintendo Switch
 - [💪 Super Smash Bros](https://nxbrew.com/super-smash-bros-ultimate-switch-nsp-update/)
 
+🍄 Mario 64
+
+Using the emulator Retroarch seems to work best.
+
+If in Retroarch you cannot move Mario but the action buttons work. This is most likely due to your joystick being mapped to direction buttons but needs to be remapped to analog directions. Use the steps below (screen capture below):
+1. In game use F1 key on keyboard
+  - some keyboards require holding an Fn key to activate the F1 key
+2. A menu should have come up
+  - Expect that you can navigate it
+3. Goto Quick Menu (you may already be on it)
+4. Goto Controls
+5. Goto Port 1 controls
+6. Remap the D-Pad
+  - up = Control Stick Y -
+  - down = Control Stick Y +
+  - left =  = Control Stick X -
+  - right =  = Control Stick X +
+7. Go back and Save configuration
+8. Press F1 to exit the menu
+  - Mario should now move around
+
+![retroarch mario64 input config](assets/images/RetroArchMario64.png)
+
 🧟‍♀️ House of the Dead remake
 
 If no guns or if two player does not work, perform the following:
