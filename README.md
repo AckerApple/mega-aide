@@ -5,7 +5,6 @@ Things learned and things to remember for my Megacade
 
 **Table of contents**
 - [👀 First time needs to know](#-first-time-needs-to-know)
-- [🎲 Individual games](#-individual-games)
 - [🕹 How to map buttons](#-how-to-map-buttons)
   - [Mame arcade button mappings](#mame-arcade-button-mappings)
   - [⚪️ Trackball mapping](#-trackball-mapping)
@@ -23,7 +22,11 @@ Things learned and things to remember for my Megacade
 - [💥 LaunchBox to startup into a specific game](#-launchbox-to-startup-into-a-specific-game)
 - [🎯 Issues chasing to fix](#-issues-chasing-to-fix)
 - [⚡️ Issues with answers to perform](#-issues-with-answers-to-perform)
-- [🧩 Certain games](#-certain-games)
+- [🧩 Individual games](#-individual-games)
+  - [🍄 Mario 64](-mario-64)
+  - [🧟‍♀️ House of the Dead remake](-🧟‍♀️-house-of-the-dead-remake)
+  - [🟡 Baby PAC-man](-baby-pac-man)
+
 
 
 <a id="-first-time-needs-to-know"></a>
@@ -66,21 +69,6 @@ Things learned and things to remember for my Megacade
   - The lighting apps are fairly easily to navigate and are on the desktop
 - 🕹 Many is not most games required controller mapping
   - See where I have learned how to map things [below](#-how-to-map-buttons)
-
-<a id="-individual-games"></a>
-## 🎲 Individual games
-
-- 🎱 Pool nation is on of the best trackball pool games
-  - In order to share the trackball, before selecting Player 2 character press escape and now player two will share trackball
-  - [more here](https://steamcommunity.com/sharedfiles/filedetails/?id=187242390)
-- ⛳️ Golden Tee Complete 2006 is the latest golf in game that series, that the machine comes with
-  - 📺 Two YouTube videos exist about getting new golf on
-  - https://www.youtube.com/watch?v=9yEuSIpGc4Q
-  - https://www.youtube.com/watch?v=VBP0wVxuuAM
-- 🦌 Buck hunter arcade, aka Big Buck Hunter HD, only works 1 player
-  - It so looks like player 2 will work but gun won't fire during gameplay
-  - Feel lucky, most Megacades don't even work 1 player before 2022
-  - Omega drive allows 1 Player as it comes with a game patch
 
 <a id="-how-to-map-buttons"></a>
 ## 🕹 How to map buttons
@@ -300,15 +288,28 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
 - 💾 How do I save and load states to pick a game right back up?  
   - `For the emulators I’ve played (NES, SNES, TG-16, Genesis, Sega CD) F1 in game brings up the menu which includes save/load states`
 
-<a id="-certain-games"></a>
-### 🧩 Certain games
+<a id="-individual-games"></a>
+### 🧩 Individual games
 
 Some games do not come on EHA Omega drive or some are outdated. Here are some Acker Apple must haves.
 
 - [🗡 The Legend of Zelda Links Awakening](https://roms2.cdnrobot.xyz/Tha/The-Legend-of-Zelda-Links-Awakening-NSP-ROMSLAB.rar?download_token=5bc8a10c305ba8cd6ae88acdc166ba089393f021c573239c42082f2aa45a9f46) for Nintendo Switch
 - [💪 Super Smash Bros](https://nxbrew.com/super-smash-bros-ultimate-switch-nsp-update/)
+- 🎱 Pool nation is one of the best trackball pool games
+  - In order to share the trackball, before selecting Player 2 character press escape and now player two will share trackball
+  - [more here](https://steamcommunity.com/sharedfiles/filedetails/?id=187242390)
+- ⛳️ Golden Tee Complete 2006 is the latest golf in game that series, that the machine comes with
+  - 📺 Two YouTube videos exist about getting new golf on
+  - https://www.youtube.com/watch?v=9yEuSIpGc4Q
+  - https://www.youtube.com/watch?v=VBP0wVxuuAM
+- 🦌 Buck hunter arcade, aka Big Buck Hunter HD, only works 1 player
+  - It so looks like player 2 will work but gun won't fire during gameplay
+  - Feel lucky, most Megacades don't even work 1 player before 2022
+  - Omega drive allows 1 Player as it comes with a game patch
 
-🍄 Mario 64
+
+<a id="-mario-64"></a>
+#### 🍄 Mario 64
 
 Using the emulator Retroarch seems to work best.
 
@@ -331,7 +332,8 @@ If in Retroarch you cannot move Mario but the action buttons work. This is most 
 
 ![retroarch mario64 input config](assets/images/RetroArchMario64.png)
 
-🧟‍♀️ House of the Dead remake
+<a id="-house-of-the-dead-remake"></a>
+### 🧟‍♀️ House of the Dead remake
 
 If no guns or if two player does not work, perform the following:
 
@@ -341,6 +343,7 @@ Once you install HOTD Remake for your PC, download the following patch files and
 
 [📺 YouTube video related to patch](https://www.youtube.com/watch?v=UD_w0S_955o)
 
+<a id="-baby-pac-man"></a>
 🟡 Baby PAC-man
 
 EHA Megacade comes with a Baby PAC-man. However, it is/was v1.1 and has issues including no two player button. The latest, as of 8-30-2022, is now v1.5 and has plenty of fixes and a two player button. Baby PAC-man is a pretty rare machine with both a ROM game and physical pinball, making it a bit more complicated to emulate. Follow these steps below:
