@@ -30,6 +30,7 @@ Things learned and things to remember for my Megacade
   - [🍄 Mario 64](-mario-64)(#-individual-games)
   - [🧟‍♀️ House of the Dead remake](-🧟‍♀️-house-of-the-dead-remake)
   - [🟡 Baby PAC-man](-baby-pac-man)
+  - [🤠 Wild West Shootout](-wild-west-shootout)
 
 
 
@@ -378,3 +379,18 @@ EHA Megacade comes with a Baby PAC-man. However, it is/was v1.1 and has issues i
 
 Keywords: baby pac man visual pinball issues help two player button dmd maze screen
 ![Baby PAC-man image](https://cdn.vpuniverse.com/monthly_2021_04/20210414202436_1.jpg.55dd06502e7dedfb9c6f6687e6642c5b.jpg)
+
+[🤠 Wild West Shootout](-wild-west-shootout)
+
+Several issues I experienced with my machine:
+
+1. To get both light guns working I had to following another online wiki
+  - [github wiki by argonlefou](https://github.com/argonlefou/DemulShooter/wiki/Coastal#wild-west-shoutout)
+2. When I used the above Demulshooter app, I ended up getting a 4:3 aspect ration and fun fired higher than I was aiming.
+  - The tip to edit the Windows registry, did not work for me
+  - Open the WWS game using DemulShooter script and black bars should **still** be there
+  - Then open `Borderless Gaming` (it opens into task bar) and on its left menu select WWS and tap the on screen **right arrow** icon
+  - WWS may now already be in a fixed state and if not then on the right sided menu area, find “Cowboy” and edit it’s options to refine and perfect.
+  - Ensure Borderless Gaming is set to startup with Windows so game always opens correctly
+
+Keywords: argonlefou DemulShooter
