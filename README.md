@@ -23,14 +23,14 @@ Things learned and things to remember for my Megacade
 - [🎯 Issues chasing to fix](#-issues-chasing-to-fix)
 - [⚡️ Issues with answers to perform](#-issues-with-answers-to-perform)
 - [🧩 Individual games](#-individual-games)
-  - [🗡 The Legend of Zelda Links Awakening](#-individual-games)
-  - [💪 Super Smash Bros](#-individual-games)
-  - [⛳️ Golden Tee Complete 2006](#-individual-games)
-  - [🦌 Buck hunter arcade](#-individual-games)
-  - [🍄 Mario 64](-mario-64)(#-individual-games)
-  - [🧟‍♀️ House of the Dead remake](-🧟‍♀️-house-of-the-dead-remake)
-  - [🟡 Baby PAC-man](-baby-pac-man)
-  - [🤠 Wild West Shootout](-wild-west-shootout)
+  - [🗡 The Legend of Zelda Links Awakening](#-the-legend-of-zelda-links-awakening)
+  - [💪 Super Smash Bros](#-super-smash-bros)
+  - [⛳️ Golden Tee Complete 2006](#-golden-tee-complete-2006)
+  - [🦌 Buck hunter arcade](#-buck-hunter-arcade)
+  - [🍄 Mario 64](#-mario-64)
+  - [🧟‍♀️ House of the Dead remake](#-🧟‍♀️-house-of-the-dead-remake)
+  - [🟡 Baby PAC-man](#-baby-pac-man)
+  - [🤠 Wild West Shootout](#-wild-west-shootout)
 
 
 
@@ -380,7 +380,8 @@ EHA Megacade comes with a Baby PAC-man. However, it is/was v1.1 and has issues i
 Keywords: baby pac man visual pinball issues help two player button dmd maze screen
 ![Baby PAC-man image](https://cdn.vpuniverse.com/monthly_2021_04/20210414202436_1.jpg.55dd06502e7dedfb9c6f6687e6642c5b.jpg)
 
-[🤠 Wild West Shootout](-wild-west-shootout)
+<a id="-wild-west-shootout"></a>
+🤠 Wild West Shootout
 
 Several issues I experienced with my machine:
 
