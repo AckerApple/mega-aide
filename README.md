@@ -386,12 +386,12 @@ Keywords: baby pac man visual pinball issues help two player button dmd maze scr
 Several issues I experienced with my machine:
 
 1. To get both light guns working I had to following another online wiki
-  - [github wiki by argonlefou](https://github.com/argonlefou/DemulShooter/wiki/Coastal#wild-west-shoutout)
+    - [github wiki by argonlefou](https://github.com/argonlefou/DemulShooter/wiki/Coastal#wild-west-shoutout)
 2. When I used the above Demulshooter app, I ended up getting a 4:3 aspect ration and fun fired higher than I was aiming.
-  - The tip to edit the Windows registry, did not work for me
-  - Open the WWS game using DemulShooter script and black bars should **still** be there
-  - Then open `Borderless Gaming` (it opens into task bar) and on its left menu select WWS and tap the on screen **right arrow** icon
-  - WWS may now already be in a fixed state and if not then on the right sided menu area, find “Cowboy” and edit it’s options to refine and perfect.
-  - Ensure Borderless Gaming is set to startup with Windows so game always opens correctly
+    - The tip to edit the Windows registry, did not work for me
+    - Open the WWS game using DemulShooter script and black bars should **still** be there
+    - Then open `Borderless Gaming` (it opens into task bar) and on its left menu select WWS and tap the on screen **right arrow** icon
+    - WWS may now already be in a fixed state and if not then on the right sided menu area, find “Cowboy” and edit it’s options to refine and perfect.
+    - Ensure Borderless Gaming is set to startup with Windows so game always opens correctly
 
-Keywords: argonlefou DemulShooter
+Keywords: argonlefou DemulShooter cowboy wws gun4ir
