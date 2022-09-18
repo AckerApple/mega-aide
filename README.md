@@ -378,7 +378,7 @@ EHA Megacade comes with a Baby PAC-man. However, it is/was v1.1 and has issues i
       - separate display should now have your Baby PAC-man maze on it
 
 Keywords: baby pac man visual pinball issues help two player button dmd maze screen
-![Baby PAC-man image](https://cdn.vpuniverse.com/monthly_2021_04/20210414202436_1.jpg.55dd06502e7dedfb9c6f6687e6642c5b.jpg)
+![Baby PAC-man image](https://www.joystixgames.com/wp-content/uploads/2016/10/Baby-Pac-Man-arcade-game-at-Joystix.jpg)
 
 <a id="-wild-west-shootout"></a>
 🤠 Wild West Shootout
