@@ -107,6 +107,8 @@ Note: This documentation is exact for my Omega Megacade made in August 2022. Ove
     - Set to `Value="0.2"` and the wheel will fade enough to let videos play through but still indicate you are at the menu (kinda nice)
 4. 💾 save and close and test Big Box platform wheel
 
+> The following two links help me figure out the wheel fade:
+> [link 1](https://forums.launchbox-app.com/topic/44719-show-game-wheel-permanently/) and [link 2](https://forums.launchbox-app.com/topic/44049-unified/page/7/#comment-281260)
 
 <a id="-how-to-map-buttons"></a>
 ## 🕹 How to map buttons
