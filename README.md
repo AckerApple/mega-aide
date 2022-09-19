@@ -5,6 +5,7 @@ Things learned and things to remember for my Megacade
 
 **Table of contents**
 - [👀 First time needs to know](#-first-time-needs-to-know)
+- [☸️ Make BigBox wheel stop fading out](-make-bigbox-wheel-stop-fading-out)
 - [🕹 How to map buttons](#-how-to-map-buttons)
   - [Mame arcade button mappings](#mame-arcade-button-mappings)
   - [⚪️ Trackball mapping](#-trackball-mapping)
@@ -76,6 +77,34 @@ Things learned and things to remember for my Megacade
   - The lighting apps are fairly easily to navigate and are on the desktop
 - 🕹 Many is not most games required controller mapping
   - See where I have learned how to map things [below](#-how-to-map-buttons)
+
+<a id="-make-bigbox-wheel-stop-fading-out"></a>
+## ☸️ Make BigBox wheel stop fading out
+
+CASE: You or your first time guests can't tell when they are in a menu or in a game. It's just confusing when the selection wheel is not shown. When I first got my Megacade I thought the menu was trash because of this, it's not. Let's fix it below
+
+Note: This documentation is exact for my Omega Megacade made in August 2022. Overtime the exact files documented below may change but the concept to apply fix remains the same.
+
+**Platform Wheel no fade**
+1. Find the file related to the platform wheel fading out
+    - PlatformWheel2FiltersView.xaml
+    - my machine the parent folder is: `C:\Users\Administorator\LaunchBox\Themes\Unified Redux\Views`
+2. Open/edit the file in any text editor
+    - 🔎 search for `<!-- FADING WHEEL -->` or just `FADING WHEEL`
+3. Edit the last `<EasingDoubleKeyFrame` where you see `Value="0"`
+    - If you set `Value="1"` then the 
+4. 💾 save and close and test Big Box platform wheel
+
+**Game Wheel no fade**
+1. Find the file related to the platform wheel fading out
+    - Wheel4GamesView.xaml
+    - my machine the parent folder is: `C:\Users\Administorator\LaunchBox\Themes\Unified Redux\Views`
+2. Open/edit the file in any text editor
+    - 🔎 search for `<!-- FADING WHEEL -->` or just `FADING WHEEL`
+3. Edit the last `<EasingDoubleKeyFrame` where you see `Value="0"`
+    - If you set `Value="1"` then the 
+4. 💾 save and close and test Big Box platform wheel
+
 
 <a id="-how-to-map-buttons"></a>
 ## 🕹 How to map buttons
@@ -344,6 +373,7 @@ Some games do not come on EHA Omega drive or some are outdated. Here are some Ac
   - It so looks like player 2 will work but gun won't fire during gameplay
   - Feel lucky, most Megacades don't even work 1 player before 2022
   - Omega drive allows 1 Player as it comes with a game patch
+  - [more info and patches here](https://sindenlightgun.miraheze.org/wiki/Big_Buck_Hunter_Arcade)
 
 
 <a id="-mario-64"></a>
