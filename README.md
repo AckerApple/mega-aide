@@ -93,7 +93,7 @@ Note: This documentation is exact for my Omega Megacade made in August 2022. Ove
     - 🔎 search for `<!-- FADING WHEEL -->` or just `FADING WHEEL`
 3. Edit the last `<EasingDoubleKeyFrame` where you see `Value="0"`
     - Set to `Value="1"` and the wheel will not fade
-    - Set to `Value="0.5"` and the wheel will half fade (kinda nice)
+    - Pro tip: Instead set to `Value="0.5"` and the wheel will half fade (kinda nice)
 4. 💾 save and close and test Big Box platform wheel
 
 **Game Wheel no fade**
@@ -104,7 +104,7 @@ Note: This documentation is exact for my Omega Megacade made in August 2022. Ove
     - 🔎 search for `<!-- FADING WHEEL -->` or just `FADING WHEEL`
 3. Edit the last `<EasingDoubleKeyFrame` where you see `Value="0"`
     - Set to `Value="1"` and the wheel will not fade
-    - Set to `Value="0.2"` and the wheel will fade enough to let videos play through but still indicate you are at the menu (kinda nice)
+    - Pro tip: Instead set to `Value="0.2"` and the wheel will fade enough to let videos play through but still indicate you are at the menu (kinda nice)
 4. 💾 save and close and test Big Box platform wheel
 
 > The following two links help me figure out the wheel fade:
