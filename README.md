@@ -22,6 +22,8 @@ Things learned and things to remember for my Megacade
 - [💥 LaunchBox to startup into a specific game](#-launchbox-to-startup-into-a-specific-game)
 - [🎯 Issues chasing to fix](#-issues-chasing-to-fix)
 - [⚡️ Issues with answers to perform](#-issues-with-answers-to-perform)
+- [🤖 Individual Emulators](#-individual-emulators)
+  - [() Yuzu](#yuzu)
 - [🧩 Individual games](#-individual-games)
   - [🗡 The Legend of Zelda Links Awakening](#-the-legend-of-zelda-links-awakening)
   - [💪 Super Smash Bros](#-super-smash-bros)
@@ -292,6 +294,37 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
   - `get your Motherboard drivers installed. Don't trust that EHA did that. Also run a direct USB cable from the trackball to the computer and bypass any hub. I had the same problem for years until I installed the MB drivers. Also, don't get an external keyboard with a touchpad. That can jack things up. If you do all of that it will be pretty solid until you unplug something. But it's going to be far more solid after you do all of the above`
 - 💾 How do I save and load states to pick a game right back up?  
   - `For the emulators I’ve played (NES, SNES, TG-16, Genesis, Sega CD) F1 in game brings up the menu which includes save/load states`
+
+<a id="-individual-emulators"></a>
+### 🤖 Individual Emulators
+
+<a id="yuzu"></a>
+### () Yuzu
+
+Yuzu does not understand the difference between LShift and RShift nor RCtrl and LCtrl, its just "CTRL" and "SHIFT". This often will result in Player 3 sharing buttons with Player 1, when playing from an arcade panel with buttons emulated as a keyboard.
+
+This fix could be used to fix just about any game/emulater that you need to remap keys for. All instructions are for LaunchBox but if smart enough you can apply this knowledge into a AutoHotKey script (LaunchBox uses autohotkey scripts)
+
+Known button conflicts are:
+- P1 button 1 (LCTRL) conficts with Player 3 Button 1 (RCtrl)
+- P1 button 4 (LSHIFT) conficts with Player 3 Button 2 (RSHIFT)
+
+🛠 Fix: Have LaunchBox open Yuzu with additional lines that remaps keys:
+1. Open LaunchBox app (not BigBox)
+2. Goto Tools > Manage > Emulators > Find and then edit "Yuzu"
+3. Goto Running Script
+4. Add the following two lines to the file
+    - `RShift::[`
+    - `LControl::]`
+    - Note: I placed these new lines, with a line return after them, above the existing line `$ESC::`
+5. Save and close LaunchBox
+6. Open Yuzu the app so we can configure inputs
+7. Top Menu goto "Emulation" > goto Controls > Goto Player 3
+  - Set the Face Button "X" to "[" using a real keyboard to enter it
+  - Set the Face Button "Y" to "[" using a real keyboard to enter it
+  - Note: We are using brackets "[" and "]" because our script edit above set them but you could use something else if you match in both places
+8. Note: Recommend saving as a Profile
+9. You are done, now launch any Yuzu driven Nintendo Switch game and you shouldn't have button conflicts
 
 <a id="-individual-games"></a>
 ### 🧩 Individual games
