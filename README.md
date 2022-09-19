@@ -5,7 +5,7 @@ Things learned and things to remember for my Megacade
 
 **Table of contents**
 - [👀 First time needs to know](#-first-time-needs-to-know)
-- [☸️ Make BigBox wheel stop fading out](#`-make-bigbox-wheel-stop-fading-out)
+- [☸️ Make BigBox wheel stop fading out](#-make-bigbox-wheel-stop-fading-out)
 - [🕹 How to map buttons](#-how-to-map-buttons)
   - [Mame arcade button mappings](#mame-arcade-button-mappings)
   - [⚪️ Trackball mapping](#-trackball-mapping)
