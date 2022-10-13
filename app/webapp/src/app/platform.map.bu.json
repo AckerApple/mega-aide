@@ -1,0 +1,73 @@
+{
+  "images": [{
+    "url": "assets/maps/nintendo.jpg",
+    "players": [{
+      "Digit1": {
+        "emoji": "▶️",
+        "label": "start",
+        "color": [255, 0, 0],
+        "x": 50,
+        "y": 50
+      }
+    }]
+  },{
+    "url": "assets/maps/PlayStation-DualShock.jpg",
+    "players": [{
+      "Digit1": {
+        "emoji": "▶️",
+        "label": "start",
+        "color": [255, 0, 0],
+        "x": 50,
+        "y": 50
+      },
+      "Digit5": {
+        "color": [255, 0, 0],
+        "label": "select",
+        "x": 50,
+        "y": 50
+      }
+    }, {
+      "Digit2": {
+        "color": [255, 0, 0],
+        "emoji": "▶️",
+        "label": "start",
+        "x": 50,
+        "y": 50
+      },
+      "Digit6": {
+        "color": [255, 0, 0],
+        "label": "select",
+        "x": 50,
+        "y": 50
+      }
+    }, {
+      "Digit3": {
+        "emoji": "▶️",
+        "color": [255, 0, 0],
+        "label": "start",
+        "x": 50,
+        "y": 50
+      },
+      "Digit7": {
+        "color": [255, 0, 0],
+        "label": "select",
+        "x": 50,
+        "y": 50
+      }
+    }, {
+      "Digit4": {
+        "color": [255, 0, 0],
+        "emoji": "▶️",
+        "label": "start",
+        "x": 50,
+        "y": 50
+      },
+      "Digit8": {
+        "color": [255, 0, 0],
+        "label": "select",
+        "x": 50,
+        "y": 50
+      }
+    }]
+  }]
+}

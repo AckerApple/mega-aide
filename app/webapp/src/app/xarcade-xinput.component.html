@@ -1,0 +1,50 @@
+<robust-select-directory label="XArcade XInput" [reloadPath]="session.config.xarcadeXinput.path"
+  (directoryManagerChange)="session.save();readDir($event)"
+  (error)="this.session.error('could not load XArcade XInput path', $event)"
+></robust-select-directory>
+
+<div>
+  <br />
+  <div class="text-center">
+    ⬆️ Select XArcade XInput folder above to unlock features below ⬇️
+    <br /><br />
+    <a class="text-xs bg-positive pad-h pad-v-xs"
+      (click)="viewMoreInfo = !viewMoreInfo"
+    >ℹ️ more info</a>
+  </div>
+  <p *ngIf="viewMoreInfo" class="bg-positive pad">
+    ℹ️ When you select your XArcade XInput folder, settings files will be read to offer features.
+    <br /><br />
+    Such features include:
+    <li>A robust controller mapping interface</li>
+    <li>and more...</li>
+  </p>
+</div>
+
+<ng-container *ngIf="mappingFileNames">
+  <h3>Mapping file</h3>
+  <hr class="border-1 border-white" />
+  <div class="flex-wrap child-margin-xxs">
+    <a type="button" class="flex1" *ngFor="let fileName of mappingFileNames"
+      [routerLink]="'mapping/' + fileName"
+    >{{ fileName }}</a>
+  </div>
+</ng-container>
+
+
+<div class="flex-wrap child-margin-xxs">
+  <button type="button" *ngIf="configHasChanges" class="bg-balanced flex1 active-bg-energized"
+    (click)="saveFiles()"
+  >💾 save changes</button>
+</div>  
+
+<div class="text-center child-margin-xs pad">
+  <div class="opacity-80 text-xs">🔗 helpful links</div>
+  <a href="https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.keys"
+    (click)="openAnchor($event)" target="_blank" class="text-white underline"
+  >Windows keys</a>
+
+  <a href="https://github.com/mikew/xarcade-xinput"
+    (click)="openAnchor($event)" target="_blank" class="text-white underline"
+  >XArcade XInput</a>
+</div>

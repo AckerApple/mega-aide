@@ -1,0 +1,336 @@
+<strong>⌨️ Keyboard input debug</strong>
+<p>A good tool for arcade console panel button testing</p>
+
+<div class="flex-wrap child-margin-xxs">
+  <button class="flex1" *ngFor="let control of platformMap.images"
+    (click)="reads.editPlatform = undefined;reads.platformMap = control;reads.playerMaps = []"
+    [class.active] = "reads.platformMap === control"
+  >
+    <img src="{{control.url}}" alt="" border="0"
+      style="height:2rem"
+    />
+    <div>{{control.label}}</div>
+  </button>
+</div>
+
+<div *ngIf="reads.platformMap" style="min-width:50vw">
+  <br />
+  <h3>Player editor</h3>
+  <div class="flex-wrap child-margin-xxs">
+    <button type="button" class="flex1"
+      *ngFor="let player of reads.platformMap.players;let index=index"
+      [class.active] = "reads.playerMaps.includes(index)"
+      (click)="togglePlayerMapByIndex(index, true)"
+      (contextmenu)="toggleLockPlayerMapByIndex(index);$event.preventDefault()"
+    >{{reads.lockPlayerMaps.includes(index) ? '🔒 ' : ''}}Player {{index + 1}}</button>
+    <button type="button" class="flex1 bg-white text-black"
+      (click)="showAllPlayersOf(reads.platformMap)"
+    >👀 Show All</button>
+    <button type="button" class="flex1 bg-balanced"
+      (click)="createPlayerOnControl( reads.platformMap.players )"
+    >➕ add player</button>
+    <button type="button" class="flex1 bg-calm bg-calm"
+      (click)="clonePlatform(reads.platformMap)"
+    >📋 clone</button>
+    <button type="button" class="flex1 bg-calm bg-calm"
+      (click)="reads.viewPlatformJson = reads.platformMap"
+      [class.active]="reads.viewPlatformJson"
+    >⚙️ view config</button>
+    <button type="button" class="flex1 bg-calm bg-calm"
+      (click)="reads.editPlatform = reads.platformMap"
+    >✏️ edit details</button>
+  </div>
+
+  <div *ngIf="reads.viewPlatformJson" class="child-margin-xxs flex-wrap">
+    <textarea cols="60" rows="12" wrap="off" class="width-full">{{ reads.platformMap | json }}</textarea>
+  </div>
+  <div *ngIf="reads.editPlatform" class="child-margin-xxs flex-wrap">
+    <div class="flex1">
+      <label for="label">label</label>
+      <input type="text" maxLength="125" class="width-full" [(ngModel)]="reads.editPlatform.label"
+        placeholder="platform titling"
+      />
+    </div>
+    <div class="flex1">
+      <label for="url">image url</label>
+      <input type="text" maxLength="125" class="width-full" [(ngModel)]="reads.editPlatform.url"
+        placeholder="absolute or relative url"
+      />
+    </div>
+  </div>
+  
+  <div *ngIf="reads.playerMaps.length" class="flex-right">
+    <div class="text-center">visual sizing</div>
+    <input type="range" min="2" max="40"
+      [(ngModel)]="reads.controllerSize"
+    />
+  </div>
+
+  <div *ngIf="reads.playerMaps.length">
+    <div class="flex-wrap child-margin-1">
+      <div class="flex1 bg-black pad-xxs" *ngFor="let playerMap of reads.playerMaps">
+        <!--controller image overlay-->
+        <div class="flex-center flex-1">
+          <div class="flex-1 flex-center">
+            <div class="text-center">
+              <div class="text-center">
+                Player {{ playerMap + 1 }}&nbsp;
+                <label [for]="'playerToggle'+playerMap" class="text-xs">
+                  <input type="checkbox" [id]="'playerToggle'+playerMap"
+                    (change)="toggleLockPlayerMapByIndex(playerMap)"
+                    [checked] = "reads.lockPlayerMaps.includes(playerMap)"
+                    title="lock visibility"
+                  />&nbsp;<span [class.opacity-half]="!reads.lockPlayerMaps.includes(playerMap)"
+                  >lock in view</span>
+                </label>
+              </div>
+
+              <div class="inline-block pos-rel">
+                <span *ngFor="let control of reads.platformMap.players[playerMap]"
+                  draggable="true" class="pos-abs flex-center flex-valign-center border"
+                  [ngClass]="reads.lastDrag?.control === control ? 'border-energized border-2' : 'border'"
+                  [class.radius-half]="!control.shape || control.shape==='circle'"
+                  (click)="showControl(control)"
+                  (dragstart)="reads.lastDrag={control:control, startOffsetY:$event.offsetY, startOffsetX:$event.offsetX}"
+                  [style.top.%]="control.y"
+                  [style.left.%]="control.x"
+                  [style.width.%] = "control.width || 4"
+                  [style.height.%] = "control.height || 4"
+                  [title] = "control.label"
+                  style="text-shadow:1px 1px 1px #FFF"
+                  [style.font-size.%]="25 + reads.controllerSize"
+                  [class.opacity-80]="reads.lastPress?.code !== control.keyCode"
+                  [style.background-color]="reads.lastPress?.code === control.keyCode ? 'rgba(0, 255, 255, 1)' : (control.color && 'rgba(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ', 1)' || 'rgba(255,255,255,1)')"
+                  nextKeyEvent="dblclick"
+                  [(nextKey)]="control.keyCode"
+                  [nextKeyListening]="reads.controlPressListen === control"
+                  (nextKeyListeningChange)="$event ? reads.controlPressListen=control : reads.controlPressListen=undefined"
+                >{{ reads.controlPressListen === control ? 'press key' : control.keyCode}}</span>
+                <img [src]="reads.platformMap.url" alt="" border="0"
+                  [style.height.rem]="reads.controllerSize"
+                  (drop)="dropLastDrag($event)"
+                  (dragover)="$event.preventDefault();$event.stopPropagation()"
+                />
+              </div>
+              <div class="flex-apart text-xs child-margin">
+                <a class="nowrap" [class.bg-energized]="reads.remapping"
+                  (click)="remapPlayerAll( reads.platformMap.players[playerMap] )"
+                >🔄 <u>remap controls</u></a>
+  
+                <a class="nowrap"
+                  (click)="reads.platformMap.players[playerMap].push({index: reads.platformMap.players.length, keyCode: '', x:reads.platformMap.players.length, y:0, width:4, height:4})"
+                >➕ <u>add button</u></a>
+  
+                <a class="nowrap" (click)="reads.viewPlayerMap = !reads.viewPlayerMap"
+                  [class.active]="reads.viewPlayerMap"
+                >🗺 <u>view player map</u></a>
+              </div>
+            </div>
+          </div>
+  
+          <!-- controller buttons table -->
+          <div class="text-xs">
+            <ng-container *ngIf="reads.lastDrag && reads.platformMap.players[playerMap].includes(reads.lastDrag.control)">
+              <ng-container *ngTemplateOutlet="controlForm;context:{
+                playerMap: playerMap,
+                players: reads.platformMap.players,
+                control: reads.lastDrag?.control
+              }"></ng-container>
+            </ng-container>
+            
+            <div *ngIf="!reads.lastDrag?.control">
+              <div class="text-center"><strong>mapping table</strong></div>
+              <table cellPadding="2" cellSpacing="2" border="0" class="width-full bg-dark">
+                <thead>
+                  <th></th>
+                  <th>name</th>
+                  <th>key</th>
+                </thead>
+                <tr *ngFor="let control of reads.platformMap.players[playerMap]"
+                  [ngClass] = "control === reads.lastDrag?.control ? 'bg-energized' : 'bg-black'"
+                  (click)="toggleSelectedControl(control)"
+                  class="cursor-pointer hover-bg-energized"
+                >
+                  <td class="flex-center pad-top-xs">
+                    <div class="inline-block width-20 height-20"
+                      [style.background-color]="reads.lastPress?.code === control.keyCode ? 'rgba(0, 255, 255, 1)' : (control.color && 'rgba(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ', 1)' || 'rgba(255,255,255,1)')"
+                    ></div>
+                  </td>
+                  <td>{{control.label}}</td>
+                  <td>{{control.keyCode}}</td>
+                </tr>
+              </table>
+              <select (change)="copyPlayerToPlayerByEvent(reads.platformMap.players[playerMap], $event)" class="flex1">
+                <option class="opacity-70">➡️👤 copy to player </option>
+                <option *ngFor="let player of reads.platformMap.players;let index=index"
+                  [value]="index"
+                >player {{index+1}}</option>
+                <option value="-1">➕ create another player</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        
+        <div *ngIf="reads.remapping && reads.remapping.playerIndex === playerMap" class="bg-energized pad">
+          <h3>button remapping in progress...</h3>
+          Press <b>{{reads.remapping.player[reads.remapping.index].label}}</b> button
+          <p>Currently it's key {{reads.remapping.player[reads.remapping.index].keyCode}}</p>
+          <p>step {{reads.remapping.index+1}} of {{reads.remapping.player.length}}</p>
+          <button type="button" (click)="reads.remapping.end()">🛑 end</button>
+        </div>
+          
+        <div *ngIf="reads.viewPlayerMap">
+          <textarea cols="60" rows="12" wrap="off" class="min-height-400 width-full"
+          >{{ reads.platformMap.players[playerMap] | json}}</textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="reads.playerMaps.length" class="bg-grey margin-v-xs pad-xs">
+    <label for="keyboardTestingArea">⌨️ Keyboard testing area</label>
+    <input type="text" id="keyboardTestingArea" placeholder="place cursor here then push arcade keyboard buttons"
+      (keyup)="$event.preventDefault()"
+      (keydown)="$event.preventDefault()"
+      class="width-full"
+    />
+    
+    <!-- key decode table-->
+    <div class="flex-wrap" *ngIf="reads.lastPress">
+      <div class="flex-1 flex-stacked child-margin-1">
+        <strong class="text-center bg-grey-3x border-bottom">code</strong>
+        <div class="text-center flex-1">{{ reads.lastPress.code }}</div>
+      </div>
+    
+      <div class="flex-1 flex-stacked child-margin-1">
+        <strong class="text-center bg-grey-3x border-bottom">key</strong>
+        <div class="text-center flex-1">{{ reads.lastPress.key }}</div>
+      </div>
+    
+      <div class="flex-1 flex-stacked child-margin-1">
+        <strong class="text-center bg-grey-3x border-bottom">which</strong>
+        <div class="text-center flex-1">{{ reads.lastPress.which }}</div>
+      </div>
+    
+      <div class="flex-1 flex-stacked child-margin-1">
+        <strong class="text-center bg-grey-3x border-bottom">mappings</strong>
+        <ng-container *ngIf="reads.lastPress.mappings">
+          <div *ngIf="reads.lastPress.mappings.length === 1" class="flex-1">
+            {{ reads.lastPress.mappings[0] }}
+          </div>
+          <div *ngIf="reads.lastPress.mappings.length > 1" class="flex-1">
+            <li *ngFor="let map of reads.lastPress.mappings">{{ map }}</li>
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<br />
+
+<div class="flex-wrap child-margin-xxs">
+  <button type="button" (click)="saveChanges()" class="bg-balanced flex1">💾 save changes</button>
+  
+  <button type="button" (click)="platformMap.images.push(reads.editPlatform=reads.platformMap={label: '', url: '', players:[]})" class="bg-balanced flex1"
+  >➕ add platform</button>
+  
+  <button (click)="reads.viewButtonMap = !reads.viewButtonMap"
+    [class.active]="reads.viewButtonMap" type="button" class="width-full flex1"
+  >🗺 view keyboard mappings</button>
+</div>
+			
+<div *ngIf="reads.viewButtonMap">
+  <textarea readonly class="width-full min-height-400" wrap="off"
+  >{{ controlMap | json }}</textarea>
+</div>
+
+<ng-template #controlForm let-playerMap="playerMap" let-players="players" let-control="control">
+  <div class="flex-stacked child-margin-xxs max-width-500">
+
+    <div class="flex-wrap">
+      <div class="flex1 flex-stacked">
+        <div>label</div>
+        <input type="text" [(ngModel)]="control.label" class="flex-1" />
+      </div>
+
+      <div class="flex-stacked">
+        <div>keyboard input</div>
+        <select class="flex-1" [(ngModel)]="control.keyCode">
+          <option value=""></option>
+          <option *ngFor="let item of (controlMap | keyvalue: unsorted)"
+            [value]="item.key"
+          >{{item.value[0]}} - {{item.key}}</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="flex-wrap">
+      <div class="flex-stacked flex1 pad-right-xs">
+        <div>shape</div>
+        <select class="flex-1" [(ngModel)]="control.shape">
+          <option value="circle">circle</option>
+          <option value="square">square</option>
+        </select>       
+      </div>
+      <div class="flex-stacked flex1">
+        <div>color</div>
+        <input type="color" class="flex-1 width-full"
+          [(ngModel)]="control.color"
+          [style.background-color]="control.color && 'rgba(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ', 1)'"
+          (input)="selectControlColor($event)"
+          (change)="selectControlColor($event)"
+        />
+      </div>
+    </div>
+    
+    <div class="flex-wrap">
+      <div class="flex-1 pad-right-xs">
+        <div>width - {{control.width}}</div>
+        <input type="range" min="0" max="100" step="0.1" class="width-full"
+          [(ngModel)]="control.width"
+        />
+      </div>
+      <div class="flex-1">
+        <div>height - {{control.height}}</div>
+        <input type="range" min="0" max="100" step="0.1" class="width-full"
+          [(ngModel)]="control.height"
+        />
+      </div>
+    </div>
+
+    <div class="flex-wrap">
+      <div class="flex-1 pad-right-xs">
+        <div>x - {{control.x | number : '0.000'}}</div>
+        <input type="range" min="0" max="100" step="0.001" class="width-full"
+          [(ngModel)]="control.x"
+        />
+      </div>
+      <div class="flex-1">
+        <div>y - {{control.y | number : '0.000'}}</div>
+        <input type="range" min="0" max="100" step="0.001" class="width-full"
+          [(ngModel)]="control.y"
+        />
+      </div>
+    </div>
+    <div class="flex-1 flex-wrap child-margin-1">
+      <button type="button" class="flex1"
+        [(nextKey)]="control.keyCode"
+        [(nextKeyListening)]="reads.pressListening"
+        [class.bg-energized]="reads.pressListening"
+      >🗺 remap</button>
+
+      <button class="flex1"
+        (click)="duplicatePlayerButton(players[playerMap], control)"
+      >👯‍♀️ clone</button>
+
+      <button type="button" class="bg-assertive flex1"
+        (click)="removePlayerButtonFromMap(control, players[playerMap])"
+      >🗑 remove</button>
+
+      <button type="button" class="bg-black text-white flex1"
+        (click)="removePlayerButtonFromMap(control, players[playerMap])"
+      >❌ close</button>
+    </div>
+  </div>
+</ng-template>

@@ -1,0 +1,52 @@
+
+<div class="flex-wrap child-margin-xxs">
+  <div *ngFor="let player of playerArray" class="bg-grey flex1">
+    <div class="pad-xxs">Player {{ player.playerIndex }}</div>
+    <table cellPadding="0" cellSpacing="1" border="0" class="width-full">
+      <tr>
+        <th class="bg-grey-2x text-center">&nbsp;</th>
+        <th class="bg-grey-2x text-center">button</th>
+        <th class="bg-grey-2x text-center">key</th>
+        <th class="bg-grey-2x text-center">&nbsp;</th>
+      </tr>
+
+      <tr *ngFor="let keyvalue of player.keys | keyvalue">
+        <td class="cursor-pointer" (click)="editRow = keyvalue.value">✏️</td>
+        <ng-container *ngIf="editRow !== keyvalue.value">
+          <td class="bg-grey-2x pad-xxs">
+            {{ keyvalue.value.button }}
+            <div *ngFor="let parameter of keyvalue.value.parameters">{{parameter}}</div>
+          </td>
+          <td class="bg-grey-2x pad-xxs">
+            {{keyvalue.key}}
+          </td>
+        </ng-container>
+        
+        
+        <ng-container *ngIf="editRow === keyvalue.value">
+          <td class="bg-grey-2x pad-xxs">
+            <select [(ngModel)]="keyvalue.value.button" [title]="keyvalue.value.button">
+              <option value=""></option>
+              <option *ngFor="let item of gamepad | keyvalue" [value]="item.key">{{item.key}}</option>
+            </select>
+            <div *ngFor="let parameter of keyvalue.value.parameters">{{parameter}}</div>
+          </td>
+          <td class="bg-grey-2x pad-xxs">
+            <select [(ngModel)]="keyvalue.key">
+              <option value=""></option>
+              <option *ngFor="let item of windowsKeys | keyvalue" [value]="item.key">{{item.key}}</option>
+            </select>
+          </td>
+        </ng-container>
+
+        <td>
+          <button type="button"
+            nextKey
+            (nextKeyCodeChange)="changePlayerButtonKey(player.keys, keyvalue.key, $event)"
+            [class.bg-energized]=""
+          >remap</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

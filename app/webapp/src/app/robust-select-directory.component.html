@@ -1,0 +1,18 @@
+<input class="invisible pos-abs" type="file" directory accept=".folder"
+  id="robustFolderPicker" webkitdirectory (change)="readInputDirectory($event.target)"
+/>
+
+<div class="text-right">
+  <button *ngIf="reloadPath" type="button" class="flex1"
+    [title] = "reloadPath"
+    (click) = "onPathReload(reloadPath)"
+  >🔄 Reload</button>
+
+  <button type="button" class="flex1"
+    (click)="selectPath()"
+  >📁 select {{ label }} folder</button>
+
+  <div *ngIf="reloadPath" class="text-xs">
+    <strong>{{ label }} path:</strong> {{ reloadPath }}
+  </div>
+</div>

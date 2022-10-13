@@ -87,8 +87,8 @@ Note: This documentation is exact for my Omega Megacade made in August 2022. Ove
 
 **Platform Wheel no fade**
 1. Find the file related to the platform wheel fading out
-    - PlatformWheel2FiltersView.xaml
-    - my machine the parent folder is: `C:\Users\Administorator\LaunchBox\Themes\Unified Redux\Views`
+    - `PlatformWheel2FiltersView.xaml`
+    - 📁 my machine parent folder is: `C:\Users\Administrator\LaunchBox\Themes\Unified Redux\Views`
 2. Open/edit the file in any text editor
     - 🔎 search for `<!-- FADING WHEEL -->` or just `FADING WHEEL`
 3. Edit the last `<EasingDoubleKeyFrame` where you see `Value="0"`
@@ -98,8 +98,8 @@ Note: This documentation is exact for my Omega Megacade made in August 2022. Ove
 
 **Game Wheel no fade**
 1. Find the file related to the platform wheel fading out
-    - Wheel4GamesView.xaml
-    - my machine the parent folder is: `C:\Users\Administorator\LaunchBox\Themes\Unified Redux\Views`
+    - `Wheel4GamesView.xaml`
+    - my machine the parent folder is: `C:\Users\Administrator\LaunchBox\Themes\Unified Redux\Views`
 2. Open/edit the file in any text editor
     - 🔎 search for `<!-- FADING WHEEL -->` or just `FADING WHEEL`
 3. Edit the last `<EasingDoubleKeyFrame` where you see `Value="0"`

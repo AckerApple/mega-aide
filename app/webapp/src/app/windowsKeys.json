@@ -1,0 +1,971 @@
+{
+  "A": {
+    "num": 65,
+    "description": "The A key."
+  },
+
+  "Add": {
+    "num": 107,
+    "description": "The add key."
+  },
+
+  "Alt": {
+    "num": 262144,
+    "description": "The ALT modifier key."
+  },
+
+  "Apps": {
+    "num": 93,
+    "description": "The application key (Microsoft Natural Keyboard)."
+  },
+
+  "Attn": {
+    "num": 246,
+    "description": "The ATTN key."
+  },
+
+  "B": {
+    "num": 66,
+    "description": "The B key."
+  },
+
+  "Back": {
+    "num": 8,
+    "description": "The BACKSPACE key."
+  },
+
+  "BrowserBack": {
+    "num": 166,
+    "description": "The browser back key."
+  },
+
+  "BrowserFavorites": {
+    "num": 171,
+    "description": "The browser favorites key."
+  },
+
+  "BrowserForward": {
+    "num": 167,
+    "description": "The browser forward key."
+  },
+
+  "BrowserHome": {
+    "num": 172,
+    "description": "The browser home key."
+  },
+
+  "BrowserRefresh": {
+    "num": 168,
+    "description": "The browser refresh key."
+  },
+
+  "BrowserSearch": {
+    "num": 170,
+    "description": "The browser search key."
+  },
+
+  "BrowserStop": {
+    "num": 169,
+    "description": "The browser stop key."
+  },
+
+  "C": {
+    "num": 67,
+    "description": "The C key."
+  },
+
+  "Cancel": {
+    "num": 3,
+    "description": "The CANCEL key."
+  },
+
+  "Capital": {
+    "num": 20,
+    "description": "The CAPS LOCK key."
+  },
+
+  "CapsLock": {
+    "num": 20,
+    "description": "The CAPS LOCK key."
+  },
+
+  "Clear": {
+    "num": 12,
+    "description": "The CLEAR key."
+  },
+
+  "Control": {
+    "num": 131072,
+    "description": "The CTRL modifier key."
+  },
+
+  "ControlKey": {
+    "num": 17,
+    "description": "The CTRL key."
+  },
+
+  "Crsel": {
+    "num": 247,
+    "description": "The CRSEL key."
+  },
+
+  "D": {
+    "num": 68,
+    "description": "The D key."
+  },
+
+  "D0": {
+    "num": 48,
+    "description": "The 0 key."
+  },
+
+  "D1": {
+    "num": 49,
+    "description": "The 1 key."
+  },
+
+  "D2": {
+    "num": 50,
+    "description": "The 2 key."
+  },
+
+  "D3": {
+    "num": 51,
+    "description": "The 3 key."
+  },
+
+  "D4": {
+    "num": 52,
+    "description": "The 4 key."
+  },
+
+  "D5": {
+    "num": 53,
+    "description": "The 5 key."
+  },
+
+  "D6": {
+    "num": 54,
+    "description": "The 6 key."
+  },
+
+  "D7": {
+    "num": 55,
+    "description": "The 7 key."
+  },
+
+  "D8": {
+    "num": 56,
+    "description": "The 8 key."
+  },
+
+  "D9": {
+    "num": 57,
+    "description": "The 9 key."
+  },
+
+  "Decimal": {
+    "num": 110,
+    "description": "The decimal key."
+  },
+
+  "Delete": {
+    "num": 46,
+    "description": "The DEL key."
+  },
+
+  "Divide": {
+    "num": 111,
+    "description": "The divide key."
+  },
+
+  "Down": {
+    "num": 40,
+    "description": "The DOWN ARROW key."
+  },
+
+  "E": {
+    "num": 69,
+    "description": "The E key."
+  },
+
+  "End": {
+    "num": 35,
+    "description": "The END key."
+  },
+
+  "Enter": {
+    "num": 13,
+    "description": "The ENTER key."
+  },
+
+  "EraseEof": {
+    "num": 249,
+    "description": "The ERASE EOF key."
+  },
+
+  "Escape": {
+    "num": 27,
+    "description": "The ESC key."
+  },
+
+  "Execute": {
+    "num": 43,
+    "description": "The EXECUTE key."
+  },
+
+  "Exsel": {
+    "num": 248,
+    "description": "The EXSEL key."
+  },
+
+  "F": {
+    "num": 70,
+    "description": "The F key."
+  },
+
+  "F1": {
+    "num": 112,
+    "description": "The F1 key."
+  },
+
+  "F10": {
+    "num": 121,
+    "description": "The F10 key."
+  },
+
+  "F11": {
+    "num": 122,
+    "description": "The F11 key."
+  },
+
+  "F12": {
+    "num": 123,
+    "description": "The F12 key."
+  },
+
+  "F13": {
+    "num": 124,
+    "description": "The F13 key."
+  },
+
+  "F14": {
+    "num": 125,
+    "description": "The F14 key."
+  },
+
+  "F15": {
+    "num": 126,
+    "description": "The F15 key."
+  },
+
+  "F16": {
+    "num": 127,
+    "description": "The F16 key."
+  },
+
+  "F17": {
+    "num": 128,
+    "description": "The F17 key."
+  },
+
+  "F18": {
+    "num": 129,
+    "description": "The F18 key."
+  },
+
+  "F19": {
+    "num": 130,
+    "description": "The F19 key."
+  },
+
+  "F2": {
+    "num": 113,
+    "description": "The F2 key."
+  },
+
+  "F20": {
+    "num": 131,
+    "description": "The F20 key."
+  },
+
+  "F21": {
+    "num": 132,
+    "description": "The F21 key."
+  },
+
+  "F22": {
+    "num": 133,
+    "description": "The F22 key."
+  },
+
+  "F23": {
+    "num": 134,
+    "description": "The F23 key."
+  },
+
+  "F24": {
+    "num": 135,
+    "description": "The F24 key."
+  },
+
+  "F3": {
+    "num": 114,
+    "description": "The F3 key."
+  },
+
+  "F4": {
+    "num": 115,
+    "description": "The F4 key."
+  },
+
+  "F5": {
+    "num": 116,
+    "description": "The F5 key."
+  },
+
+  "F6": {
+    "num": 117,
+    "description": "The F6 key."
+  },
+
+  "F7": {
+    "num": 118,
+    "description": "The F7 key."
+  },
+
+  "F8": {
+    "num": 119,
+    "description": "The F8 key."
+  },
+
+  "F9": {
+    "num": 120,
+    "description": "The F9 key."
+  },
+
+  "FinalMode": {
+    "num": 24,
+    "description": "The IME final mode key."
+  },
+
+  "G": {
+    "num": 71,
+    "description": "The G key."
+  },
+
+  "H": {
+    "num": 72,
+    "description": "The H key."
+  },
+
+  "HanguelMode": {
+    "num": 21,
+    "description": "The IME Hanguel mode key. (maintained for compatibility; use HangulMode)"
+  },
+
+  "HangulMode": {
+    "num": 21,
+    "description": "The IME Hangul mode key."
+  },
+
+  "HanjaMode": {
+    "num": 25,
+    "description": "The IME Hanja mode key."
+  },
+
+  "Help": {
+    "num": 47,
+    "description": "The HELP key."
+  },
+
+  "Home": {
+    "num": 36,
+    "description": "The HOME key."
+  },
+
+  "I": {
+    "num": 73,
+    "description": "The I key."
+  },
+
+  "IMEAccept": {
+    "num": 30,
+    "description": "The IME accept key, replaces IMEAceept."
+  },
+
+  "IMEAceept": {
+    "num": 30,
+    "description": "The IME accept key. Obsolete, use IMEAccept instead."
+  },
+
+  "IMEConvert": {
+    "num": 28,
+    "description": "The IME convert key."
+  },
+
+  "IMEModeChange": {
+    "num": 31,
+    "description": "The IME mode change key."
+  },
+
+  "IMENonconvert": {
+    "num": 29,
+    "description": "The IME nonconvert key."
+  },
+
+  "Insert": {
+    "num": 45,
+    "description": "The INS key."
+  },
+
+  "J": {
+    "num": 74,
+    "description": "The J key."
+  },
+
+  "JunjaMode": {
+    "num": 23,
+    "description": "The IME Junja mode key."
+  },
+
+  "K": {
+    "num": 75,
+    "description": "The K key."
+  },
+
+  "KanaMode": {
+    "num": 21,
+    "description": "The IME Kana mode key."
+  },
+
+  "KanjiMode": {
+    "num": 25,
+    "description": "The IME Kanji mode key."
+  },
+
+  "KeyCode": {
+    "num": 65535,
+    "description": "The bitmask to extract a key code from a key value."
+  },
+
+  "L": {
+    "num": 76,
+    "description": "The L key."
+  },
+
+  "LaunchApplication1": {
+    "num": 182,
+    "description": "The start application one key."
+  },
+
+  "LaunchApplication2": {
+    "num": 183,
+    "description": "The start application two key."
+  },
+
+  "LaunchMail": {
+    "num": 180,
+    "description": "The launch mail key."
+  },
+
+  "LButton": {
+    "num": 1,
+    "description": "The left mouse button."
+  },
+
+  "LControlKey": {
+    "num": 162,
+    "description": "The left CTRL key."
+  },
+
+  "Left": {
+    "num": 37,
+    "description": "The LEFT ARROW key."
+  },
+
+  "LineFeed": {
+    "num": 10,
+    "description": "The LINEFEED key."
+  },
+
+  "LMenu": {
+    "num": 164,
+    "description": "The left ALT key."
+  },
+
+  "LShiftKey": {
+    "num": 160,
+    "description": "The left SHIFT key."
+  },
+
+  "LWin": {
+    "num": 91,
+    "description": "The left Windows logo key (Microsoft Natural Keyboard)."
+  },
+
+  "M": {
+    "num": 77,
+    "description": "The M key."
+  },
+
+  "MButton": {
+    "num": 4,
+    "description": "The middle mouse button (three-button mouse)."
+  },
+
+  "MediaNextTrack": {
+    "num": 176,
+    "description": "The media next track key."
+  },
+
+  "MediaPlayPause": {
+    "num": 179,
+    "description": "The media play pause key."
+  },
+
+  "MediaPreviousTrack": {
+    "num": 177,
+    "description": "The media previous track key."
+  },
+
+  "MediaStop": {
+    "num": 178,
+    "description": "The media Stop key."
+  },
+
+  "Menu": {
+    "num": 18,
+    "description": "The ALT key."
+  },
+
+  "Modifiers": {
+    "num": 65536,
+    "description": "The bitmask to extract modifiers from a key value."
+  },
+
+  "Multiply": {
+    "num": 106,
+    "description": "The multiply key."
+  },
+
+  "N": {
+    "num": 78,
+    "description": "The N key."
+  },
+
+  "Next": {
+    "num": 34,
+    "description": "The PAGE DOWN key."
+  },
+
+  "NoName": {
+    "num": 252,
+    "description": "A constant reserved for future use."
+  },
+
+  "None": {
+    "num": 0,
+    "description": "No key pressed."
+  },
+
+  "NumLock": {
+    "num": 144,
+    "description": "The NUM LOCK key."
+  },
+
+  "NumPad0": {
+    "num": 96,
+    "description": "The 0 key on the numeric keypad."
+  },
+
+  "NumPad1": {
+    "num": 97,
+    "description": "The 1 key on the numeric keypad."
+  },
+
+  "NumPad2": {
+    "num": 98,
+    "description": "The 2 key on the numeric keypad."
+  },
+
+  "NumPad3": {
+    "num": 99,
+    "description": "The 3 key on the numeric keypad."
+  },
+
+  "NumPad4": {
+    "num": 100,
+    "description": "The 4 key on the numeric keypad."
+  },
+
+  "NumPad5": {
+    "num": 101,
+    "description": "The 5 key on the numeric keypad."
+  },
+
+  "NumPad6": {
+    "num": 102,
+    "description": "The 6 key on the numeric keypad."
+  },
+
+  "NumPad7": {
+    "num": 103,
+    "description": "The 7 key on the numeric keypad."
+  },
+
+  "NumPad8": {
+    "num": 104,
+    "description": "The 8 key on the numeric keypad."
+  },
+
+  "NumPad9": {
+    "num": 105,
+    "description": "The 9 key on the numeric keypad."
+  },
+
+  "O": {
+    "num": 79,
+    "description": "The O key."
+  },
+
+  "Oem1": {
+    "num": 186,
+    "description": "The OEM 1 key."
+  },
+
+  "Oem102": {
+    "num": 226,
+    "description": "The OEM 102 key."
+  },
+
+  "Oem2": {
+    "num": 191,
+    "description": "The OEM 2 key."
+  },
+
+  "Oem3": {
+    "num": 192,
+    "description": "The OEM 3 key."
+  },
+
+  "Oem4": {
+    "num": 219,
+    "description": "The OEM 4 key."
+  },
+
+  "Oem5": {
+    "num": 220,
+    "description": "The OEM 5 key."
+  },
+
+  "Oem6": {
+    "num": 221,
+    "description": "The OEM 6 key."
+  },
+
+  "Oem7": {
+    "num": 222,
+    "description": "The OEM 7 key."
+  },
+
+  "Oem8": {
+    "num": 223,
+    "description": "The OEM 8 key."
+  },
+
+  "OemBackslash": {
+    "num": 226,
+    "description": "The OEM angle bracket or backslash key on the RT 102 key keyboard."
+  },
+
+  "OemClear": {
+    "num": 254,
+    "description": "The CLEAR key."
+  },
+
+  "OemCloseBrackets": {
+    "num": 221,
+    "description": "The OEM close bracket key on a US standard keyboard."
+  },
+
+  "Oemcomma": {
+    "num": 188,
+    "description": "The OEM comma key on any country/region keyboard."
+  },
+
+  "OemMinus": {
+    "num": 189,
+    "description": "The OEM minus key on any country/region keyboard."
+  },
+
+  "OemOpenBrackets": {
+    "num": 219,
+    "description": "The OEM open bracket key on a US standard keyboard."
+  },
+
+  "OemPeriod": {
+    "num": 190,
+    "description": "The OEM period key on any country/region keyboard."
+  },
+
+  "OemPipe": {
+    "num": 220,
+    "description": "The OEM pipe key on a US standard keyboard."
+  },
+
+  "Oemplus": {
+    "num": 187,
+    "description": "The OEM plus key on any country/region keyboard."
+  },
+
+  "OemQuestion": {
+    "num": 191,
+    "description": "The OEM question mark key on a US standard keyboard."
+  },
+
+  "OemQuotes": {
+    "num": 222,
+    "description": "The OEM singled/double quote key on a US standard keyboard."
+  },
+
+  "OemSemicolon": {
+    "num": 186,
+    "description": "The OEM Semicolon key on a US standard keyboard."
+  },
+
+  "Oemtilde": {
+    "num": 192,
+    "description": "The OEM tilde key on a US standard keyboard."
+  },
+
+  "P": {
+    "num": 80,
+    "description": "The P key."
+  },
+
+  "Pa1": {
+    "num": 253,
+    "description": "The PA1 key."
+  },
+
+  "Packet": {
+    "num": 231,
+    "description": "Used to pass Unicode characters as if they were keystrokes. The Packet key value is the low word of a 32-bit virtual-key value used for non-keyboard input methods."
+  },
+
+  "PageDown": {
+    "num": 34,
+    "description": "The PAGE DOWN key."
+  },
+
+  "PageUp": {
+    "num": 33,
+    "description": "The PAGE UP key."
+  },
+
+  "Pause": {
+    "num": 19,
+    "description": "The PAUSE key."
+  },
+
+  "Play": {
+    "num": 250,
+    "description": "The PLAY key."
+  },
+
+  "Print": {
+    "num": 42,
+    "description": "The PRINT key."
+  },
+
+  "PrintScreen": {
+    "num": 44,
+    "description": "The PRINT SCREEN key."
+  },
+
+  "Prior": {
+    "num": 33,
+    "description": "The PAGE UP key."
+  },
+
+  "ProcessKey": {
+    "num": 229,
+    "description": "The PROCESS KEY key."
+  },
+
+  "Q": {
+    "num": 81,
+    "description": "The Q key."
+  },
+
+  "R": {
+    "num": 82,
+    "description": "The R key."
+  },
+
+  "RButton": {
+    "num": 2,
+    "description": "The right mouse button."
+  },
+
+  "RControlKey": {
+    "num": 163,
+    "description": "The right CTRL key."
+  },
+
+  "Return": {
+    "num": 13,
+    "description": "The RETURN key."
+  },
+
+  "Right": {
+    "num": 39,
+    "description": "The RIGHT ARROW key."
+  },
+
+  "RMenu": {
+    "num": 165,
+    "description": "The right ALT key."
+  },
+
+  "RShiftKey": {
+    "num": 161,
+    "description": "The right SHIFT key."
+  },
+
+  "RWin": {
+    "num": 92,
+    "description": "The right Windows logo key (Microsoft Natural Keyboard)."
+  },
+
+  "S": {
+    "num": 83,
+    "description": "The S key."
+  },
+
+  "Scroll": {
+    "num": 145,
+    "description": "The SCROLL LOCK key."
+  },
+
+  "Select": {
+    "num": 41,
+    "description": "The SELECT key."
+  },
+
+  "SelectMedia": {
+    "num": 181,
+    "description": "The select media key."
+  },
+
+  "Separator": {
+    "num": 108,
+    "description": "The separator key."
+  },
+
+  "Shift": {
+    "num": 65536,
+    "description": "The SHIFT modifier key."
+  },
+
+  "ShiftKey": {
+    "num": 16,
+    "description": "The SHIFT key."
+  },
+
+  "Sleep": {
+    "num": 95,
+    "description": "The computer sleep key."
+  },
+
+  "Snapshot": {
+    "num": 44,
+    "description": "The PRINT SCREEN key."
+  },
+
+  "Space": {
+    "num": 32,
+    "description": "The SPACEBAR key."
+  },
+
+  "Subtract": {
+    "num": 109,
+    "description": "The subtract key."
+  },
+
+  "T": {
+    "num": 84,
+    "description": "The T key."
+  },
+
+  "Tab": {
+    "num": 9,
+    "description": "The TAB key."
+  },
+
+  "U": {
+    "num": 85,
+    "description": "The U key."
+  },
+
+  "Up": {
+    "num": 38,
+    "description": "The UP ARROW key."
+  },
+
+  "V": {
+    "num": 86,
+    "description": "The V key."
+  },
+
+  "VolumeDown": {
+    "num": 174,
+    "description": "The volume down key."
+  },
+
+  "VolumeMute": {
+    "num": 173,
+    "description": "The volume mute key."
+  },
+
+  "VolumeUp": {
+    "num": 175,
+    "description": "The volume up key."
+  },
+
+  "W": {
+    "num": 87,
+    "description": "The W key."
+  },
+
+  "X": {
+    "num": 88,
+    "description": "The X key."
+  },
+
+  "XButton1": {
+    "num": 5,
+    "description": "The first x mouse button (five-button mouse)."
+  },
+
+  "XButton2": {
+    "num": 6,
+    "description": "The second x mouse button (five-button mouse)."
+  },
+
+  "Y": {
+    "num": 89,
+    "description": "The Y key."
+  },
+
+  "Z": {
+    "num": 90,
+    "description": "The Z key."
+  },
+
+  "Zoom": {
+    "num": 251,
+    "description": "The ZOOM key."
+  }
+}

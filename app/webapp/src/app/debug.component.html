@@ -1,0 +1,9 @@
+<strong>debugDeport</strong>
+<div>
+  <textarea readonly class="width-full min-height-400" wrap="off">{{ debugReport | json }}</textarea>
+</div>
+
+<a class="nowrap text-info" target="_blank"
+  [attr.href]="reportIssueLink"
+  (click)="openAnchor($event)"
+>🐞 report issue with this app</a>

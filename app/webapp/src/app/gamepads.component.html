@@ -1,0 +1,25 @@
+<div *ngFor="let gamepad of gamepads | keyvalue">
+  <h3>Gamepad {{ gamepad.key }}</h3>
+  <div>{{ gamepad.value.id }}</div>
+  <div>
+    MAPPING: {{ gamepad.value.mapping || 'unknown' }}
+  </div>
+  <strong>AXES</strong>
+  <div class="flex-wrap child-flex1 child-margin-xxs">
+    <a class="radius-10 pad-xs bg-positive text-center" *ngFor="let axis of gamepad.value.axes">
+      {{ axis }}
+    </a>
+  </div>
+  <strong>BUTTONS: {{ gamepad.value.buttons.length }}</strong>
+  <div class="flex-wrap child-flex-1 child-margin-xxs">
+    <a class="radius-10 pad-xs bg-positive text-center" *ngFor="let button of gamepad.value.buttons; let index = index"
+      [class.bg-energized]="button.pressed"
+      [class.bg-calm]="button.touched"
+    >{{ index }}</a>
+  </div>
+  <div>
+    vibrationActuator: {{ $any(gamepad.value).vibrationActuator }}
+  </div>
+  <!--<pre>{{gamepad.value | json}}</pre>-->
+  <hr />
+</div>
