@@ -10,14 +10,21 @@ export class GamepadsComponent {
 
   ngOnInit(){
     // set existing not null controllers
-    navigator.getGamepads().filter(gamepad => gamepad && this.gamepadHandler(gamepad, true))
-    this.subscribeToWindow()
-    this.buttonWatch = setInterval(() => {
-      navigator.getGamepads().forEach(gamepad => {
-        if ( !gamepad ) {
-          return
-        }
+    getReadyGamepads().forEach(gamepad => this.gamepadHandler(gamepad, true))
 
+    this.subscribeToWindow()
+    this.listenToButtons()
+  }
+  
+  ngOnDestroy(){
+    clearInterval(this.buttonWatch)
+    this.eventHandlers.forEach(x => window.removeEventListener(x.eventName, x.handler))
+  }
+
+  listenToButtons() {
+    this.buttonWatch = setInterval(() => {
+      const gamepads = getReadyGamepads()
+      gamepads.forEach(gamepad => {
         const match = this.gamepads[gamepad.index]
         if ( !match ) {
           return // not found (maybe we should connect?)
@@ -29,12 +36,7 @@ export class GamepadsComponent {
 
         this.gamepads[gamepad.index] = gamepad
       })
-    }, 100)
-  }
-  
-  ngOnDestroy(){
-    clearInterval(this.buttonWatch)
-    this.eventHandlers.forEach(x => window.removeEventListener(x.eventName, x.handler))
+    }, 50)
   }
 
   subscribeToWindow() {
@@ -67,4 +69,8 @@ export class GamepadsComponent {
     delete this.gamepads[gamepad.index]
     return gamepad
   }  
+}
+
+export function getReadyGamepads(): Gamepad[] {
+  return navigator.getGamepads().filter(gamepad => gamepad) as Gamepad[]
 }

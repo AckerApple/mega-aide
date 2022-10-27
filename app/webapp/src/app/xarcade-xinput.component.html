@@ -1,9 +1,10 @@
 <robust-select-directory label="XArcade XInput" [reloadPath]="session.config.xarcadeXinput.path"
   (directoryManagerChange)="session.save();readDir($event)"
-  (error)="this.session.error('could not load XArcade XInput path', $event)"
+  (error)="session.error('could not load XArcade XInput path', $event)"
+  [pickerId]="xarcadeXinputPickerId"
 ></robust-select-directory>
 
-<div>
+<div *ngIf="!mappingFileNames.length">
   <br />
   <div class="text-center">
     ⬆️ Select XArcade XInput folder above to unlock features below ⬇️
@@ -21,22 +22,32 @@
   </p>
 </div>
 
-<ng-container *ngIf="mappingFileNames">
-  <h3>Mapping file</h3>
+<ng-container *ngIf="mappingFileNames.length">
+  <h3>Mapping files</h3>
+  <p>Choose a file to work with below...</p>
   <hr class="border-1 border-white" />
-  <div class="flex-wrap child-margin-xxs">
-    <a type="button" class="flex1" *ngFor="let fileName of mappingFileNames"
-      [routerLink]="'mapping/' + fileName"
-    >{{ fileName }}</a>
+  <div class="flex-stacked child-margin-xxs">
+    <ng-container *ngFor="let fileName of mappingFileNames; let index=index">
+      <a class="text-white"
+        [routerLink]="'mapping/' + fileName"
+      >📄 {{ fileName }}</a>
+    </ng-container>
   </div>
 </ng-container>
 
+<br />
 
 <div class="flex-wrap child-margin-xxs">
+  <a *ngIf="session.launchBoxDirectory && session.launchBoxXarcadeDir === session.xarcadeDirectory"
+    class="flex-1" type="button" routerLink="/launchbox"
+  >🧰 LaunchBox</a>
+  
   <button type="button" *ngIf="configHasChanges" class="bg-balanced flex1 active-bg-energized"
     (click)="saveFiles()"
   >💾 save changes</button>
-</div>  
+</div>
+
+<br />
 
 <div class="text-center child-margin-xs pad">
   <div class="opacity-80 text-xs">🔗 helpful links</div>

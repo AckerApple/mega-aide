@@ -7,24 +7,39 @@ import { AppRoutingModule } from './app.routing.module'
 import { SessionProvider } from './session.provider'
 
 import { AppComponent } from './app.component'
-import { NextKeyDirective } from './nextKey.directive'
-import { DebugComponent } from './debug.component'
 import { RobustSelectDirectoryComponent } from './robust-select-directory.component'
+import { DebugComponent } from './debug.component'
+
+import { NextKeyDirective } from './nextKey.directive'
+import { NextButtonDirective } from './nextButton.directive'
 
 import { MenuComponent } from './menu.component'
 import { XarcadeXinputComponent } from './xarcade-xinput.component'
 import { LaunchBoxComponent } from './launchbox.component'
 import { XinputMappingComponent } from './xinput-mapping.component'
 
-import { KeyboardComponent } from './keyboard.component'
+import { PlatformComponent } from './inputs/platform.component'
+import { PlatformsComponent } from './inputs/platforms.component'
 import { InputsComponent } from './inputs.component'
 import { GamepadsComponent } from './gamepads.component'
+import { InputDebugComponent } from './inputs/input-debug.component'
+import { PlatformControlMapComponent } from './inputs/platform-control-map.component'
+
+import { PlatformVisualFiltersComponent } from './inputs/platform-visual-filters.component'
+import { PlatformFiltersDirective } from './inputs/platform-filters.directive'
+import { MenuStackListComponent } from './menu-stack-list.component'
 
 @NgModule({
   declarations: [
     AppComponent,
+    
     NextKeyDirective,
-    KeyboardComponent,
+    NextButtonDirective,
+    
+    PlatformsComponent,
+    PlatformComponent,
+    InputDebugComponent,
+    PlatformControlMapComponent,
     InputsComponent,
     GamepadsComponent,
     MenuComponent,
@@ -33,6 +48,9 @@ import { GamepadsComponent } from './gamepads.component'
     XarcadeXinputComponent,
     RobustSelectDirectoryComponent,
     XinputMappingComponent,
+    PlatformVisualFiltersComponent,
+    PlatformFiltersDirective,
+    MenuStackListComponent
   ],
   imports: [
     BrowserModule,
@@ -42,6 +60,6 @@ import { GamepadsComponent } from './gamepads.component'
     AckRouterModule,
   ],
   providers: [ SessionProvider ],
-  bootstrap: [AppComponent]
+  bootstrap: [ AppComponent ]
 })
 export class AppModule { }

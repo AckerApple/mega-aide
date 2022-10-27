@@ -1,52 +1,93 @@
+<div>
+  <platform-filters #filters="platformFilters" [controllerSize]="12" useLabels="1"></platform-filters>
+  <platform-visual-filters [filters]="filters" class="flex-right flex-wrap child-margin-xs"
+  ></platform-visual-filters>
 
-<div class="flex-wrap child-margin-xxs">
-  <div *ngFor="let player of playerArray" class="bg-grey flex1">
-    <div class="pad-xxs">Player {{ player.playerIndex }}</div>
-    <table cellPadding="0" cellSpacing="1" border="0" class="width-full">
-      <tr>
-        <th class="bg-grey-2x text-center">&nbsp;</th>
-        <th class="bg-grey-2x text-center">button</th>
-        <th class="bg-grey-2x text-center">key</th>
-        <th class="bg-grey-2x text-center">&nbsp;</th>
-      </tr>
-
-      <tr *ngFor="let keyvalue of player.keys | keyvalue">
-        <td class="cursor-pointer" (click)="editRow = keyvalue.value">✏️</td>
-        <ng-container *ngIf="editRow !== keyvalue.value">
-          <td class="bg-grey-2x pad-xxs">
-            {{ keyvalue.value.button }}
-            <div *ngFor="let parameter of keyvalue.value.parameters">{{parameter}}</div>
+  <div class="flex-wrap child-margin-xxs">
+    <div *ngFor="let player of playerArray" class="bg-grey flex1">
+      <div class="pad-xxs bg-dark text-center">
+        Player {{ player.playerIndex + 1 }}
+      </div>
+      
+      <div class="flex-center">
+        <platform-control-map
+          [platform]        = "platform"
+          [playerIndex]     = "0"
+          [controllerSize]  = "filters.controllerSize"
+          [useLabels]       = "filters.useLabels"
+          [pressedObject]   = "lastPresses.pressedObject"
+          [remap]           = "player.remap"
+        ></platform-control-map>
+      </div>
+      
+      <table cellPadding="1" cellSpacing="1" border="0" class="width-full">
+        <tr>
+          <th class="bg-grey-2x text-center">&nbsp;</th>
+          <th class="bg-grey-2x text-center">button</th>
+          <th class="bg-grey-2x text-center">key</th>
+          <th class="bg-grey-2x text-center">num</th>
+          <th class="bg-grey-2x text-center">&nbsp;</th>
+        </tr>
+  
+        <tr *ngFor="let keyvalue of player.keys | keyvalue : buttonSort"
+          [ngClass]="lastPresses.pressedObject[$any(keyvalue.value.num)] ? 'bg-calm' : 'bg-grey-2x'"
+          (mouseover)="lastPresses.pressedObject[$any(keyvalue.value.num)] = {code: keyvalue.value.num, key: keyvalue.value.key}"
+          (mouseout)="lastPresses.pressedObject[$any(keyvalue.value.num)] = undefined"
+        >
+          <td class="cursor-pointer"
+            (click)="editRow = editRow === keyvalue.value ? undefined : keyvalue.value"
+          >✏️</td>
+          <ng-container *ngIf="editRow !== keyvalue.value">
+            <td class="pad-xxs">
+              {{ keyvalue.value.button }}
+              <div *ngFor="let parameter of keyvalue.value.parameters">{{parameter}}</div>
+            </td>
+            <td class="pad-xxs">
+              <!-- on remap listen -->
+              <div class="text-center" *ngIf="keyvalue.value === nextKeyListening; else buttonValue">
+                <div class="text-smx nowrap">press any key</div>
+                <div class="text-xxs opacity-80">was {{ keyvalue.key }}</div>
+              </div>
+              <!-- keyname -->
+              <ng-template #buttonValue>{{ keyvalue.key }}</ng-template>
+            </td>
+            <td>{{ keyvalue.value.num }}</td>
+          </ng-container>
+          
+          <ng-container *ngIf="editRow === keyvalue.value">
+            <td class="bg-grey-2x pad-xxs">
+              <select [(ngModel)]="keyvalue.value.button" [title]="keyvalue.value.button">
+                <option value=""></option>
+                <option *ngFor="let item of gamepad | keyvalue" [value]="item.key">{{item.key}}</option>
+              </select>
+              <div *ngFor="let parameter of keyvalue.value.parameters">{{parameter}}</div>
+            </td>
+            <td class="bg-grey-2x pad-xxs">
+              <select [(ngModel)]="keyvalue.key">
+                <option value=""></option>
+                <option *ngFor="let item of windowsKeys" [value]="item.code">{{ item.code }}</option>
+              </select>
+            </td>
+          </ng-container>
+  
+          <td>
+            <button type="button" class="pad-xxs"
+              nextKey
+              (nextKeyListeningChange)="nextKeyListening = $event ? keyvalue.value : undefined"
+              (nextKeyCodeChange)="changePlayerButtonKey(player.keys, keyvalue.key, $event)"
+              [class.bg-energized]="nextKeyListening === keyvalue.value"
+            >remap</button>
           </td>
-          <td class="bg-grey-2x pad-xxs">
-            {{keyvalue.key}}
-          </td>
-        </ng-container>
-        
-        
-        <ng-container *ngIf="editRow === keyvalue.value">
-          <td class="bg-grey-2x pad-xxs">
-            <select [(ngModel)]="keyvalue.value.button" [title]="keyvalue.value.button">
-              <option value=""></option>
-              <option *ngFor="let item of gamepad | keyvalue" [value]="item.key">{{item.key}}</option>
-            </select>
-            <div *ngFor="let parameter of keyvalue.value.parameters">{{parameter}}</div>
-          </td>
-          <td class="bg-grey-2x pad-xxs">
-            <select [(ngModel)]="keyvalue.key">
-              <option value=""></option>
-              <option *ngFor="let item of windowsKeys | keyvalue" [value]="item.key">{{item.key}}</option>
-            </select>
-          </td>
-        </ng-container>
-
-        <td>
-          <button type="button"
-            nextKey
-            (nextKeyCodeChange)="changePlayerButtonKey(player.keys, keyvalue.key, $event)"
-            [class.bg-energized]=""
-          >remap</button>
-        </td>
-      </tr>
-    </table>
+        </tr>
+      </table>
+      <div class="flex">
+        <a type="button" class="flex-1 text-xxs width-full bg-balanced text-center pad-xxs"
+          (click)="addPlayerButton(player)"
+        >add button</a>
+      </div>
+    </div>
+  </div>
+  <div>
+    <a type="button" (click)="save()">SAVE</a>
   </div>
 </div>

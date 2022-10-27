@@ -1,4 +1,5 @@
 import { Component } from '@angular/core'
+// import { Router } from '@angular/router'
 import packageJson from '../../package.json'
 import { SessionProvider } from './session.provider'
 
@@ -15,7 +16,17 @@ export class AppComponent {
   window = window as any // for in-template check of available functionality AND for its any typing in `this` component
   title = 'webapp'
 
-  constructor(public session: SessionProvider) {}
+  constructor(
+    public session: SessionProvider,
+    // public router: Router,
+  ) {
+    /*
+    console.log('router', router)
+    const currentPathing = 'inputs/gamepads'.split('/')
+    currentPathing.pop()
+    const targetPath = currentPathing.join('/')
+    console.log('router', router.config.find(route => route.path === targetPath))*/
+  }
 }
 
 export function openAnchor(event: Event) {

@@ -1,6 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { directoryReadToArray } from './app.utilities'
-import { ChromeDirectoryManager, DirectoryManager, NeutralinoDirectoryManager, SafariDirectoryManager } from './DirectoryManagers'
+import { BrowserDirectoryManager } from './BrowserDirectoryManagers'
+import { DirectoryManager, NeutralinoDirectoryManager } from './DirectoryManagers'
+import { SafariDirectoryManager } from './SafariDirectoryManagers'
 
 declare const Neutralino: any
 
@@ -11,9 +13,14 @@ declare const Neutralino: any
 export class RobustSelectDirectoryComponent {
   window: any = window
   @Input() label!: string // "LaunchBox"
+  @Input() pickerId?: string // ensures loaded path is same as previous
   @Input() reloadPath?: string // C:\blah\blah
-  @Output() errorChange = new EventEmitter<Error>()
+  @Output() error = new EventEmitter<Error>()
   @Output() directoryManagerChange = new EventEmitter<DirectoryManager>()
+
+  getPickerId() {
+    return this.pickerId || this.getId().replace(/[ -_]/g,'')
+  }
   
   async onPathReload(path: string) {
     if ( typeof Neutralino === 'object' ) {
@@ -37,25 +44,33 @@ export class RobustSelectDirectoryComponent {
     // chrome
     if ( this.window.showDirectoryPicker ) {  
       try {
-        const boxDir = await this.window.showDirectoryPicker()
+        const boxDir = await this.window.showDirectoryPicker({
+          id: this.getPickerId(),
+          // id: this.getId(),
+          mode: 'readwrite'
+        })
         const boxFiles = await directoryReadToArray( boxDir )
-        const dm = new ChromeDirectoryManager('', boxFiles, boxDir)
+        const dm = new BrowserDirectoryManager('', boxFiles, boxDir)
         this.directoryManagerChange.emit(dm)
         return
       } catch (err: any) {
         if ( err.message.includes('aborted') ) {
           return
         }
-        this.errorChange.emit(err)
+        this.error.emit(err)
       }
     }
-    
+
     // safari
     this.showDirectoryPicker()
   }
 
+  getId() {
+    return 'robustFolderPicker-' + this.label
+  }
+
   showDirectoryPicker() {
-    document.getElementById('robustFolderPicker')?.click()
+    document.getElementById(this.getId())?.click()
   }
 
   // safari read directory

@@ -60,9 +60,9 @@ export function findFolder(
 }
 
 export async function directoryReadToArray(
-  directory: LikeFile[]
-): Promise<LikeFile[]> {
-  const files: LikeFile[] = [] // {name: string, kind: string, getFile: () => File}[] = []
+  directory: FileSystemFileHandle[] //LikeFile[]
+): Promise<FileSystemFileHandle[]> {
+  const files: FileSystemFileHandle[] = [] // {name: string, kind: string, getFile: () => File}[] = []
   for await (const entry of directory.values()) {
     files.push(entry as any)
   }

@@ -1,5 +1,5 @@
 import { DirectoryManager, DmFileReader } from './DirectoryManagers'
-import { getOs, getStorage, path, saveStorage } from './app.utilities'
+import { path } from './app.utilities'
 import { Component } from '@angular/core'
 import { SessionProvider } from './session.provider'
 
@@ -38,18 +38,33 @@ export class LaunchBoxComponent {
   view?: string
   window = window as any
   neutralino = typeof Neutralino === 'object' ? true : false
-
+  xarcadeDirectory?: DirectoryManager
   bigBox: BigBox = new BigBox()
 
-  constructor(public session: SessionProvider) {}
+  constructor(public session: SessionProvider) {
+    if ( this.session.launchBoxDirectory ) {
+      this.readDir(this.session.launchBoxDirectory)
+    }
+  }
 
   async readDir( directoryManager: DirectoryManager ) {
-    console.log('readDir', directoryManager)
+    this.session.launchBoxDirectory = directoryManager
     const configFilePath = 'Data/' + this.session.config.launchBox.bigBoxFileName
     const configFile = await directoryManager.findFileByPath( configFilePath )
 
+    // attempt to set xarcade path by launch box tools path
+    if ( !this.session.xarcadeDirectory ) {
+      const xarcadePath = 'tools/xarcade-xinput'
+      const xarcadeDir = await directoryManager.getDirectory( xarcadePath )  
+      if ( xarcadeDir ) {
+        this.session.xarcadeDirectory = xarcadeDir
+        // notate that the link was found via LaunchBox for back and forth jumping
+        this.session.launchBoxXarcadeDir = xarcadeDir
+      }
+    }
+
     if ( !configFile ) {
-      return this.session.onError('cannot find LaunchBox/Data/BigBoxSettings.xml file', new Error('cannot find LaunchBox/Data/BigBoxSettings.xml file'))
+      return this.session.error('cannot find LaunchBox/Data/BigBoxSettings.xml file', new Error('cannot find LaunchBox/Data/BigBoxSettings.xml file'))
     }
 
     this.setConfigFile(configFile, directoryManager)

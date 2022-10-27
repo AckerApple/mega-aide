@@ -15,13 +15,19 @@ select {
   color:black
 }
 
+a[type=button].bg-assertive { @extend .bg-assertive }
+a[type=button].bg-positive { @extend .bg-positive }
+a[type=button].bg-balanced { @extend .bg-balanced }
+a[type=button].bg-calm { @extend .bg-calm }
+a[type=button].bg-info { @extend .bg-info }
+
 button, a[type=button] {
   @extend .bg-positive, .text-white, .pad-smx, .text-center, .no-a-style;
   border-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.5) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1);
   border-width: .075rem;
   border-radius: .5em;
   border-style: solid;
-  text-shadow:0 1px 0 #000;
+  text-shadow:0 1px 0 rgba(0, 0, 0, .5);
 }
 
 button:hover, a[type=button]:hover {
@@ -29,10 +35,13 @@ button:hover, a[type=button]:hover {
   text-shadow:none;
 }
 
-button:active, a[type=button]:active,
+button:active, a[type=button]:active {
+  border-color: rgba(255, 255, 255, 0.8);
+}
+
 button.active, a[type=button].active {
   text-shadow:0 2px 0 #000;
-  font-weight: bold;
+  /*font-weight: bold;*/
   border-color: rgba(255, 255, 255, 0.8);
 }
 

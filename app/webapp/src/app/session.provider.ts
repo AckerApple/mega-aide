@@ -1,11 +1,20 @@
 import { Injectable } from "@angular/core"
 import { getOs, getStorage, saveStorage } from "./app.utilities"
 import { DirectoryManager } from "./DirectoryManagers"
+import platformMap from './platform.map.json'
+import { PlatformsMapping } from "./platforms"
 
 @Injectable()
 export class SessionProvider {
-  error?: any
+  lastError?: Record<string, any>
   os = getOs()
+  
+  platformMap: PlatformsMapping = platformMap as any
+
+  launchBoxDirectory?: DirectoryManager
+  // xarcade loaded from launchbox
+  launchBoxXarcadeDir?: DirectoryManager
+  // xarcade loaded directly
   xarcadeDirectory?: DirectoryManager
 
   config = {
@@ -36,8 +45,8 @@ export class SessionProvider {
     }
   }
 
-  onError(message: string, err: any) {
-    this.error = Object.getOwnPropertyNames(err).reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)
+  error(message: string, err: any) {
+    this.lastError = Object.getOwnPropertyNames(err).reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)
     console.error('🔴 ' + message, err)
   }
 

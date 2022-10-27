@@ -1,50 +1,60 @@
 <!-- Toolbar -->
-<div class="toolbar flex-apart pad-h-xs" role="banner">
-  <h1>🕹 Mega-aide</h1>
-  <sup>v{{ version }}</sup>
+<div class="toolbar" role="banner">
+  <div class="flex-apart pad-h-xs">
+    <h1>🕹 Mega-aide</h1>
+    <sup>v{{ version }}</sup>
+  </div>
+  <div class="child-margin-v-xxs child-margin-h-xs text-smx border-top border-white flex-valign-center flex-wrap" style="background-color: rgb(5, 46, 124);">
+    <a *ngIf="routeState.RouteWatchReporter.$history.length > 1"
+      [title]="'history length ' + routeState.RouteWatchReporter.$history.length"
+      (click)="routeState.goBackOrUp()"
+    >⬅️</a>
+    <a *ngIf="routeState.current.config?.path !== 'menu'"
+      (click)="routeState.goUp()"
+    >⬆️</a>
+    <ng-container *ngFor="let item of routeState.crumbArray;let index=index">
+      <span *ngIf="index > 0">>></span>
+      <a class="text-white no-a-style underline pad-xxs"
+        [routerLink]="item.config.path"
+      >{{item.config.data ? item.config.data['emoji']+' ' : ''}}<u>{{ item.config.title || item.config.path }}</u></a>
+    </ng-container>
+  </div>  
 </div>
 
-<div style="height:40px"></div>
-
-<div *ngIf="routeState.current.config.path !== 'menu'"
-  class="text-right pad-right"
->
-  <a class="text-white no-a-style bg-black radius-10 pad" routerLink="menu"
-  >⏪ <u>main menu</u></a>
-</div>
+<div style="height:85px"></div>
 
 <div class="content" role="main">
-  <div *ngIf="session.error">
+  <div *ngIf="session.lastError">
     <strong class="text-assertive">🐞 Error</strong>
     <div>
-      <textarea readonly class="width-full min-height-300 bg-danger" wrap="off">{{ session.error }}</textarea>
-      <button *ngIf="session.error" class="flex1"
-        (click)="session.error = undefined"
+      <textarea readonly class="width-full min-height-300 bg-danger" wrap="off"
+        style="min-width:80vw"
+      >{{ session.lastError | json }}</textarea>
+      <button *ngIf="session.lastError" class="flex1"
+        (click)="session.lastError = undefined"
       >🐞 ❌ clear error</button>
     </div>
   </div>
   
-  <ng-container *ngIf="routeState.current.config.data">
-    <h2>{{ routeState.current.config.data['title'] }}</h2>
+  <ng-container *ngIf="routeState.current.config && routeState.current.config.data">
+    <ng-container *ngTemplateOutlet="title;context:{title:routeState.current.config.title || routeState.current.config.data['title']}"></ng-container>
+    <ng-template #title let-title="title">
+      <h2>
+        {{routeState.current.config.data ? routeState.current.config.data['emoji'] + '&nbsp;' : ''}}
+        {{ title | titlecase }}
+      </h2>
+    </ng-template>
     <p>{{ routeState.current.config.data['description'] }}</p>
   </ng-container>
   
-  <div [ngClass]="routeState.current.config.data && routeState.current.config.data['wrapClass']"
+  <div [ngClass]="routeState.current.config && routeState.current.config.data && routeState.current.config.data['wrapClass']"
     style="min-width:40vw"
   >
-    <router-outlet #routerOutlet="outlet"></router-outlet>
-    <route-reporter
-      #routeState="RouteReporter"
-    ></route-reporter>
+    <router-outlet></router-outlet>
+    <route-reporter #routeState="RouteReporter"></route-reporter>
   </div>
 
-  <div *ngIf="routeState.current.config.path !== 'menu'" class="text-center">
-    <br />
-    <a class="text-white no-a-style bg-black radius-10 pad" routerLink="menu"
-    >⏪ <u>main menu</u></a>
-  </div>
-
-  <br />
+  <br /><br />
   
   <div class="text-center text-white text-xs">
     <div class="opacity-half">🔗 helpful links</div>

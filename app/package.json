@@ -12,6 +12,7 @@
     "resources:write": "node resources-write.js",
     "dist:rename:mac": "mv dist/myapp/myapp-mac_x64 dist/myapp/myapp-mac_x64.app",
     "start": "neu run",
+    "clear:webapp": "cd webapp && npm run clear",
     "start:webapp": "cd webapp && npm run start"
   }
 }

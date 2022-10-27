@@ -6,7 +6,7 @@
       "players": [
         [
           {
-            "keyCode": "Digit1",
+            "keyName": "Digit1",
             "shape": "square",
             "emoji": "▶️",
             "label": "start",
@@ -18,37 +18,13 @@
             "x": 49.497,
             "y": 57.398,
             "width": 7,
-            "height": 5.7
+            "height": 5.7,
+            "keyCode": 49,
+            "gamepadButton": 9,
+            "gamepadCode": 9
           },
           {
-            "keyCode": "ControlLeft",
-            "x": 76,
-            "y": 54.95495495495496,
-            "width": 8,
-            "height": 11,
-            "shape": "circle",
-            "label": "A",
-            "color": [
-              187,
-              38,
-              35
-            ]
-          },
-          {
-            "keyCode": "AltLeft",
-            "x": 64.56,
-            "y": 54.508,
-            "width": 8.2,
-            "height": 11.8,
-            "color": [
-              187,
-              38,
-              35
-            ],
-            "label": "B"
-          },
-          {
-            "keyCode": "Digit5",
+            "keyName": "Digit5",
             "shape": "square",
             "emoji": "▶️",
             "label": "select",
@@ -60,10 +36,46 @@
             "x": 38,
             "y": 57.37,
             "width": 7,
-            "height": 5.7
+            "height": 5.7,
+            "keyCode": 53,
+            "gamepadButton": 8,
+            "gamepadCode": 8
           },
           {
-            "keyCode": "ArrowUp",
+            "keyName": "ControlLeft",
+            "x": 76,
+            "y": 54.95495495495496,
+            "width": 8,
+            "height": 11,
+            "shape": "circle",
+            "label": "A",
+            "color": [
+              187,
+              38,
+              35
+            ],
+            "keyCode": 17,
+            "gamepadButton": 1,
+            "gamepadCode": 1
+          },
+          {
+            "keyName": "AltLeft",
+            "x": 64.56,
+            "y": 54.508,
+            "width": 8.2,
+            "height": 11.8,
+            "color": [
+              187,
+              38,
+              35
+            ],
+            "label": "B",
+            "keyCode": 18,
+            "gamepadButton": 0,
+            "gamepadCode": 0
+          },
+          {
+            "keyName": "ArrowUp",
             "shape": "square",
             "emoji": "▶️",
             "label": "up",
@@ -75,10 +87,13 @@
             "x": 18.8,
             "y": 42.04204204204204,
             "width": 4.9,
-            "height": 5.7
+            "height": 5.7,
+            "keyCode": 38,
+            "gamepadAxis": "-1",
+            "gamepadCode": "-1"
           },
           {
-            "keyCode": "ArrowRight",
+            "keyName": "ArrowRight",
             "shape": "square",
             "emoji": "▶️",
             "label": "right",
@@ -90,10 +105,13 @@
             "x": 25,
             "y": 51.651651651651655,
             "width": 4.9,
-            "height": 5.7
+            "height": 5.7,
+            "keyCode": 39,
+            "gamepadAxis": "+0",
+            "gamepadCode": "+0"
           },
           {
-            "keyCode": "ArrowDown",
+            "keyName": "ArrowDown",
             "shape": "square",
             "emoji": "▶️",
             "label": "down",
@@ -105,10 +123,13 @@
             "x": 18.8,
             "y": 60.36036036036037,
             "width": 4.9,
-            "height": 5.7
+            "height": 5.7,
+            "keyCode": 40,
+            "gamepadAxis": "+1",
+            "gamepadCode": "+1"
           },
           {
-            "keyCode": "ArrowLeft",
+            "keyName": "ArrowLeft",
             "shape": "square",
             "emoji": "▶️",
             "label": "left",
@@ -120,149 +141,15 @@
             "x": 12.6,
             "y": 51.35135135135135,
             "width": 4.9,
-            "height": 5.7
+            "height": 5.7,
+            "keyCode": 37,
+            "gamepadAxis": "-0",
+            "gamepadCode": "-0"
           }
         ],
         [
           {
-            "keyCode": "KeyA",
-            "x": 75.8,
-            "y": 54.65465465465466,
-            "width": 8.3,
-            "height": 11.9,
-            "color": [
-              189,
-              34,
-              31
-            ],
-            "label": "A"
-          },
-          {
-            "keyCode": "KeyS",
-            "x": 64.4,
-            "y": 54.35435435435435,
-            "width": 8.3,
-            "height": 11.9,
-            "color": [
-              189,
-              34,
-              31
-            ],
-            "label": "A - copy"
-          },
-          {
-            "keyCode": "Digit2",
-            "x": 49.8,
-            "y": 58.25825825825825,
-            "width": 6.4,
-            "height": 4.5,
-            "shape": "square",
-            "color": [
-              13,
-              13,
-              13
-            ]
-          },
-          {
-            "keyCode": "Digit6",
-            "x": 38,
-            "y": 57.65765765765766,
-            "width": 6.6,
-            "height": 5.1,
-            "shape": "square",
-            "color": [
-              13,
-              13,
-              13
-            ],
-            "label": "undefined - copy"
-          },
-          {
-            "keyCode": "KeyR",
-            "x": 18,
-            "y": 42.94294294294294,
-            "width": 6.6,
-            "height": 5.1,
-            "shape": "square",
-            "color": [
-              13,
-              13,
-              13
-            ],
-            "label": "up"
-          },
-          {
-            "keyCode": "KeyF",
-            "x": 17.599999999999998,
-            "y": 60.66066066066066,
-            "width": 6.6,
-            "height": 5.1,
-            "shape": "square",
-            "color": [
-              13,
-              13,
-              13
-            ],
-            "label": "down"
-          },
-          {
-            "keyCode": "KeyD",
-            "x": 12.4,
-            "y": 52.25225225225225,
-            "width": 6.6,
-            "height": 5.1,
-            "shape": "square",
-            "color": [
-              13,
-              13,
-              13
-            ],
-            "label": "left"
-          },
-          {
-            "keyCode": "KeyG",
-            "x": 23,
-            "y": 52.25225225225225,
-            "width": 6.6,
-            "height": 5.1,
-            "shape": "square",
-            "color": [
-              13,
-              13,
-              13
-            ],
-            "label": "right"
-          }
-        ],
-        [
-          {
-            "keyCode": "ControlRight",
-            "x": 75.8,
-            "y": 54.65465465465466,
-            "width": 8.3,
-            "height": 11.9,
-            "color": [
-              189,
-              34,
-              31
-            ],
-            "label": "A"
-          },
-          {
-            "keyCode": "ShiftRight",
-            "x": 64.4,
-            "y": 54.35435435435435,
-            "width": 8.3,
-            "height": 11.9,
-            "color": [
-              189,
-              34,
-              31
-            ],
-            "label": "B"
-          },
-          {
-            "keyCode": "Digit3",
+            "keyName": "Digit2",
             "x": 49.8,
             "y": 58.25825825825825,
             "width": 6.4,
@@ -273,10 +160,12 @@
               13,
               13
             ],
-            "label": "start"
+            "label": "start",
+            "keyCode": 50,
+            "gamepadCode": 9
           },
           {
-            "keyCode": "Digit7",
+            "keyName": "Digit6",
             "x": 38,
             "y": 57.65765765765766,
             "width": 6.6,
@@ -287,10 +176,42 @@
               13,
               13
             ],
-            "label": "select"
+            "label": "select",
+            "keyCode": 54,
+            "gamepadCode": 8
           },
           {
-            "keyCode": "Minus",
+            "keyName": "KeyA",
+            "x": 75.8,
+            "y": 54.65465465465466,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "A",
+            "keyCode": 65,
+            "gamepadCode": 1
+          },
+          {
+            "keyName": "KeyS",
+            "x": 64.4,
+            "y": 54.35435435435435,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "B",
+            "keyCode": 83,
+            "gamepadCode": 0
+          },
+          {
+            "keyName": "KeyR",
             "x": 18,
             "y": 42.94294294294294,
             "width": 6.6,
@@ -301,10 +222,12 @@
               13,
               13
             ],
-            "label": "up"
+            "label": "up",
+            "keyCode": 82,
+            "gamepadCode": "-1"
           },
           {
-            "keyCode": "BracketLeft",
+            "keyName": "KeyF",
             "x": 17.599999999999998,
             "y": 60.66066066066066,
             "width": 6.6,
@@ -315,10 +238,12 @@
               13,
               13
             ],
-            "label": "down"
+            "label": "down",
+            "keyCode": 70,
+            "gamepadCode": "+1"
           },
           {
-            "keyCode": "Digit9",
+            "keyName": "KeyD",
             "x": 12.4,
             "y": 52.25225225225225,
             "width": 6.6,
@@ -329,10 +254,12 @@
               13,
               13
             ],
-            "label": "left"
+            "label": "left",
+            "keyCode": 68,
+            "gamepadCode": "-0"
           },
           {
-            "keyCode": "KeyT",
+            "keyName": "KeyG",
             "x": 23,
             "y": 52.25225225225225,
             "width": 6.6,
@@ -343,38 +270,14 @@
               13,
               13
             ],
-            "label": "right"
+            "label": "right",
+            "keyCode": 71,
+            "gamepadCode": "+0"
           }
         ],
         [
           {
-            "keyCode": "KeyB",
-            "x": 75.8,
-            "y": 54.65465465465466,
-            "width": 8.3,
-            "height": 11.9,
-            "color": [
-              189,
-              34,
-              31
-            ],
-            "label": "A"
-          },
-          {
-            "keyCode": "KeyE",
-            "x": 64.4,
-            "y": 54.35435435435435,
-            "width": 8.3,
-            "height": 11.9,
-            "color": [
-              189,
-              34,
-              31
-            ],
-            "label": "B"
-          },
-          {
-            "keyCode": "Digit4",
+            "keyName": "Digit3",
             "x": 49.8,
             "y": 58.25825825825825,
             "width": 6.4,
@@ -385,10 +288,12 @@
               13,
               13
             ],
-            "label": "start"
+            "label": "start",
+            "keyCode": 51,
+            "gamepadCode": 9
           },
           {
-            "keyCode": "Digit8",
+            "keyName": "Digit7",
             "x": 38,
             "y": 57.65765765765766,
             "width": 6.6,
@@ -399,10 +304,42 @@
               13,
               13
             ],
-            "label": "select"
+            "label": "select",
+            "keyCode": 55,
+            "gamepadCode": 8
           },
           {
-            "keyCode": "KeyY",
+            "keyName": "ControlRight",
+            "x": 75.8,
+            "y": 54.65465465465466,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "A",
+            "keyCode": 17,
+            "gamepadCode": 1
+          },
+          {
+            "keyName": "ShiftRight",
+            "x": 64.4,
+            "y": 54.35435435435435,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "B",
+            "keyCode": 16,
+            "gamepadCode": 0
+          },
+          {
+            "keyName": "Minus",
             "x": 18,
             "y": 42.94294294294294,
             "width": 6.6,
@@ -413,10 +350,12 @@
               13,
               13
             ],
-            "label": "up"
+            "label": "up",
+            "keyCode": 189,
+            "gamepadCode": "-1"
           },
           {
-            "keyCode": "KeyN",
+            "keyName": "BracketLeft",
             "x": 17.599999999999998,
             "y": 60.66066066066066,
             "width": 6.6,
@@ -427,10 +366,12 @@
               13,
               13
             ],
-            "label": "down"
+            "label": "down",
+            "keyCode": 219,
+            "gamepadCode": "+1"
           },
           {
-            "keyCode": "Period",
+            "keyName": "Digit9",
             "x": 12.4,
             "y": 52.25225225225225,
             "width": 6.6,
@@ -441,10 +382,12 @@
               13,
               13
             ],
-            "label": "left"
+            "label": "left",
+            "keyCode": 57,
+            "gamepadCode": "-0"
           },
           {
-            "keyCode": "KeyU",
+            "keyName": "KeyT",
             "x": 23,
             "y": 52.25225225225225,
             "width": 6.6,
@@ -455,7 +398,137 @@
               13,
               13
             ],
-            "label": "right"
+            "label": "right",
+            "keyCode": 84,
+            "gamepadCode": "+0"
+          }
+        ],
+        [
+          {
+            "keyName": "Digit4",
+            "x": 49.8,
+            "y": 58.25825825825825,
+            "width": 6.4,
+            "height": 4.5,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "start",
+            "keyCode": 52,
+            "gamepadCode": 9
+          },
+          {
+            "keyName": "Digit8",
+            "x": 38,
+            "y": 57.65765765765766,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "select",
+            "keyCode": 56,
+            "gamepadCode": 8
+          },
+          {
+            "keyName": "KeyB",
+            "x": 75.8,
+            "y": 54.65465465465466,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "A",
+            "keyCode": 66,
+            "gamepadCode": 1
+          },
+          {
+            "keyName": "KeyE",
+            "x": 64.4,
+            "y": 54.35435435435435,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "B",
+            "keyCode": 69,
+            "gamepadCode": 0
+          },
+          {
+            "keyName": "KeyY",
+            "x": 18,
+            "y": 42.94294294294294,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "up",
+            "keyCode": 89,
+            "gamepadCode": "-1"
+          },
+          {
+            "keyName": "KeyN",
+            "x": 17.599999999999998,
+            "y": 60.66066066066066,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "down",
+            "keyCode": 78,
+            "gamepadCode": "+1"
+          },
+          {
+            "keyName": "Period",
+            "x": 12.4,
+            "y": 52.25225225225225,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "left",
+            "keyCode": 190,
+            "gamepadCode": "-0"
+          },
+          {
+            "keyName": "KeyU",
+            "x": 23,
+            "y": 52.25225225225225,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "right",
+            "keyCode": 85,
+            "gamepadCode": "+0"
           }
         ]
       ]
@@ -466,7 +539,7 @@
       "players": [
         [
           {
-            "keyCode": "Digit1",
+            "keyName": "Digit1",
             "emoji": "▶️",
             "label": "start",
             "color": [
@@ -477,10 +550,11 @@
             "x": 55.234375,
             "y": 38.333333333333336,
             "height": 7,
-            "width": 5.1
+            "width": 5.1,
+            "keyCode": 49
           },
           {
-            "keyCode": "Digit5",
+            "keyName": "Digit5",
             "color": [
               255,
               0,
@@ -491,10 +565,11 @@
             "y": 38.611111111111114,
             "width": 5.4,
             "shape": "square",
-            "height": 5.7
+            "height": 5.7,
+            "keyCode": 53
           },
           {
-            "keyCode": "AltLeft",
+            "keyName": "AltLeft",
             "x": 73.25349301397206,
             "y": 23.04964539007092,
             "width": 6.3,
@@ -504,10 +579,11 @@
               233,
               221
             ],
-            "label": "triangle"
+            "label": "triangle",
+            "keyCode": 18
           },
           {
-            "keyCode": "KeyZ",
+            "keyName": "KeyZ",
             "x": 80.23952095808383,
             "y": 35.1063829787234,
             "width": 6.3,
@@ -517,10 +593,11 @@
               165,
               172
             ],
-            "label": "circle"
+            "label": "circle",
+            "keyCode": 90
           },
           {
-            "keyCode": "ShiftLeft",
+            "keyName": "ShiftLeft",
             "x": 72.85429141716567,
             "y": 47.16312056737589,
             "width": 6.3,
@@ -530,10 +607,11 @@
               170,
               205
             ],
-            "label": "x"
+            "label": "x",
+            "keyCode": 16
           },
           {
-            "keyCode": "LeftControl",
+            "keyName": "ControlLeft",
             "x": 65.6686626746507,
             "y": 34.57446808510639,
             "width": 6.3,
@@ -543,10 +621,213 @@
               197,
               224
             ],
+            "label": "square",
+            "keyCode": 17
+          },
+          {
+            "keyName": "ArrowUp",
+            "x": 20.958083832335326,
+            "y": 28.723404255319153,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up",
+            "keyCode": 38
+          },
+          {
+            "keyName": "ArrowDown",
+            "x": 21.35728542914172,
+            "y": 44.148936170212764,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down",
+            "keyCode": 40
+          },
+          {
+            "keyName": "ArrowLeft",
+            "x": 16.46706586826347,
+            "y": 37.234042553191486,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left",
+            "keyCode": 37
+          },
+          {
+            "keyName": "ArrowRight",
+            "x": 25.948103792415168,
+            "y": 36.702127659574465,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right",
+            "keyCode": 39
+          },
+          {
+            "keyName": "Space",
+            "x": 70.95808383233533,
+            "y": 8.687943262411348,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "R1",
+            "keyCode": 32
+          },
+          {
+            "keyName": "KeyC",
+            "x": 18.562874251497004,
+            "y": 9.397163120567376,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "L1",
+            "keyCode": 67
+          },
+          {
+            "keyName": "KeyX",
+            "x": 70.85828343313374,
+            "y": 0.8865248226950355,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "R2",
+            "keyCode": 88
+          },
+          {
+            "keyName": "KeyV",
+            "x": 18.529,
+            "y": 0.733,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "L2",
+            "keyCode": 86
+          }
+        ],
+        [
+          {
+            "keyName": "Digit2",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 55.234375,
+            "y": 38.333333333333336,
+            "height": 7,
+            "width": 5.1
+          },
+          {
+            "keyName": "Digit6",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "select",
+            "x": 38.75,
+            "y": 38.611111111111114,
+            "width": 5.4,
+            "shape": "square",
+            "height": 5.7
+          },
+          {
+            "keyName": "KeyS",
+            "x": 73.25349301397206,
+            "y": 23.04964539007092,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "triangle"
+          },
+          {
+            "keyName": "KeyI",
+            "x": 80.23952095808383,
+            "y": 35.1063829787234,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "circle"
+          },
+          {
+            "keyName": "KeyW",
+            "x": 72.85429141716567,
+            "y": 47.16312056737589,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "x"
+          },
+          {
+            "keyName": "KeyA",
+            "x": 65.6686626746507,
+            "y": 35.785,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              236,
+              197,
+              224
+            ],
             "label": "square"
           },
           {
-            "keyCode": "ArrowUp",
+            "keyName": "KeyR",
             "x": 20.958083832335326,
             "y": 28.723404255319153,
             "width": 4.1,
@@ -560,7 +841,7 @@
             "label": "up"
           },
           {
-            "keyCode": "ArrowDown",
+            "keyName": "KeyF",
             "x": 21.35728542914172,
             "y": 44.148936170212764,
             "width": 4.1,
@@ -574,7 +855,7 @@
             "label": "down"
           },
           {
-            "keyCode": "ArrowLeft",
+            "keyName": "KeyD",
             "x": 16.46706586826347,
             "y": 37.234042553191486,
             "width": 4.1,
@@ -588,7 +869,7 @@
             "label": "left"
           },
           {
-            "keyCode": "ArrowRight",
+            "keyName": "KeyG",
             "x": 25.948103792415168,
             "y": 36.702127659574465,
             "width": 4.1,
@@ -602,7 +883,7 @@
             "label": "right"
           },
           {
-            "keyCode": "Space",
+            "keyName": "KeyQ",
             "x": 70.95808383233533,
             "y": 8.687943262411348,
             "width": 9.6,
@@ -616,7 +897,7 @@
             "label": "R1"
           },
           {
-            "keyCode": "KeyC",
+            "keyName": "KeyJ",
             "x": 18.562874251497004,
             "y": 9.397163120567376,
             "width": 9.6,
@@ -630,7 +911,7 @@
             "label": "L1"
           },
           {
-            "keyCode": "KeyX",
+            "keyName": "KeyK",
             "x": 70.85828343313374,
             "y": 0.8865248226950355,
             "width": 9.6,
@@ -644,7 +925,7 @@
             "label": "R2"
           },
           {
-            "keyCode": "KeyV",
+            "keyName": "KeyL",
             "x": 18.529,
             "y": 0.733,
             "width": 9.6,
@@ -660,7 +941,7 @@
         ],
         [
           {
-            "keyCode": "Digit2",
+            "keyName": "Digit3",
             "emoji": "▶️",
             "label": "start",
             "color": [
@@ -674,7 +955,7 @@
             "width": 5.1
           },
           {
-            "keyCode": "Digit6",
+            "keyName": "Digit7",
             "color": [
               255,
               0,
@@ -688,7 +969,7 @@
             "height": 5.7
           },
           {
-            "keyCode": "KeyS",
+            "keyName": "ShiftRight",
             "x": 73.25349301397206,
             "y": 23.04964539007092,
             "width": 6.3,
@@ -701,7 +982,7 @@
             "label": "triangle"
           },
           {
-            "keyCode": "KeyI",
+            "keyName": "PageUp",
             "x": 80.23952095808383,
             "y": 35.1063829787234,
             "width": 6.3,
@@ -714,7 +995,7 @@
             "label": "circle"
           },
           {
-            "keyCode": "KeyW",
+            "keyName": "KeyO",
             "x": 72.85429141716567,
             "y": 47.16312056737589,
             "width": 6.3,
@@ -727,7 +1008,7 @@
             "label": "x"
           },
           {
-            "keyCode": "KeyA",
+            "keyName": "ControlRight",
             "x": 65.6686626746507,
             "y": 35.785,
             "width": 6.3,
@@ -740,7 +1021,7 @@
             "label": "square"
           },
           {
-            "keyCode": "KeyR",
+            "keyName": "Minus",
             "x": 20.958083832335326,
             "y": 28.723404255319153,
             "width": 4.1,
@@ -754,7 +1035,7 @@
             "label": "up"
           },
           {
-            "keyCode": "KeyF",
+            "keyName": "BracketLeft",
             "x": 21.35728542914172,
             "y": 44.148936170212764,
             "width": 4.1,
@@ -768,7 +1049,7 @@
             "label": "down"
           },
           {
-            "keyCode": "KeyD",
+            "keyName": "Digit9",
             "x": 16.46706586826347,
             "y": 37.234042553191486,
             "width": 4.1,
@@ -782,7 +1063,7 @@
             "label": "left"
           },
           {
-            "keyCode": "KeyG",
+            "keyName": "KeyT",
             "x": 25.948103792415168,
             "y": 36.702127659574465,
             "width": 4.1,
@@ -796,7 +1077,7 @@
             "label": "right"
           },
           {
-            "keyCode": "KeyQ",
+            "keyName": "End",
             "x": 70.95808383233533,
             "y": 8.687943262411348,
             "width": 9.6,
@@ -810,201 +1091,7 @@
             "label": "R1"
           },
           {
-            "keyCode": "KeyJ",
-            "x": 18.562874251497004,
-            "y": 9.397163120567376,
-            "width": 9.6,
-            "height": 7,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "L1"
-          },
-          {
-            "keyCode": "KeyK",
-            "x": 70.85828343313374,
-            "y": 0.8865248226950355,
-            "width": 9.6,
-            "height": 7,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "R2"
-          },
-          {
-            "keyCode": "KeyL",
-            "x": 18.529,
-            "y": 0.733,
-            "width": 9.6,
-            "height": 7,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "L2"
-          }
-        ],
-        [
-          {
-            "keyCode": "Digit3",
-            "emoji": "▶️",
-            "label": "start",
-            "color": [
-              255,
-              0,
-              0
-            ],
-            "x": 55.234375,
-            "y": 38.333333333333336,
-            "height": 7,
-            "width": 5.1
-          },
-          {
-            "keyCode": "Digit7",
-            "color": [
-              255,
-              0,
-              0
-            ],
-            "label": "select",
-            "x": 38.75,
-            "y": 38.611111111111114,
-            "width": 5.4,
-            "shape": "square",
-            "height": 5.7
-          },
-          {
-            "keyCode": "ShiftRight",
-            "x": 73.25349301397206,
-            "y": 23.04964539007092,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              155,
-              233,
-              221
-            ],
-            "label": "triangle"
-          },
-          {
-            "keyCode": "PageUp",
-            "x": 80.23952095808383,
-            "y": 35.1063829787234,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              236,
-              165,
-              172
-            ],
-            "label": "circle"
-          },
-          {
-            "keyCode": "KeyO",
-            "x": 72.85429141716567,
-            "y": 47.16312056737589,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              136,
-              170,
-              205
-            ],
-            "label": "x"
-          },
-          {
-            "keyCode": "ControlRight",
-            "x": 65.6686626746507,
-            "y": 35.785,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              236,
-              197,
-              224
-            ],
-            "label": "square"
-          },
-          {
-            "keyCode": "Minus",
-            "x": 20.958083832335326,
-            "y": 28.723404255319153,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "up"
-          },
-          {
-            "keyCode": "BracketLeft",
-            "x": 21.35728542914172,
-            "y": 44.148936170212764,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "down"
-          },
-          {
-            "keyCode": "Digit9",
-            "x": 16.46706586826347,
-            "y": 37.234042553191486,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "left"
-          },
-          {
-            "keyCode": "KeyT",
-            "x": 25.948103792415168,
-            "y": 36.702127659574465,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "right"
-          },
-          {
-            "keyCode": "End",
-            "x": 70.95808383233533,
-            "y": 8.687943262411348,
-            "width": 9.6,
-            "height": 7,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "R1"
-          },
-          {
-            "keyCode": "PageUp",
+            "keyName": "PageUp",
             "x": 18.562874251497004,
             "y": 9.397163120567376,
             "width": 9.6,
@@ -1020,7 +1107,7 @@
         ],
         [
           {
-            "keyCode": "Digit4",
+            "keyName": "Digit4",
             "emoji": "▶️",
             "label": "start",
             "color": [
@@ -1034,7 +1121,7 @@
             "width": 5.1
           },
           {
-            "keyCode": "Digit8",
+            "keyName": "Digit8",
             "color": [
               255,
               0,
@@ -1048,7 +1135,7 @@
             "height": 5.7
           },
           {
-            "keyCode": "KeyE",
+            "keyName": "KeyE",
             "x": 73.25349301397206,
             "y": 23.04964539007092,
             "width": 6.3,
@@ -1061,7 +1148,7 @@
             "label": "triangle"
           },
           {
-            "keyCode": "Digit0",
+            "keyName": "Digit0",
             "x": 80.23952095808383,
             "y": 35.1063829787234,
             "width": 6.3,
@@ -1074,7 +1161,7 @@
             "label": "circle"
           },
           {
-            "keyCode": "KeyM",
+            "keyName": "KeyM",
             "x": 72.85429141716567,
             "y": 47.16312056737589,
             "width": 6.3,
@@ -1087,7 +1174,7 @@
             "label": "x"
           },
           {
-            "keyCode": "KeyB",
+            "keyName": "KeyB",
             "x": 65.6686626746507,
             "y": 35.785,
             "width": 6.3,
@@ -1100,7 +1187,7 @@
             "label": "square"
           },
           {
-            "keyCode": "KeyY",
+            "keyName": "KeyY",
             "x": 20.958083832335326,
             "y": 28.723404255319153,
             "width": 4.1,
@@ -1114,7 +1201,7 @@
             "label": "up"
           },
           {
-            "keyCode": "KeyN",
+            "keyName": "KeyN",
             "x": 21.35728542914172,
             "y": 44.148936170212764,
             "width": 4.1,
@@ -1128,7 +1215,7 @@
             "label": "down"
           },
           {
-            "keyCode": "Period",
+            "keyName": "Period",
             "x": 16.46706586826347,
             "y": 37.234042553191486,
             "width": 4.1,
@@ -1142,7 +1229,7 @@
             "label": "left"
           },
           {
-            "keyCode": "KeyU",
+            "keyName": "KeyU",
             "x": 25.948103792415168,
             "y": 36.702127659574465,
             "width": 4.1,
@@ -1156,7 +1243,7 @@
             "label": "right"
           },
           {
-            "keyCode": "Home",
+            "keyName": "Home",
             "x": 70.95808383233533,
             "y": 8.687943262411348,
             "width": 9.6,
@@ -1170,7 +1257,7 @@
             "label": "R1"
           },
           {
-            "keyCode": "KeyH",
+            "keyName": "KeyH",
             "x": 18.562874251497004,
             "y": 9.397163120567376,
             "width": 9.6,
@@ -1193,49 +1280,7 @@
         [
           {
             "index": 1,
-            "keyCode": "",
-            "x": 83.1858407079646,
-            "y": 41.732283464566926,
-            "width": 7.5,
-            "height": 16,
-            "color": [
-              255,
-              0,
-              0
-            ],
-            "label": "A"
-          },
-          {
-            "index": 1,
-            "keyCode": "",
-            "x": 73.788,
-            "y": 56.838,
-            "width": 7.5,
-            "height": 16,
-            "color": [
-              255,
-              232,
-              39
-            ],
-            "label": "B"
-          },
-          {
-            "index": 1,
-            "keyCode": "",
-            "x": 64.42477876106196,
-            "y": 39.37007874015748,
-            "width": 7.5,
-            "height": 16,
-            "color": [
-              1,
-              140,
-              50
-            ],
-            "label": "Y"
-          },
-          {
-            "index": 1,
-            "keyCode": "",
+            "keyName": "",
             "x": 47.9646017699115,
             "y": 49.01574803149607,
             "width": 7.5,
@@ -1249,7 +1294,7 @@
           },
           {
             "index": 1,
-            "keyCode": "",
+            "keyName": "",
             "x": 37.78761061946903,
             "y": 50.39370078740157,
             "width": 7.5,
@@ -1263,7 +1308,49 @@
           },
           {
             "index": 1,
-            "keyCode": "",
+            "keyName": "",
+            "x": 83.1858407079646,
+            "y": 41.732283464566926,
+            "width": 7.5,
+            "height": 16,
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "A"
+          },
+          {
+            "index": 1,
+            "keyName": "",
+            "x": 73.788,
+            "y": 56.838,
+            "width": 7.5,
+            "height": 16,
+            "color": [
+              255,
+              232,
+              39
+            ],
+            "label": "B"
+          },
+          {
+            "index": 1,
+            "keyName": "",
+            "x": 64.42477876106196,
+            "y": 39.37007874015748,
+            "width": 7.5,
+            "height": 16,
+            "color": [
+              1,
+              140,
+              50
+            ],
+            "label": "Y"
+          },
+          {
+            "index": 1,
+            "keyName": "",
             "x": 73.71681415929203,
             "y": 24.409448818897637,
             "width": 7.5,
@@ -1277,7 +1364,7 @@
           },
           {
             "index": 1,
-            "keyCode": "",
+            "keyName": "",
             "x": 18.849557522123895,
             "y": 29.92125984251969,
             "width": 5.6,
@@ -1292,7 +1379,7 @@
           },
           {
             "index": 1,
-            "keyCode": "",
+            "keyName": "",
             "x": 13.628318584070797,
             "y": 42.125984251968504,
             "width": 5.6,
@@ -1307,7 +1394,7 @@
           },
           {
             "index": 1,
-            "keyCode": "",
+            "keyName": "",
             "x": 24.424778761061948,
             "y": 43.30708661417323,
             "width": 5.6,
@@ -1322,7 +1409,7 @@
           },
           {
             "index": 1,
-            "keyCode": "",
+            "keyName": "",
             "x": 19.115044247787612,
             "y": 55.51181102362205,
             "width": 5.6,
@@ -1337,7 +1424,7 @@
           },
           {
             "index": 1,
-            "keyCode": "",
+            "keyName": "",
             "x": 13.362831858407079,
             "y": -0.19685039370078738,
             "width": 17.7,
@@ -1352,7 +1439,7 @@
           },
           {
             "index": 1,
-            "keyCode": "",
+            "keyName": "",
             "x": 67.9646017699115,
             "y": -1.7716535433070866,
             "width": 17.7,
@@ -1374,7 +1461,7 @@
       "players": [
         [
           {
-            "keyCode": "Digit1",
+            "keyName": "Digit1",
             "emoji": "▶️",
             "label": "start",
             "color": [
@@ -1382,27 +1469,29 @@
               0,
               0
             ],
-            "x": 52.73972602739726,
-            "y": 25.196850393700785,
+            "x": 53.83,
+            "y": 25.886,
             "height": 7,
-            "width": 5.1
+            "width": 5.1,
+            "keyCode": 49
           },
           {
-            "keyCode": "Digit5",
+            "keyName": "Digit5",
             "color": [
               255,
               0,
               0
             ],
-            "label": "select",
-            "x": 39.31506849315068,
+            "label": "Back",
+            "x": 40.942,
             "y": 26.574803149606304,
             "width": 5.4,
-            "shape": "square",
-            "height": 5.7
+            "shape": "circle",
+            "height": 7.6,
+            "keyCode": 53
           },
           {
-            "keyCode": "AltLeft",
+            "keyName": "AltLeft",
             "x": 69.58904109589041,
             "y": 17.716535433070867,
             "width": 6.3,
@@ -1412,10 +1501,11 @@
               233,
               221
             ],
-            "label": "triangle"
+            "label": "Y",
+            "keyCode": 18
           },
           {
-            "keyCode": "KeyZ",
+            "keyName": "KeyZ",
             "x": 75.314,
             "y": 26.042,
             "width": 6.3,
@@ -1425,10 +1515,11 @@
               165,
               172
             ],
-            "label": "circle"
+            "label": "B",
+            "keyCode": 90
           },
           {
-            "keyCode": "ShiftLeft",
+            "keyName": "Escape",
             "x": 69.312,
             "y": 33.785,
             "width": 6.3,
@@ -1438,10 +1529,11 @@
               170,
               205
             ],
-            "label": "x"
+            "label": "A",
+            "keyCode": 16
           },
           {
-            "keyCode": "LeftControl",
+            "keyName": "ControlLeft",
             "x": 63.505,
             "y": 25.393700787401574,
             "width": 6.3,
@@ -1451,10 +1543,199 @@
               197,
               224
             ],
-            "label": "square"
+            "label": "X",
+            "keyCode": 17
           },
           {
-            "keyCode": "ArrowUp",
+            "keyName": "ArrowUp",
+            "x": 35.75342465753425,
+            "y": 37.79527559055118,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up",
+            "keyCode": 38
+          },
+          {
+            "keyName": "ArrowDown",
+            "x": 36.43835616438356,
+            "y": 51.181102362204726,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down",
+            "keyCode": 40
+          },
+          {
+            "keyName": "ArrowLeft",
+            "x": 31.232876712328768,
+            "y": 45.86614173228347,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left",
+            "keyCode": 37
+          },
+          {
+            "keyName": "ArrowRight",
+            "x": 40.821917808219176,
+            "y": 43.89763779527559,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right",
+            "keyCode": 39
+          },
+          {
+            "keyName": "Space",
+            "x": 63.83561643835617,
+            "y": 10.62992125984252,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightBumper",
+            "keyCode": 32
+          },
+          {
+            "keyName": "KeyC",
+            "x": 25.068493150684933,
+            "y": 10.826771653543307,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftBumper",
+            "keyCode": 67
+          },
+          {
+            "keyName": "KeyX",
+            "x": 65.34246575342466,
+            "y": 2.098,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightTrigger",
+            "keyCode": 88
+          },
+          {
+            "keyName": "KeyV",
+            "x": 23.972602739726025,
+            "y": 1.968503937007874,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftTrigger",
+            "keyCode": 86
+          }
+        ],
+        [
+          {
+            "keyName": "Digit2",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 53.83,
+            "y": 25.886,
+            "height": 7,
+            "width": 5.1
+          },
+          {
+            "keyName": "KeyS",
+            "x": 69.58904109589041,
+            "y": 17.716535433070867,
+            "width": 6.3,
+            "height": 9.3,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "Y"
+          },
+          {
+            "keyName": "KeyI",
+            "x": 75.314,
+            "y": 26.042,
+            "width": 6.3,
+            "height": 8.9,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "B"
+          },
+          {
+            "keyName": "KeyW",
+            "x": 69.312,
+            "y": 33.785,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "A"
+          },
+          {
+            "keyName": "KeyA",
+            "x": 63.505,
+            "y": 25.393700787401574,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              236,
+              197,
+              224
+            ],
+            "label": "X"
+          },
+          {
+            "keyName": "KeyR",
             "x": 35.75342465753425,
             "y": 37.79527559055118,
             "width": 4.1,
@@ -1468,7 +1749,7 @@
             "label": "up"
           },
           {
-            "keyCode": "ArrowDown",
+            "keyName": "KeyF",
             "x": 36.43835616438356,
             "y": 51.181102362204726,
             "width": 4.1,
@@ -1482,7 +1763,7 @@
             "label": "down"
           },
           {
-            "keyCode": "ArrowLeft",
+            "keyName": "KeyD",
             "x": 31.232876712328768,
             "y": 45.86614173228347,
             "width": 4.1,
@@ -1496,7 +1777,7 @@
             "label": "left"
           },
           {
-            "keyCode": "ArrowRight",
+            "keyName": "KeyG",
             "x": 40.821917808219176,
             "y": 43.89763779527559,
             "width": 4.1,
@@ -1510,7 +1791,351 @@
             "label": "right"
           },
           {
-            "keyCode": "Space",
+            "keyName": "Digit1",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 53.83,
+            "y": 25.886,
+            "height": 7,
+            "width": 5.1,
+            "keyCode": 49
+          },
+          {
+            "keyName": "Digit5",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "Back",
+            "x": 40.942,
+            "y": 26.574803149606304,
+            "width": 5.4,
+            "shape": "circle",
+            "height": 7.6,
+            "keyCode": 53
+          },
+          {
+            "keyName": "AltLeft",
+            "x": 69.58904109589041,
+            "y": 17.716535433070867,
+            "width": 6.3,
+            "height": 9.3,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "Y",
+            "keyCode": 18
+          },
+          {
+            "keyName": "KeyZ",
+            "x": 75.314,
+            "y": 26.042,
+            "width": 6.3,
+            "height": 8.9,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "B",
+            "keyCode": 90
+          },
+          {
+            "keyName": "Escape",
+            "x": 69.312,
+            "y": 33.785,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "A",
+            "keyCode": 16
+          },
+          {
+            "keyName": "ControlLeft",
+            "x": 63.505,
+            "y": 25.393700787401574,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              236,
+              197,
+              224
+            ],
+            "label": "X",
+            "keyCode": 17
+          },
+          {
+            "keyName": "ArrowUp",
+            "x": 35.75342465753425,
+            "y": 37.79527559055118,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up",
+            "keyCode": 38
+          },
+          {
+            "keyName": "ArrowDown",
+            "x": 36.43835616438356,
+            "y": 51.181102362204726,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down",
+            "keyCode": 40
+          },
+          {
+            "keyName": "ArrowLeft",
+            "x": 31.232876712328768,
+            "y": 45.86614173228347,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left",
+            "keyCode": 37
+          },
+          {
+            "keyName": "ArrowRight",
+            "x": 40.821917808219176,
+            "y": 43.89763779527559,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right",
+            "keyCode": 39
+          },
+          {
+            "keyName": "Space",
+            "x": 63.83561643835617,
+            "y": 10.62992125984252,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightBumper",
+            "keyCode": 32
+          },
+          {
+            "keyName": "KeyC",
+            "x": 25.068493150684933,
+            "y": 10.826771653543307,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftBumper",
+            "keyCode": 67
+          },
+          {
+            "keyName": "KeyX",
+            "x": 65.34246575342466,
+            "y": 2.098,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightTrigger",
+            "keyCode": 88
+          },
+          {
+            "keyName": "KeyV",
+            "x": 23.972602739726025,
+            "y": 1.968503937007874,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftTrigger",
+            "keyCode": 86
+          }
+        ],
+        [
+          {
+            "keyName": "Digit3",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 53.83,
+            "y": 25.886,
+            "height": 7,
+            "width": 5.1
+          },
+          {
+            "keyName": "Digit7",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "Back",
+            "x": 40.942,
+            "y": 26.574803149606304,
+            "width": 5.4,
+            "shape": "circle",
+            "height": 7.6
+          },
+          {
+            "keyName": "ShiftRight",
+            "x": 69.58904109589041,
+            "y": 17.716535433070867,
+            "width": 6.3,
+            "height": 9.3,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "Y"
+          },
+          {
+            "keyName": "PageUp",
+            "x": 75.314,
+            "y": 26.042,
+            "width": 6.3,
+            "height": 8.9,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "B"
+          },
+          {
+            "keyName": "KeyO",
+            "x": 69.312,
+            "y": 33.785,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "A"
+          },
+          {
+            "keyName": "ControlRight",
+            "x": 63.505,
+            "y": 25.393700787401574,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              236,
+              197,
+              224
+            ],
+            "label": "X"
+          },
+          {
+            "keyName": "Minus",
+            "x": 35.75342465753425,
+            "y": 37.79527559055118,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up"
+          },
+          {
+            "keyName": "BracketLeft",
+            "x": 36.43835616438356,
+            "y": 51.181102362204726,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down"
+          },
+          {
+            "keyName": "Digit9",
+            "x": 31.232876712328768,
+            "y": 45.86614173228347,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left"
+          },
+          {
+            "keyName": "KeyT",
+            "x": 40.821917808219176,
+            "y": 43.89763779527559,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right"
+          },
+          {
+            "keyName": "End",
             "x": 63.83561643835617,
             "y": 10.62992125984252,
             "width": 9.6,
@@ -1524,7 +2149,7 @@
             "label": "R1"
           },
           {
-            "keyCode": "KeyC",
+            "keyName": "PageUp",
             "x": 25.068493150684933,
             "y": 10.826771653543307,
             "width": 9.6,
@@ -1538,7 +2163,7 @@
             "label": "L1"
           },
           {
-            "keyCode": "KeyX",
+            "keyName": "KeyK",
             "x": 65.34246575342466,
             "y": 2.098,
             "width": 9.6,
@@ -1552,7 +2177,7 @@
             "label": "R2"
           },
           {
-            "keyCode": "KeyV",
+            "keyName": "KeyL",
             "x": 23.972602739726025,
             "y": 1.968503937007874,
             "width": 9.6,
@@ -1564,11 +2189,71 @@
               5
             ],
             "label": "L2"
+          },
+          {
+            "keyName": "Space",
+            "x": 63.83561643835617,
+            "y": 10.62992125984252,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightBumper",
+            "keyCode": 32
+          },
+          {
+            "keyName": "KeyC",
+            "x": 25.068493150684933,
+            "y": 10.826771653543307,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftBumper",
+            "keyCode": 67
+          },
+          {
+            "keyName": "KeyX",
+            "x": 65.34246575342466,
+            "y": 2.098,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightTrigger",
+            "keyCode": 88
+          },
+          {
+            "keyName": "KeyV",
+            "x": 23.972602739726025,
+            "y": 1.968503937007874,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftTrigger",
+            "keyCode": 86
           }
         ],
         [
           {
-            "keyCode": "Digit2",
+            "keyName": "Digit4",
             "emoji": "▶️",
             "label": "start",
             "color": [
@@ -1576,81 +2261,81 @@
               0,
               0
             ],
-            "x": 55.234375,
-            "y": 38.333333333333336,
+            "x": 53.83,
+            "y": 25.886,
             "height": 7,
             "width": 5.1
           },
           {
-            "keyCode": "Digit6",
+            "keyName": "Digit8",
             "color": [
               255,
               0,
               0
             ],
-            "label": "select",
-            "x": 38.75,
-            "y": 38.611111111111114,
+            "label": "Back",
+            "x": 40.942,
+            "y": 26.574803149606304,
             "width": 5.4,
-            "shape": "square",
-            "height": 5.7
+            "shape": "circle",
+            "height": 7.6
           },
           {
-            "keyCode": "KeyS",
-            "x": 73.25349301397206,
-            "y": 23.04964539007092,
+            "keyName": "KeyE",
+            "x": 69.58904109589041,
+            "y": 17.716535433070867,
             "width": 6.3,
-            "height": 10.8,
+            "height": 9.3,
             "color": [
               155,
               233,
               221
             ],
-            "label": "triangle"
+            "label": "Y"
           },
           {
-            "keyCode": "KeyI",
-            "x": 80.23952095808383,
-            "y": 35.1063829787234,
+            "keyName": "Digit0",
+            "x": 75.314,
+            "y": 26.042,
             "width": 6.3,
-            "height": 10.8,
+            "height": 8.9,
             "color": [
               236,
               165,
               172
             ],
-            "label": "circle"
+            "label": "B"
           },
           {
-            "keyCode": "KeyW",
-            "x": 72.85429141716567,
-            "y": 47.16312056737589,
+            "keyName": "KeyM",
+            "x": 69.312,
+            "y": 33.785,
             "width": 6.3,
-            "height": 10.8,
+            "height": 9,
             "color": [
               136,
               170,
               205
             ],
-            "label": "x"
+            "label": "A"
           },
           {
-            "keyCode": "KeyA",
-            "x": 65.6686626746507,
-            "y": 35.785,
+            "keyName": "KeyB",
+            "x": 63.505,
+            "y": 25.393700787401574,
             "width": 6.3,
-            "height": 10.8,
+            "height": 9,
             "color": [
               236,
               197,
               224
             ],
-            "label": "square"
+            "label": "X"
           },
           {
-            "keyCode": "KeyR",
-            "x": 20.958083832335326,
-            "y": 28.723404255319153,
+            "keyName": "KeyY",
+            "x": 35.75342465753425,
+            "y": 37.79527559055118,
             "width": 4.1,
             "height": 9.1,
             "shape": "square",
@@ -1662,9 +2347,9 @@
             "label": "up"
           },
           {
-            "keyCode": "KeyF",
-            "x": 21.35728542914172,
-            "y": 44.148936170212764,
+            "keyName": "KeyN",
+            "x": 36.43835616438356,
+            "y": 51.181102362204726,
             "width": 4.1,
             "height": 9.1,
             "shape": "square",
@@ -1676,9 +2361,9 @@
             "label": "down"
           },
           {
-            "keyCode": "KeyD",
-            "x": 16.46706586826347,
-            "y": 37.234042553191486,
+            "keyName": "Period",
+            "x": 31.232876712328768,
+            "y": 45.86614173228347,
             "width": 4.1,
             "height": 9.1,
             "shape": "square",
@@ -1690,9 +2375,9 @@
             "label": "left"
           },
           {
-            "keyCode": "KeyG",
-            "x": 25.948103792415168,
-            "y": 36.702127659574465,
+            "keyName": "KeyU",
+            "x": 40.821917808219176,
+            "y": 43.89763779527559,
             "width": 4.1,
             "height": 9.1,
             "shape": "square",
@@ -1704,9 +2389,9 @@
             "label": "right"
           },
           {
-            "keyCode": "KeyQ",
-            "x": 70.95808383233533,
-            "y": 8.687943262411348,
+            "keyName": "Home",
+            "x": 63.83561643835617,
+            "y": 10.62992125984252,
             "width": 9.6,
             "height": 7,
             "shape": "square",
@@ -1718,9 +2403,9 @@
             "label": "R1"
           },
           {
-            "keyCode": "KeyJ",
-            "x": 18.562874251497004,
-            "y": 9.397163120567376,
+            "keyName": "KeyH",
+            "x": 25.068493150684933,
+            "y": 10.826771653543307,
             "width": 9.6,
             "height": 7,
             "shape": "square",
@@ -1732,9 +2417,9 @@
             "label": "L1"
           },
           {
-            "keyCode": "KeyK",
-            "x": 70.85828343313374,
-            "y": 0.8865248226950355,
+            "keyName": "KeyK",
+            "x": 65.34246575342466,
+            "y": 2.098,
             "width": 9.6,
             "height": 7,
             "shape": "square",
@@ -1746,9 +2431,9 @@
             "label": "R2"
           },
           {
-            "keyCode": "KeyL",
-            "x": 18.529,
-            "y": 0.733,
+            "keyName": "KeyL",
+            "x": 23.972602739726025,
+            "y": 1.968503937007874,
             "width": 9.6,
             "height": 7,
             "shape": "square",
@@ -1758,149 +2443,11 @@
               5
             ],
             "label": "L2"
-          }
-        ],
-        [
-          {
-            "keyCode": "Digit3",
-            "emoji": "▶️",
-            "label": "start",
-            "color": [
-              255,
-              0,
-              0
-            ],
-            "x": 55.234375,
-            "y": 38.333333333333336,
-            "height": 7,
-            "width": 5.1
           },
           {
-            "keyCode": "Digit7",
-            "color": [
-              255,
-              0,
-              0
-            ],
-            "label": "select",
-            "x": 38.75,
-            "y": 38.611111111111114,
-            "width": 5.4,
-            "shape": "square",
-            "height": 5.7
-          },
-          {
-            "keyCode": "ShiftRight",
-            "x": 73.25349301397206,
-            "y": 23.04964539007092,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              155,
-              233,
-              221
-            ],
-            "label": "triangle"
-          },
-          {
-            "keyCode": "PageUp",
-            "x": 80.23952095808383,
-            "y": 35.1063829787234,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              236,
-              165,
-              172
-            ],
-            "label": "circle"
-          },
-          {
-            "keyCode": "KeyO",
-            "x": 72.85429141716567,
-            "y": 47.16312056737589,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              136,
-              170,
-              205
-            ],
-            "label": "x"
-          },
-          {
-            "keyCode": "ControlRight",
-            "x": 65.6686626746507,
-            "y": 35.785,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              236,
-              197,
-              224
-            ],
-            "label": "square"
-          },
-          {
-            "keyCode": "Minus",
-            "x": 20.958083832335326,
-            "y": 28.723404255319153,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "up"
-          },
-          {
-            "keyCode": "BracketLeft",
-            "x": 21.35728542914172,
-            "y": 44.148936170212764,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "down"
-          },
-          {
-            "keyCode": "Digit9",
-            "x": 16.46706586826347,
-            "y": 37.234042553191486,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "left"
-          },
-          {
-            "keyCode": "KeyT",
-            "x": 25.948103792415168,
-            "y": 36.702127659574465,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "right"
-          },
-          {
-            "keyCode": "End",
-            "x": 70.95808383233533,
-            "y": 8.687943262411348,
+            "keyName": "Space",
+            "x": 63.83561643835617,
+            "y": 10.62992125984252,
             "width": 9.6,
             "height": 7,
             "shape": "square",
@@ -1909,12 +2456,13 @@
               5,
               5
             ],
-            "label": "R1"
+            "label": "RightBumper",
+            "keyCode": 32
           },
           {
-            "keyCode": "PageUp",
-            "x": 18.562874251497004,
-            "y": 9.397163120567376,
+            "keyName": "KeyC",
+            "x": 25.068493150684933,
+            "y": 10.826771653543307,
             "width": 9.6,
             "height": 7,
             "shape": "square",
@@ -1923,150 +2471,13 @@
               5,
               5
             ],
-            "label": "L1"
-          }
-        ],
-        [
-          {
-            "keyCode": "Digit4",
-            "emoji": "▶️",
-            "label": "start",
-            "color": [
-              255,
-              0,
-              0
-            ],
-            "x": 55.234375,
-            "y": 38.333333333333336,
-            "height": 7,
-            "width": 5.1
+            "label": "LeftBumper",
+            "keyCode": 67
           },
           {
-            "keyCode": "Digit8",
-            "color": [
-              255,
-              0,
-              0
-            ],
-            "label": "select",
-            "x": 38.75,
-            "y": 38.611111111111114,
-            "width": 5.4,
-            "shape": "square",
-            "height": 5.7
-          },
-          {
-            "keyCode": "KeyE",
-            "x": 73.25349301397206,
-            "y": 23.04964539007092,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              155,
-              233,
-              221
-            ],
-            "label": "triangle"
-          },
-          {
-            "keyCode": "Digit0",
-            "x": 80.23952095808383,
-            "y": 35.1063829787234,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              236,
-              165,
-              172
-            ],
-            "label": "circle"
-          },
-          {
-            "keyCode": "KeyM",
-            "x": 72.85429141716567,
-            "y": 47.16312056737589,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              136,
-              170,
-              205
-            ],
-            "label": "x"
-          },
-          {
-            "keyCode": "KeyB",
-            "x": 65.6686626746507,
-            "y": 35.785,
-            "width": 6.3,
-            "height": 10.8,
-            "color": [
-              236,
-              197,
-              224
-            ],
-            "label": "square"
-          },
-          {
-            "keyCode": "KeyY",
-            "x": 20.958083832335326,
-            "y": 28.723404255319153,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "up"
-          },
-          {
-            "keyCode": "KeyN",
-            "x": 21.35728542914172,
-            "y": 44.148936170212764,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "down"
-          },
-          {
-            "keyCode": "Period",
-            "x": 16.46706586826347,
-            "y": 37.234042553191486,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "left"
-          },
-          {
-            "keyCode": "KeyU",
-            "x": 25.948103792415168,
-            "y": 36.702127659574465,
-            "width": 4.1,
-            "height": 9.1,
-            "shape": "square",
-            "color": [
-              5,
-              5,
-              5
-            ],
-            "label": "right"
-          },
-          {
-            "keyCode": "Home",
-            "x": 70.95808383233533,
-            "y": 8.687943262411348,
+            "keyName": "KeyX",
+            "x": 65.34246575342466,
+            "y": 2.098,
             "width": 9.6,
             "height": 7,
             "shape": "square",
@@ -2075,12 +2486,13 @@
               5,
               5
             ],
-            "label": "R1"
+            "label": "RightTrigger",
+            "keyCode": 88
           },
           {
-            "keyCode": "KeyH",
-            "x": 18.562874251497004,
-            "y": 9.397163120567376,
+            "keyName": "KeyV",
+            "x": 23.972602739726025,
+            "y": 1.968503937007874,
             "width": 9.6,
             "height": 7,
             "shape": "square",
@@ -2089,7 +2501,8 @@
               5,
               5
             ],
-            "label": "L1"
+            "label": "LeftTrigger",
+            "keyCode": 86
           }
         ]
       ]

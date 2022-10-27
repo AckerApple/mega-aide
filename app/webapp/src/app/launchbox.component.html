@@ -62,6 +62,10 @@
     [class.bg-energized] = "bigBox.viewBigBoxSettings"
   >⚙️ view BigBox settings</button>
 
+  <a *ngIf="session.launchBoxXarcadeDir" type="button" class="flex1"
+    routerLink="/inputs/xarcade-xinput"
+  >🎮 ➡️ ⌨️ Xarcade Xinput</a>
+
   <button type="button" *ngIf="configHasChanges" class="bg-balanced flex1"
     (click)="saveFiles()"
     [class.bg-energized] = "bigBox.viewBigBoxSettings"

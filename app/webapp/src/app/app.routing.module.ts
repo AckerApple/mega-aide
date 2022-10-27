@@ -1,60 +1,105 @@
 import { NgModule } from '@angular/core'
 import { MenuComponent } from './menu.component'
-import { RouterModule, Routes } from '@angular/router'
+import { Route, RouterModule, Routes } from '@angular/router'
 import { DebugComponent } from './debug.component'
 import { LaunchBoxComponent } from './launchbox.component'
 import { XarcadeXinputComponent } from './xarcade-xinput.component'
 import { XinputMappingComponent } from './xinput-mapping.component'
 
-import { KeyboardComponent } from './keyboard.component'
+import { PlatformsComponent } from './inputs/platforms.component'
+import { PlatformComponent } from './inputs/platform.component'
 import { InputsComponent } from './inputs.component'
 import { GamepadsComponent } from './gamepads.component'
+import { InputDebugComponent } from './inputs/input-debug.component'
 
-export const menu = [
+export const launchBox: Route = {
+  path: 'launchbox',
+  title: 'LaunchBox',
+  component: LaunchBoxComponent,
+  data: {
+    emoji: '🧰',
+    description: 'Useful utilities to assist with LaunchBox',
+    wrapClass: 'bg-black radius-25 pad-4x'
+  }
+}
+
+export const debugReport: Route = {
+  path: 'debug-report',
+  title: 'debug report',
+  data: {
+    emoji: '🐞',
+  },
+  component: DebugComponent,
+}
+
+export const inputs: Route = {
+  path: 'inputs',
+  title: 'Inputs',
+  data: {
+    emoji: '⌨️ 🎮 🕹',
+  },
+  component: InputsComponent,
+}
+
+export const xArcade: Route = {
+  path: 'inputs/xarcade-xinput',
+  component: XarcadeXinputComponent,
+  title: 'XArcade XInput',
+  data: {
+    emoji: '🎮 ➡️ ⌨️',
+    description: 'Useful utilities to assist with gamepad to keyboard mappings',
+    wrapClass: 'bg-black radius-25 pad-4x'
+  }
+}
+
+export const platforms: Route = {
+  path: 'inputs/platforms',
+  title: 'platform mappings',
+  data: {
+    emoji: '🗺',
+  },
+  component: PlatformsComponent,
+}
+
+export const gamepads: Route = {
+  path: 'inputs/gamepads',
+  title: 'Gamepads',
+  data: {
+    emoji: '🎮',
+  },
+  component: GamepadsComponent,
+}
+
+export const debugKeyboard: Route = {
+  path: 'inputs/debug',
+  title: 'Debug Keyboard',
+  data: {
+    emoji: '⌨️ 🎮 🐞',
+  },
+  component: InputDebugComponent,
+}
+
+export const menu: Route[] = [
   {
-    name: 'menu',
     path: 'menu',
+    title: 'main menu',
+    data: {
+      emoji: '⠇',
+    },
     component: MenuComponent,
-  },{
-    name: 'debug-report',
-    path: 'debug-report',
-    component: DebugComponent,
-  },{
-    name: 'launch-box',
-    path: 'launch-box',
-    component: LaunchBoxComponent,
+  },debugReport, launchBox, inputs,platforms,{
+    path: 'inputs/platforms/:platform',
+    title: 'platform editor',
     data: {
-      title: '🧰 LaunchBox tools',
-      description: 'Useful utilities to assist with LaunchBox',
-      wrapClass: 'bg-black radius-25 pad-4x'
-    }
-  },{
-    name: 'inputs',
-    path: 'inputs',
-    component: InputsComponent,
-  },{
-    name: 'inputs/keyboard',
-    path: 'inputs/keyboard',
-    component: KeyboardComponent,
-  },{
-    name: 'inputs/gamepads',
-    path: 'inputs/gamepads',
-    component: GamepadsComponent,
-  },{
-    name: 'xarcade-xinput',
-    path: 'xarcade-xinput',
-    component: XarcadeXinputComponent,
-    data: {
-      title: '🎮 ➡️ ⌨️ XArcade XInput',
-      description: 'Useful utilities to assist with gamepad to keyboard mappings',
-      wrapClass: 'bg-black radius-25 pad-4x'
-    }
-  },{
-    name: 'xarcade-xinput-mapping',
-    path: 'xarcade-xinput/mapping/:fileName',
+      emoji: '⚙️',
+    },
+    component: PlatformComponent,
+  },gamepads,debugKeyboard,xArcade,{
+    path: 'inputs/xarcade-xinput/mapping/:fileName',
     component: XinputMappingComponent,
+    title: 'XArcade XInput mapping file',
     data: {
-      title: '🎮 ➡️ ⌨️ XArcade XInput mapping file',
+      emoji: '🎮 ➡️ ⌨️',
       description: 'A file dedicated to mapping keyboard inputs into gamepad buttons',
       wrapClass: 'bg-black radius-25 pad-4x'
     }

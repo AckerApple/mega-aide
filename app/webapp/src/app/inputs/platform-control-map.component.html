@@ -1,0 +1,35 @@
+<div class="inline-block pos-rel">
+  <!--draw button-->
+  <a *ngFor="let control of controls; let index = index"
+    draggable="true" class="pos-abs flex-center flex-valign-center border"
+    [ngClass]="lastDrag?.control === control || controlListen === control ? 'border-energized border-4' : 'border'"
+    [class.radius-half]="!control.shape || control.shape==='circle'"
+    (click)="controlClick.emit(toggleLastDrag(control,$event))"
+    (dragstart)="setLastDrag(control, $event)"
+    [style.top.%]="control.y"
+    [style.left.%]="control.x"
+    [style.width.%] = "control.width || 4"
+    [style.height.%] = "control.height || 4"
+    [title] = "control.label+' - keyCode:' + remapped[index].keyCode"
+    style="text-shadow:1px 1px 1px #000;text-decoration: none;"
+    [style.font-size.%]="(52 + controllerSize) - ((useLabels ? control.label : control.keyName) || '').length * 3"
+    [class.opacity-80]="!pressedObject[$any(remapped[index].keyCode)] && !buttonsObject[$any(control.gamepadCode)]"
+    [style.background-color]="pressedObject[$any(remapped[index].keyCode)] || buttonsObject[$any(control.gamepadCode)] ? 'rgba(0, 255, 255, 1)' : (control.color ? 'rgba(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ', 1)' : 'rgba(255,255,255,1)')"
+
+    startByEvent="contextmenu"
+    [(nextKey)]="control.keyName"
+    (nextKeyListeningChange)="controlListenChange.emit(controlListen=$event ? control : undefined)"
+
+    [(nextButton)]="control.gamepadCode"
+    [(nextAxis)]="control.gamepadCode"
+    (nextButtonListeningChange)="controlListenChange.emit(controlListen=$event ? control : undefined)"
+  >
+    <ng-container *ngIf="controlListen === control; else label">press key</ng-container>
+    <ng-template #label>{{ useLabels ? control.label : remapped[index].keyName }}</ng-template>
+  </a>
+  <img [src]="platform.url" alt="" border="0"
+    [style.height.rem]="controllerSize"
+    (drop)="dropLastDrag($event)"
+    (dragover)="$event.preventDefault();$event.stopPropagation()"
+  />
+</div>

@@ -4,6 +4,7 @@
   "description": "Things learned and things to remember for my Megacade",
   "scripts": {
     "start:webapp": "cd app && npm run start:webapp",
+    "clear:webapp": "cd app && npm run clear:webapp",
     "save": "git add . && git commit -m \"update\" && git push",
     "deploy": "npm run save"
   },

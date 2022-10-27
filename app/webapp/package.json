@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "ng": "ng",
+    "clear": "rm -rf .angular/cache",
     "start": "ng serve --host 0.0.0.0 --disable-host-check",
     "watch": "npm run start",
     "build": "ng build && npm run build:copy",

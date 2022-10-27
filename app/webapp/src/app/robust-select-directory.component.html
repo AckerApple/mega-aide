@@ -1,5 +1,7 @@
-<input class="invisible pos-abs" type="file" directory accept=".folder"
-  id="robustFolderPicker" webkitdirectory (change)="readInputDirectory($event.target)"
+<input class="invisible pos-abs" type="file" directory accept=".folder" webkitdirectory
+  [id]="'robustFolderPicker-' + label"
+  [name]="'robustFolderPicker-' + label"
+  (change)="readInputDirectory($event.target)"
 />
 
 <div class="text-right">
