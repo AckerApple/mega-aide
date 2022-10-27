@@ -28,6 +28,7 @@ import { PlatformControlMapComponent } from './inputs/platform-control-map.compo
 import { PlatformVisualFiltersComponent } from './inputs/platform-visual-filters.component'
 import { PlatformFiltersDirective } from './inputs/platform-filters.directive'
 import { MenuStackListComponent } from './menu-stack-list.component'
+import { ExitComponent } from './exit.component'
 
 @NgModule({
   declarations: [
@@ -50,7 +51,8 @@ import { MenuStackListComponent } from './menu-stack-list.component'
     XinputMappingComponent,
     PlatformVisualFiltersComponent,
     PlatformFiltersDirective,
-    MenuStackListComponent
+    MenuStackListComponent,
+    ExitComponent
   ],
   imports: [
     BrowserModule,

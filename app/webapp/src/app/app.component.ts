@@ -27,6 +27,10 @@ export class AppComponent {
     const targetPath = currentPathing.join('/')
     console.log('router', router.config.find(route => route.path === targetPath))*/
   }
+
+  close() {
+    Neutralino.app.exit()
+  }
 }
 
 export function openAnchor(event: Event) {

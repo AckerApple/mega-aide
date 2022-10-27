@@ -2,14 +2,24 @@
 <div class="toolbar" role="banner">
   <div class="flex-apart pad-h-xs">
     <h1>🕹 Mega-aide</h1>
-    <sup>v{{ version }}</sup>
+    <div>
+      <div class="child-margin-left child-margin-top-xs flex-wrap flex-valign-center">
+        <sup>v{{ version }}</sup>
+        <div *ngIf="session.os" title="quit">
+          <a class="radius-half width-20 height-20 flex-valign-center flex-center pos-rel"
+            (click)="close()" style="background-color: red;"
+          ></a>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="child-margin-v-xxs child-margin-h-xs text-smx border-top border-white flex-valign-center flex-wrap" style="background-color: rgb(5, 46, 124);">
     <a *ngIf="routeState.RouteWatchReporter.$history.length > 1"
-      [title]="'history length ' + routeState.RouteWatchReporter.$history.length"
+      [title]="'back upto ' + routeState.RouteWatchReporter.$history.length + ' times'"
       (click)="routeState.goBackOrUp()"
     >⬅️</a>
     <a *ngIf="routeState.current.config?.path !== 'menu'"
+      title="navigate up"
       (click)="routeState.goUp()"
     >⬆️</a>
     <ng-container *ngFor="let item of routeState.crumbArray;let index=index">

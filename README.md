@@ -16,7 +16,8 @@ Things learned and things to remember for my Megacade
   - [🔀 Change default emulator used](#-change-default-emulator-used)
   - [⠇ Menus and side effect during game play](#-menus-and-side-effect-during-game-play)
   - [🏃 Game plays too fast](#-game-plays-too-fast)
-  - [☄️ Dragonball z opens in small window](#-dragonball-z-opens-in-small-window)
+  - [☄️ Dragonball Fighterz Issues](#-dragonball-fighterz-issues)
+  - [🕹 XArcade XInput no player one][#-xarcade-xinput-no-player-one]
   - [Atari 5200 blue screen](#atari-5200-blue-screen)
   - [🧠 Fix attract mode out of memory issue](#-fix-attract-mode-out-of-memory-issue)
   - [💡 Fix skipped lights during attract mode](#-fix-skipped-lights-during-attract-mode)
@@ -213,12 +214,29 @@ Most emulators have hotkeys. To fix odd menus and action from occurring, change 
 > Above keywords: speed pace twice too fast framerate nvidia aliens batman tecnoparrot ui
 
 
-<a id="-dragonball-z-opens-in-small-window"></a>
-### ☄️ Dragonball Z opens in small window
+<a id="-dragonball-fighterz-issues"></a>
+### ☄️ Dragonball FighterZ Issues
+
+**🪟 If game opens in small window**
 
 Use the in game main menu but make sure you then navigate into the game to have the settings saved.
 
 The in game options menu does in fact work, however if you just exit game immediately, it does not save. I had to edit the options, go one step in the game, I then set the graphic options again on the map area options menu, and then I backed out of the game (not a hard exit). And now the setting seems to go full screen on open!
+
+**🕹 If game buttons used to work but now it seems arcade console buttons have stopped working**
+
+- You can only get past the "press any button" screen with a Player one button
+- If XArcade XInput is being used, it maybe conflicting with another controller that has gained priority
+  - See the section [🕹 XArcade XInput no player one](-xarcade-xinput-no-player-one)
+
+<a id="-xarcade-xinput-no-player-one"></a>
+### 🕹 XArcade XInput no player one
+
+If XArcade XInput appears to be working just not correctly:
+
+- It's possible another device is gaining priority over XInput
+  - Another device maybe acting as Player 1 and so this pushes XInput to be player 2-5 instead of 1-4
+  - Unplug other devices and try again
 
 <a id="atari-5200-blue-screen"></a>
 ### Atari 5200 blue screen

@@ -4,13 +4,13 @@
       routerLinkActive="bg-energized"
       [routerLink]="'/' + item.path"
     >
-      <span>
+      <span class="pos-rel">
         &nbsp;
-        <span class="pos-abs">
+        <span class="pos-abs top-0 nowrap">
           {{ $any(item.data)['emoji'] || '&nbsp;' }}
         </span>
       </span>
-      <span class="flex-1 text-center">
+      <span class="flex-1 text-center pad-h-2x">
         {{ item.title || $any(item.data)['title'] | titlecase }}
       </span>
     </a>

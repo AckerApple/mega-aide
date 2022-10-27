@@ -1,34 +1,39 @@
-<div *ngIf="!(gamepads | keyvalue).length" class="pad bg-calm">
+<div *ngIf="!gamepads.length" class="pad bg-calm">
   Press any button on a gamepad...
 </div>
 
 <div class="flex-wrap child-margin-xxs">
-  <div *ngFor="let gamepad of gamepads | keyvalue" class="flex1 bg-grey">
-    <h3 class="bg-dark margin-0 pad-xs">Gamepad {{ gamepad.key }}</h3>
-    <div class="pad-xxs">
-      <div>{{ gamepad.value.id }}</div>
-      <div>
-        MAPPING: {{ gamepad.value.mapping || 'unknown' }}
+  <div *ngFor="let gamepad of gamepads; let index = index" class="flex1 bg-grey">
+    <h3 class="bg-dark margin-0 pad-xs">Gamepad {{ gamepad?.index || index }}</h3>
+    <ng-container *ngIf="gamepad; else noGamepad">
+      <div class="pad-xxs">
+        <div>{{ gamepad.id }}</div>
+        <div>
+          MAPPING: {{ gamepad.mapping || 'unknown' }}
+        </div>
+        <strong>AXES</strong>
+        <div class="flex-wrap child-flex1 child-margin-xxs">
+          <span class="pos-rel" *ngFor="let axis of gamepad.axes; let index=index">
+            <small class="pos-abs left-0 top-0 opacity-60 pad-xs text-xxs">{{index}}</small>
+            <a class="block radius-10 pad-xxs bg-positive text-center">
+              {{ axis | number }}
+            </a>
+          </span>
+        </div>
+        <strong>BUTTONS: {{ gamepad.buttons.length }}</strong>
+        <div class="flex-wrap child-flex-1 child-margin-xxs">
+          <a class="radius-10 pad-xxs bg-positive text-center" *ngFor="let button of gamepad.buttons; let index = index"
+            [class.bg-energized]="button.pressed"
+            [class.bg-calm]="button.touched"
+          >{{ index }}</a>
+        </div>
+        <div>
+          vibrationActuator: {{ $any(gamepad).vibrationActuator }}
+        </div>
       </div>
-      <strong>AXES</strong>
-      <div class="flex-wrap child-flex1 child-margin-xxs">
-        <span class="pos-rel" *ngFor="let axis of gamepad.value.axes; let index=index">
-          <small class="pos-abs left-0 top-0 opacity-60 pad-xs text-xxs">{{index}}</small>
-          <a class="block radius-10 pad-xxs bg-positive text-center">
-            {{ axis | number }}
-          </a>
-        </span>
-      </div>
-      <strong>BUTTONS: {{ gamepad.value.buttons.length }}</strong>
-      <div class="flex-wrap child-flex-1 child-margin-xxs">
-        <a class="radius-10 pad-xxs bg-positive text-center" *ngFor="let button of gamepad.value.buttons; let index = index"
-          [class.bg-energized]="button.pressed"
-          [class.bg-calm]="button.touched"
-        >{{ index }}</a>
-      </div>
-      <div>
-        vibrationActuator: {{ $any(gamepad.value).vibrationActuator }}
-      </div>
-    </div>
+    </ng-container>
+    <ng-template #noGamepad>
+      <div class="text-center pad">no details</div>
+    </ng-template>
   </div>
 </div>

@@ -1,6 +1,6 @@
 {
   "name": "web-app",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "scripts": {
     "ng": "ng",
     "clear": "rm -rf .angular/cache",
@@ -9,7 +9,8 @@
     "build": "ng build && npm run build:copy",
     "build:copy": "rm -rf ../resources/webapp && cp -r ./dist/webapp ../resources/webapp",
     "build:watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "patch:version": "npm --no-git-tag-version version patch"
   },
   "private": true,
   "dependencies": {

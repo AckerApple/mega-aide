@@ -1,13 +1,16 @@
 {
   "name": "megacade",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Things learned and things to remember for my Megacade",
   "scripts": {
     "start:webapp": "cd app && npm run start:webapp",
     "clear:webapp": "cd app && npm run clear:webapp",
-    "save": "git add . && git commit -m \"update\" && git push",
+    "save": "npm run patch:versions && git add . && git commit -m \"update\" && git push",
     "build": "cd app && npm run build",
-    "deploy": "npm run build && npm run save"
+    "deploy": "npm run build && npm run save",
+    "patch:versions": "npm run patch:version && npm run patch:webapp:version",
+    "patch:version": "npm --no-git-tag-version version patch",
+    "patch:webapp:version": "cd app/webapp && npm run patch:version"
   },
   "repository": {
     "type": "git",

@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core'
 import { MenuComponent } from './menu.component'
+import { ExitComponent } from './exit.component'
 import { Route, RouterModule, Routes } from '@angular/router'
 import { DebugComponent } from './debug.component'
 import { LaunchBoxComponent } from './launchbox.component'
@@ -72,11 +73,20 @@ export const gamepads: Route = {
 
 export const debugKeyboard: Route = {
   path: 'inputs/debug',
-  title: 'Debug Keyboard',
+  title: 'Keyboard',
   data: {
-    emoji: '⌨️ 🎮 🐞',
+    emoji: '⌨️',
   },
   component: InputDebugComponent,
+}
+
+export const exit: Route = {
+  path: 'exit',
+  title: 'exit',
+  data: {
+    emoji: '❌',
+  },
+  component: ExitComponent,
 }
 
 export const menu: Route[] = [
@@ -87,7 +97,7 @@ export const menu: Route[] = [
       emoji: '⠇',
     },
     component: MenuComponent,
-  },debugReport, launchBox, inputs,platforms,{
+  },exit,debugReport, launchBox, inputs,platforms,{
     path: 'inputs/platforms/:platform',
     title: 'platform editor',
     data: {
