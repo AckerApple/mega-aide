@@ -407,6 +407,8 @@ This game appears to disable the mouse when a gamepad/controller is dedicated as
     - click "Disable Device"
     - Done. The GUN4IR will still work as a mouse/keyboard but no longer as a gamepad
 
+Resources: [steamcommunity-issue-1](https://steamcommunity.com/app/1016120/discussions/0/3164316851906198915/) [steamcommunity-issue-2](https://steamcommunity.com/app/695290/discussions/0/1741102632991355043/)
+
 <a id="-dragonball-fighterz"></a>
 #### ☄️ Dragonball FighterZ
 
