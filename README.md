@@ -335,7 +335,7 @@ When Megacade has lighted buttons/joysticks controlled by LEDBlinky and it sits 
 ### 🤖 Individual Emulators
 
 <a id="yuzu"></a>
-### () Yuzu
+### Yuzu
 
 Yuzu does not understand the difference between LShift and RShift nor RCtrl and LCtrl, its just "CTRL" and "SHIFT". This often will result in Player 3 sharing buttons with Player 1, when playing from an arcade panel with buttons emulated as a keyboard.
 
