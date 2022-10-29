@@ -16,7 +16,6 @@ Things learned and things to remember for my Megacade
   - [🔀 Change default emulator used](#-change-default-emulator-used)
   - [⠇ Menus and side effect during game play](#-menus-and-side-effect-during-game-play)
   - [🏃 Game plays too fast](#-game-plays-too-fast)
-  - [☄️ Dragonball Fighterz Issues](#-dragonball-fighterz-issues)
   - [🕹 XArcade XInput no player one][#-xarcade-xinput-no-player-one]
   - [Atari 5200 blue screen](#atari-5200-blue-screen)
   - [🧠 Fix attract mode out of memory issue](#-fix-attract-mode-out-of-memory-issue)
@@ -27,10 +26,12 @@ Things learned and things to remember for my Megacade
 - [🤖 Individual Emulators](#-individual-emulators)
   - [() Yuzu](#yuzu)
 - [🧩 Individual games](#-individual-games)
-  - [🗡 The Legend of Zelda Links Awakening](#-the-legend-of-zelda-links-awakening)
-  - [💪 Super Smash Bros](#-super-smash-bros)
-  - [⛳️ Golden Tee Complete 2006](#-golden-tee-complete-2006)
-  - [🦌 Buck hunter arcade](#-buck-hunter-arcade)
+  - [🗡 The Legend of Zelda Links Awakening](#-individual-games)
+  - [💪 Super Smash Bros](#-individual-games)
+  - [⛳️ Golden Tee Complete 2006](#-individual-games)
+  - [🦌 Buck hunter arcade](#-individual-games)
+  - [⛳️ 2K21 PGA Golf](#-2K21-PGA-Golf)
+  - [☄️ Dragonball Fighterz](#-dragonball-fighterz)
   - [🍄 Mario 64](#-mario-64)
   - [🧟‍♀️ House of the Dead remake](#-🧟‍♀️-house-of-the-dead-remake)
   - [🟡 Baby PAC-man](#-baby-pac-man)
@@ -213,22 +214,6 @@ Most emulators have hotkeys. To fix odd menus and action from occurring, change 
 
 > Above keywords: speed pace twice too fast framerate nvidia aliens batman tecnoparrot ui
 
-
-<a id="-dragonball-fighterz-issues"></a>
-### ☄️ Dragonball FighterZ Issues
-
-**🪟 If game opens in small window**
-
-Use the in game main menu but make sure you then navigate into the game to have the settings saved.
-
-The in game options menu does in fact work, however if you just exit game immediately, it does not save. I had to edit the options, go one step in the game, I then set the graphic options again on the map area options menu, and then I backed out of the game (not a hard exit). And now the setting seems to go full screen on open!
-
-**🕹 If game buttons used to work but now it seems arcade console buttons have stopped working**
-
-- You can only get past the "press any button" screen with a Player one button
-- If XArcade XInput is being used, it maybe conflicting with another controller that has gained priority
-  - See the section [🕹 XArcade XInput no player one](-xarcade-xinput-no-player-one)
-
 <a id="-xarcade-xinput-no-player-one"></a>
 ### 🕹 XArcade XInput no player one
 
@@ -397,6 +382,45 @@ Some games do not come on EHA Omega drive or some are outdated. Here are some Ac
   - Omega drive allows 1 Player as it comes with a game patch
   - [more info and patches here](https://sindenlightgun.miraheze.org/wiki/Big_Buck_Hunter_Arcade)
 
+
+<a id="-2K21-PGA-Golf"></a>
+
+#### ⛳️ 2K21 PGA Golf
+
+**If mouse will not click menu items**
+
+This game appears to disable the mouse when a gamepad/controller is dedicated as present
+
+- The **quickiest fix** appears to be to unplug other gamepads
+  - Unplug devices that register as or similar to "HID-compliant game controller"
+  - The game seems to give dedicated priority to gamepads over top of mouse devices
+- For GUN4IR owners, if unplugging guns works, then try the following longterm solution:
+  - 👀 This solution disables only GUN4IR as a gamepad but keeps it running as a mouse/keyboard
+  - Goto "Devices and Printers"
+    - Control Panel > Hardware and Sound "View devices and printers"
+  - Look for "Devices" top section where you should see atleast "GUN4IR Pro Micro P1"
+  - Perform the following on all GUN4IR devices
+    - right click > properties
+    - goto hardware tab
+    - In "Device Functions:" area regular click on "HID-compliant game controller" to highlight
+    - click "Properties"
+    - click "Disable Device"
+    - Done. The GUN4IR will still work as a mouse/keyboard but no longer as a gamepad
+
+<a id="-dragonball-fighterz"></a>
+#### ☄️ Dragonball FighterZ
+
+**🪟 If game opens in small window**
+
+Use the in game main menu but make sure you then navigate into the game to have the settings saved.
+
+The in game options menu does in fact work, however if you just exit game immediately, it does not save. I had to edit the options, go one step in the game, I then set the graphic options again on the map area options menu, and then I backed out of the game (not a hard exit). And now the setting seems to go full screen on open!
+
+**🕹 If game buttons used to work but now it seems arcade console buttons have stopped working**
+
+- You can only get past the "press any button" screen with a Player one button
+- If XArcade XInput is being used, it maybe conflicting with another controller that has gained priority
+  - See the section [🕹 XArcade XInput no player one](-xarcade-xinput-no-player-one)
 
 <a id="-mario-64"></a>
 #### 🍄 Mario 64

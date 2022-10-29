@@ -7,10 +7,14 @@ export interface LastButtons {
   [buttonOrAxis: LastButton]: {
     id: string // gamepad id
     code: LastButton
+    gamepadIndex: number
   }
 }
 
 @Injectable() export class LastButtonsProvider {
+  gamepads: EditableGamepad[] = editableGamepads( navigator.getGamepads().filter(x => x) as Gamepad[] )
+  activeGamepads: EditableGamepad[] = editableGamepads( navigator.getGamepads().filter(x => x) as Gamepad[] )
+  
   pressedObject: LastButtons = {} // currently pressed in object format
   pressed: LastButton[] = [] // actively pressed
   pastPressArray: LastButton[] = [] // last 5
@@ -21,6 +25,7 @@ export interface LastButtons {
 
   listening: boolean = false
   listeningChange: EventEmitter<boolean> = new EventEmitter()
+  gameIndex?: number
 
   ngOnDestroy(){
     this.removeListeners()
@@ -36,56 +41,90 @@ export interface LastButtons {
 
   startListening() {
     clearInterval( this.buttonListenInterval )
-    const gamepadsBeforeStart: EditableGamepad[] = editableGamepads(getReadyGamepads())
+    this.gamepads.length = 0
+    this.activeGamepads.length = 0
     
-    this.buttonListenInterval = setInterval(() => {
-      navigator.getGamepads().forEach(gamepad => {
-        if ( !gamepad ) {
-          return
-        }
-
-        let match = gamepadsBeforeStart.find(before => before.id === gamepad.id)
-        
-        if ( !match ) {
-          match = editableGamepad(gamepad)
-          gamepadsBeforeStart.push(match) // it's a new gamepad
-        } else if ( match.timestamp === gamepad.timestamp ) {
-          return // has not changed
-        }
-
-        // detect by button press
-        gamepad.buttons.forEach((button, index) => {
-          if ( button.pressed ) {
-            this.pressButton(index, gamepad)
-          } else {
-            this.depress(index, gamepad)
-          }
-        })
-
-        // detect by axis press
-        gamepad.axes.forEach((xy, index) => {
-          const negative = gamepad.axes[index] === -1
-          const axis = (negative ? '-' : '+') + index
-          const opposite = (negative ? '+' : '-') + index
-          const pressed = xy === 1 || xy === -1
-
-          if ( pressed ) {
-            this.pressAxis(axis, gamepad)
-            this.depress(opposite, gamepad)
-          } else {
-            this.depress(axis, gamepad)
-            this.depress(opposite, gamepad)
-          }
-
-          if ( negative ) {}
-        })
-
-        // update ongoing gamepad record
-        match.timestamp = gamepad.timestamp
-      })
-    }, 50)
+    this.buttonListenInterval = setInterval(() =>
+      this.evaluateState()
+    , 50)
 
     this.listeningChange.emit(this.listening=true)
+  }
+
+  evaluateState() {
+    const navGamepads = getReadyGamepads()
+      
+    navGamepads.filter(gamepad => {
+      if ( !gamepad ) {
+        return
+      }
+
+      let matchIndex = this.activeGamepads.findIndex(before => before.id === gamepad.id)
+      
+      if ( matchIndex < 0 ) {
+        matchIndex = this.addGamepad(gamepad)
+        
+        if ( matchIndex < 0 ) {
+          return // it was not meant to be added (maybe filtered)
+        }
+      } else if ( this.activeGamepads[matchIndex].timestamp === gamepad.timestamp ) {
+        return gamepad // has not changed
+      }
+
+      // detect by button press
+      gamepad.buttons.forEach((button, index) => {
+        if ( button.pressed ) {
+          this.pressButton(index, gamepad)
+        } else {
+          this.depress(index, gamepad)
+        }
+      })
+
+      // detect by axis press
+      gamepad.axes.forEach((xy, index) => {
+        const value = gamepad.axes[index]
+
+        if ( this.activeGamepads[matchIndex].axes[index] === value ) {
+          return // break out, it's the same value as before
+        }
+
+        const negative = value === -1
+        const axis = (negative ? '-' : '+') + index
+        const opposite = (negative ? '+' : '-') + index
+        const pressed = xy === 1 || xy === -1
+
+        if ( pressed ) {
+          this.pressAxis(axis, gamepad)
+          this.depress(opposite, gamepad)
+        } else {
+          this.depress(axis, gamepad)
+          this.depress(opposite, gamepad)
+        }
+      })
+
+      // update ongoing gamepad record
+      Object.assign(this.activeGamepads[matchIndex], editableGamepad(gamepad))
+
+      return gamepad
+    }) as Gamepad[]
+  }
+
+  addGamepad(
+    gamepad: Gamepad
+  ): number {
+    if ( !this.gamepads.find(x => x.id === gamepad.id && x.index === gamepad.index) ) {
+      this.gamepads.push(editableGamepad(gamepad)) // update recording of all gamepads
+    }
+
+    if ( this.gameIndex !== undefined && gamepad.index !== this.gameIndex ) {
+      return -1 // ignore, we only focus on one controller
+    }
+
+    const match = editableGamepad(gamepad)
+    match.axes = [] // ensure fresh access that can't be compared
+    const matchIndex = this.activeGamepads.length
+    this.activeGamepads.push(match) // it's a new gamepad
+    return matchIndex
   }
   
   pressAxis(axis: string, gamepad: Gamepad) {
@@ -103,7 +142,9 @@ export interface LastButtons {
     gamepad: Gamepad
   ) {
     this.pressedObject[code] = {
-      code, id: gamepad.id,
+      code,
+      id: gamepad.id,
+      gamepadIndex: gamepad.index
     }
 
     if ( !this.pastPressArray.includes(code) ) {
@@ -135,8 +176,30 @@ export interface LastButtons {
     delete this.buttonListenInterval
     this.listeningChange.emit( this.listening=false )
   }
-}
 
+  setGameIndex(gameIndex?: number | string) {
+    const num = Number(gameIndex)
+
+    if ( num === -1 ) {
+      delete this.gameIndex
+      return
+    }
+    
+    Object.entries(this.pressedObject).forEach(([key, value]) => {
+      if ( value.gamepadIndex !== num ) {
+        delete this.pressedObject[key]
+      }
+    })
+    
+    this.pressed.length = 0    
+    this.gameIndex = num
+
+    const limited = this.gamepads.filter(gamepad => gamepad.index === num)
+    this.activeGamepads.length = 0
+    this.activeGamepads.push(...limited)
+    console.log('this.activeGamepads', num, typeof num, this.activeGamepads, this.gamepads)
+  }
+}
 
 function editableGamepads(gamepads: Gamepad[]): EditableGamepad[] {
   return gamepads.map(gamepad => editableGamepad(gamepad))
@@ -145,7 +208,7 @@ function editableGamepads(gamepads: Gamepad[]): EditableGamepad[] {
 function editableGamepad(gamepad: Gamepad): EditableGamepad {
   // return JSON.parse(JSON.stringify(getReadyGamepads()))
   return {
-    axes: gamepad.axes,
+    axes: gamepad.axes.map(x => x), // convert from readonly
     buttons: gamepad.buttons,
     connected: gamepad.connected,
     hapticActuators: gamepad.hapticActuators,
@@ -156,4 +219,7 @@ function editableGamepad(gamepad: Gamepad): EditableGamepad {
   }
 }
 
-type EditableGamepad = Omit<Gamepad, 'timestamp'> & {timestamp: number}
+type EditableGamepad = Omit<Gamepad, 'timestamp,axes'> & {
+  timestamp: number
+  axes: number[]
+}

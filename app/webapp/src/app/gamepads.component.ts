@@ -5,14 +5,13 @@ import { Component } from '@angular/core'
 })
 export class GamepadsComponent {
   // gamepads: Record<string, Gamepad> = {}
-  gamepads: (null | Gamepad)[] = []
+  gamepads: Gamepad[] = []
   eventHandlers: {eventName: keyof WindowEventMap, handler: any}[] = []
   buttonWatch?: any
 
   ngOnInit(){
     // set existing not null controllers
-    getReadyGamepads().forEach((gamepad, index) => this.gamepadHandler(gamepad, true, index))
-
+    getReadyGamepads().forEach((gamepad, index) => this.gamepadHandler(gamepad, true, index))    
     this.subscribeToWindow()
     this.listenToButtons()
   }
@@ -25,14 +24,14 @@ export class GamepadsComponent {
   listenToButtons() {
     this.buttonWatch = setInterval(() => {
       const gamepads = getReadyGamepads()
-      gamepads.forEach((gamepad, index) => {
-
-        const match = this.gamepads[index]
-        if ( !match ) {
+      
+      gamepads.forEach(gamepad => {
+        const index = this.gamepads.findIndex(x => x.index === gamepad.index && x.id === gamepad.id)
+        if ( index < 0 ) {
           return // not found (maybe we should connect?)
         }
 
-        if ( match.timestamp === gamepad.timestamp ) {
+        if ( this.gamepads[index].timestamp === gamepad.timestamp ) {
           return // has not changed
         }
 
@@ -57,24 +56,30 @@ export class GamepadsComponent {
     connecting: boolean,
     index?: number,
   ): Gamepad {
+    if ( !gamepad ) {
+      return gamepad
+    }
+
     index = index === undefined ? gamepad?.index : index
     if (connecting) {
       // check if we already have and update
       const existingEntry = this.gamepads.findIndex(value => value && value.id === gamepad.id && value.index === gamepad.index)
       if ( existingEntry >= 0) {
-        delete this.gamepads[ existingEntry ]
+        this.gamepads[ existingEntry ] = gamepad
+        return gamepad
       }
-
-      this.gamepads[index] = gamepad
+      
+      this.gamepads.push(gamepad)
       return gamepad
     }
     
-    delete this.gamepads[index]
+    this.gamepads.splice(index, 1) // not connecting, lets remove it
     return gamepad
   }  
 }
 
 export function getReadyGamepads(): Gamepad[] {
-  return navigator.getGamepads() as Gamepad[]
-  // return navigator.getGamepads().filter(gamepad => gamepad) as Gamepad[]
+  const gamepads = navigator.getGamepads().filter(gamepad => gamepad) as Gamepad[]
+  // const gamepads = navigator.getGamepads() as Gamepad[]
+  return gamepads
 }

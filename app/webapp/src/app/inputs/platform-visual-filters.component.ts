@@ -7,8 +7,4 @@ import { PlatformFiltersDirective } from './platform-filters.directive'
 })
 export class PlatformVisualFiltersComponent {
   @Input() filters!: PlatformFiltersDirective
-
-  ngOnInit() {
-    console.log('PlatformVisualFilters Component', this.filters)
-  }
 }

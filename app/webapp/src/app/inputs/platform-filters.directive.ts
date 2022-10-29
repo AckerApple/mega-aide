@@ -7,8 +7,5 @@ import { Directive, Input } from '@angular/core'
 export class PlatformFiltersDirective {
   @Input() useLabels: boolean | string | number = false
   @Input() controllerSize: number = 16
-
-  constructor() {
-    console.log('PlatformFiltersDirective')
-  }
+  extra: { [index: string]: any } = {}
 }

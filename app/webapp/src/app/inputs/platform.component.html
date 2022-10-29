@@ -39,9 +39,24 @@
   </div>
   
   <platform-filters #filters="platformFilters"></platform-filters>
-  <platform-visual-filters [filters]="filters" *ngIf="players.length"
-    class="flex-right flex-wrap child-margin-xs"
-  ></platform-visual-filters>
+  <ng-container *ngIf="players.length">    
+    <platform-visual-filters [filters]="filters"
+      class="flex-right flex-wrap child-margin-xs"
+    >
+      <div *ngIf="lastButtons.gamepads.length">
+        <div>Listen to Gamepad(s) - {{lastButtons.activeGamepads.length}}</div>
+        <select [ngModel]="filters.extra['targetGamepad']"
+          (ngModelChange)="lastButtons.setGameIndex( filters.extra['targetGamepad']=$event )"
+        >
+          <option value="">SELECT GAMEPAD</option>
+          <option *ngFor="let gamepad of lastButtons.gamepads"
+            [value]="gamepad.index"
+          >{{ gamepad.id }}</option>
+          <option value="-1">ALL</option>
+        </select>
+      </div>
+    </platform-visual-filters>
+  </ng-container>
 
   <div *ngIf="players.length">
     <div class="flex-wrap child-margin-1">
@@ -217,6 +232,11 @@
       <div class="flex1 flex-stacked">
         <div>label</div>
         <input type="text" [(ngModel)]="control.label" class="flex-1" />
+      </div>
+
+      <div class="flex1 flex-stacked">
+        <div>Gamepad button</div>
+        <input type="number" [(ngModel)]="control.gamepadCode" class="flex-1" />
       </div>
 
       <div class="flex1 flex-stacked">

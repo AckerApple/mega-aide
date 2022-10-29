@@ -15,7 +15,9 @@
         <div class="flex-wrap child-flex1 child-margin-xxs">
           <span class="pos-rel" *ngFor="let axis of gamepad.axes; let index=index">
             <small class="pos-abs left-0 top-0 opacity-60 pad-xs text-xxs">{{index}}</small>
-            <a class="block radius-10 pad-xxs bg-positive text-center">
+            <a class="block radius-10 pad-xxs bg-positive text-center"
+              [class.bg-energized]="[1,-1].includes(axis)"
+            >
               {{ axis | number }}
             </a>
           </span>
