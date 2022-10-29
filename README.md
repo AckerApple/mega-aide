@@ -24,7 +24,7 @@ Things learned and things to remember for my Megacade
 - [🎯 Issues chasing to fix](#-issues-chasing-to-fix)
 - [⚡️ Issues with answers to perform](#-issues-with-answers-to-perform)
 - [🤖 Individual Emulators](#-individual-emulators)
-  - [() Yuzu](#yuzu)
+  - [Yuzu](#yuzu)
 - [🧩 Individual games](#-individual-games)
   - [🗡 The Legend of Zelda Links Awakening](#-individual-games)
   - [💪 Super Smash Bros](#-individual-games)
