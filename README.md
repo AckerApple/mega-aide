@@ -16,7 +16,7 @@ Things learned and things to remember for my Megacade
   - [🔀 Change default emulator used](#-change-default-emulator-used)
   - [⠇ Menus and side effect during game play](#-menus-and-side-effect-during-game-play)
   - [🏃 Game plays too fast](#-game-plays-too-fast)
-  - [🕹 XArcade XInput no player one][#-xarcade-xinput-no-player-one]
+  - [🕹 XArcade XInput no player one](#-xarcade-xinput-no-player-one)
   - [Atari 5200 blue screen](#atari-5200-blue-screen)
   - [🧠 Fix attract mode out of memory issue](#-fix-attract-mode-out-of-memory-issue)
   - [💡 Fix skipped lights during attract mode](#-fix-skipped-lights-during-attract-mode)
