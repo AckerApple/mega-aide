@@ -370,10 +370,11 @@ Some games do not come on EHA Omega drive or some are outdated. Here are some Ac
 - [🗡 The Legend of Zelda Links Awakening](https://roms2.cdnrobot.xyz/Tha/The-Legend-of-Zelda-Links-Awakening-NSP-ROMSLAB.rar?download_token=5bc8a10c305ba8cd6ae88acdc166ba089393f021c573239c42082f2aa45a9f46) for Nintendo Switch
 - [💪 Super Smash Bros](https://nxbrew.com/super-smash-bros-ultimate-switch-nsp-update/)
 - 🎱 Pool nation is one of the best trackball pool games
-  - In order to share the trackball, before selecting Player 2 character press escape and now player two will share trackball
+  - In order to share the trackball, before selecting Player 2's character, press escape and now player two change appearance to indicate shared trackball/mouse
   - [more here](https://steamcommunity.com/sharedfiles/filedetails/?id=187242390)
-- ⛳️ Golden Tee Complete 2006 is the latest golf in game that series, that the machine comes with
-  - 📺 Two YouTube videos exist about getting new golf on
+- ⛳️ Golden Tee Complete 2006 is the latest golf in game that series, that does not require internet connection
+  - PGA 2k21 is a great modern alternative that does not require internet
+  - 📺 Two YouTube videos exist about getting new Golden Tee working
   - https://www.youtube.com/watch?v=9yEuSIpGc4Q
   - https://www.youtube.com/watch?v=VBP0wVxuuAM
 - 🦌 Buck hunter arcade, aka Big Buck Hunter HD, only works 1 player

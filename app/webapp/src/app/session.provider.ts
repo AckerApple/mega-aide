@@ -1,6 +1,6 @@
-import { Injectable } from "@angular/core"
+import { EventEmitter, Injectable } from "@angular/core"
 import { getOs, getStorage, saveStorage } from "./app.utilities"
-import { DirectoryManager } from "./DirectoryManagers"
+import { DirectoryManager, DmFileReader } from "./DirectoryManagers"
 import platformMap from './platform.map.json'
 import { PlatformsMapping } from "./platforms"
 
@@ -16,6 +16,9 @@ export class SessionProvider {
   launchBoxXarcadeDir?: DirectoryManager
   // xarcade loaded directly
   xarcadeDirectory?: DirectoryManager
+  
+  toSaveFiles: WriteFile[] = []
+  $filesSaved = new EventEmitter<WriteFile[]>()
 
   config = {
     xarcadeXinput: {
@@ -45,13 +48,12 @@ export class SessionProvider {
     }
   }
 
-  error(message: string, err: any) {
+  error(message: string, err?: any) {
     this.lastError = Object.getOwnPropertyNames(err).reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)
     console.error('🔴 ' + message, err)
   }
 
   save() {
-    console.log('save')
     saveStorage(this.config)
   }
 }
@@ -67,4 +69,9 @@ function fillGaps (toFill: any, fillFrom: any) {
       fillGaps(toFill[key], fillFrom[key])
     }
   })
+}
+
+export interface WriteFile {
+  file: DmFileReader
+  string: string
 }

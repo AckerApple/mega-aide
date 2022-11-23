@@ -12,8 +12,8 @@ export interface LastButtons {
 }
 
 @Injectable() export class LastButtonsProvider {
-  gamepads: EditableGamepad[] = editableGamepads( navigator.getGamepads().filter(x => x) as Gamepad[] )
-  activeGamepads: EditableGamepad[] = editableGamepads( navigator.getGamepads().filter(x => x) as Gamepad[] )
+  gamepads: EditableGamepad[] = editableGamepads( navigator.getGamepads().filter(x => x) as Gamepad[] ) // all avail
+  activeGamepads: EditableGamepad[] = [...this.gamepads] // filtered
   
   pressedObject: LastButtons = {} // currently pressed in object format
   pressed: LastButton[] = [] // actively pressed
@@ -26,9 +26,40 @@ export interface LastButtons {
   listening: boolean = false
   listeningChange: EventEmitter<boolean> = new EventEmitter()
   gameIndex?: number
+  eventHandlers: {handler: (any: any) => any, eventName: string}[] = []
+
+  constructor(){
+    this.subscribeToWindow()
+  }
 
   ngOnDestroy(){
     this.removeListeners()
+    this.eventHandlers.forEach(eh => 
+      window.removeEventListener(eh.eventName, eh.handler)
+    )
+  }
+
+  subscribeToWindow() {
+    const connected = (e: GamepadEvent) => this.addGamepad(e.gamepad)
+    const disconnected = (e: GamepadEvent) => this.removeGamepad(e.gamepad)
+    
+    window.addEventListener('gamepadconnected', connected, false)
+    window.addEventListener('gamepaddisconnected', disconnected, false)
+    
+    this.eventHandlers.push({handler: connected, eventName: 'gamepadconnected'})
+    this.eventHandlers.push({handler: disconnected, eventName: 'gamepaddisconnected'})
+  }
+
+  removeGamepad(gamepad: Gamepad) {
+    let index = this.gamepads.findIndex(x => gamepadsMatch(x, gamepad))
+    if ( index >= 0 ) {
+      this.gamepads.splice(index, 1)
+    }
+
+    index = this.activeGamepads.findIndex(x => gamepadsMatch(x, gamepad))
+    if ( index >= 0 ) {
+      this.activeGamepads.splice(index, 1)
+    }
   }
 
   toggleListening() {
@@ -59,15 +90,15 @@ export interface LastButtons {
         return
       }
 
-      let matchIndex = this.activeGamepads.findIndex(before => before.id === gamepad.id)
+      let activeMatchIndex = this.activeGamepads.findIndex(before => before.id === gamepad.id)
       
-      if ( matchIndex < 0 ) {
-        matchIndex = this.addGamepad(gamepad)
+      if ( activeMatchIndex < 0 ) {
+        activeMatchIndex = this.addGamepad(gamepad)
         
-        if ( matchIndex < 0 ) {
+        if ( activeMatchIndex < 0 ) {
           return // it was not meant to be added (maybe filtered)
         }
-      } else if ( this.activeGamepads[matchIndex].timestamp === gamepad.timestamp ) {
+      } else if ( this.activeGamepads[activeMatchIndex].timestamp === gamepad.timestamp ) {
         return gamepad // has not changed
       }
 
@@ -84,7 +115,7 @@ export interface LastButtons {
       gamepad.axes.forEach((xy, index) => {
         const value = gamepad.axes[index]
 
-        if ( this.activeGamepads[matchIndex].axes[index] === value ) {
+        if ( this.activeGamepads[activeMatchIndex].axes[index] === value ) {
           return // break out, it's the same value as before
         }
 
@@ -103,16 +134,20 @@ export interface LastButtons {
       })
 
       // update ongoing gamepad record
-      Object.assign(this.activeGamepads[matchIndex], editableGamepad(gamepad))
+      Object.assign(this.activeGamepads[activeMatchIndex], editableGamepad(gamepad))
+      
+      const matchIndex = this.gamepads.findIndex(before => before.id === gamepad.id)
+      Object.assign(this.gamepads[matchIndex], editableGamepad(gamepad))
 
       return gamepad
     }) as Gamepad[]
   }
 
+  /** adds to this.gamepads and this.activeGamepads if not already there */
   addGamepad(
     gamepad: Gamepad
   ): number {
-    if ( !this.gamepads.find(x => x.id === gamepad.id && x.index === gamepad.index) ) {
+    if ( !this.gamepads.find(x => gamepadsMatch(x, gamepad)) ) {
       this.gamepads.push(editableGamepad(gamepad)) // update recording of all gamepads
     }
 
@@ -141,6 +176,15 @@ export interface LastButtons {
     code: string | number,
     gamepad: Gamepad
   ) {
+    // do we already have a press by another controller?
+    const current = this.pressedObject[code]
+    if ( current && current.gamepadIndex != gamepad.index) {
+      const stillValidGamepad = this.gamepads.find(x => x.id === current.id && x.index === current.gamepadIndex)
+      if ( stillValidGamepad ) {
+        return // do not override current press
+      }
+    }
+
     this.pressedObject[code] = {
       code,
       id: gamepad.id,
@@ -161,7 +205,8 @@ export interface LastButtons {
   }
 
   depress(press: string | number, gamepad: Gamepad) {
-    if ( this.pressedObject[press]?.id === gamepad.id ) {
+    const compare = this.pressedObject[press]
+    if ( compare && compare.id === gamepad.id && compare.gamepadIndex === gamepad.index ) {
       delete this.pressedObject[press]
 
       const index = this.pressed.indexOf(press)
@@ -177,11 +222,18 @@ export interface LastButtons {
     this.listeningChange.emit( this.listening=false )
   }
 
-  setGameIndex(gameIndex?: number | string) {
-    const num = Number(gameIndex)
+  /** only listen to specific gamepad events. Will start listening if not already */
+  setGameIndex(gameIndex?: number | 'all') {
+    // listen if not already
+    if ( !this.buttonListenInterval ) {
+      this.startListening()
+    }
 
+    const num = Number(gameIndex)
     if ( num === -1 ) {
       delete this.gameIndex
+      this.activeGamepads.length = 0
+      this.activeGamepads.push(...this.gamepads)
       return
     }
     
@@ -191,13 +243,12 @@ export interface LastButtons {
       }
     })
     
-    this.pressed.length = 0    
+    this.pressed.length = 0
     this.gameIndex = num
 
     const limited = this.gamepads.filter(gamepad => gamepad.index === num)
     this.activeGamepads.length = 0
     this.activeGamepads.push(...limited)
-    console.log('this.activeGamepads', num, typeof num, this.activeGamepads, this.gamepads)
   }
 }
 
@@ -222,4 +273,8 @@ function editableGamepad(gamepad: Gamepad): EditableGamepad {
 type EditableGamepad = Omit<Gamepad, 'timestamp,axes'> & {
   timestamp: number
   axes: number[]
+}
+
+function gamepadsMatch(x: Gamepad, gamepad: Gamepad) {
+  return x.id === gamepad.id && x.index === gamepad.index
 }

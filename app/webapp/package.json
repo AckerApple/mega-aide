@@ -1,6 +1,6 @@
 {
-  "name": "web-app",
-  "version": "0.1.7",
+  "name": "Mega-aide",
+  "version": "0.1.8",
   "scripts": {
     "ng": "ng",
     "clear": "rm -rf .angular/cache",
@@ -31,7 +31,8 @@
     "@angular/cli": "~14.2.3",
     "@angular/compiler-cli": "^14.2.0",
     "@types/jasmine": "~4.0.0",
-    "ack-angular": "^4.0.0",
+    "@types/wicg-file-system-access": "^2020.9.5",
+    "ack-angular": "^4.1.2",
     "ack-css-boot": "^3.0.10",
     "jasmine-core": "~4.3.0",
     "karma": "~6.4.0",

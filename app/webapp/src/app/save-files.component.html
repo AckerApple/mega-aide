@@ -1,0 +1,22 @@
+<h3>💾 Save Files</h3>
+
+<ol class="child-pad-xs child-margin-xxs">
+  <li *ngFor="let item of toWrite">
+    📄 {{ item.file.name }}
+  </li>
+</ol>
+
+<div class="pad">
+  <input type="checkbox" [(ngModel)]="saveWithBackupFolder" /> Create backups within a "backup" folder
+</div>
+
+<div *ngIf="saving; else saveButton">
+  saving {{ saving }} files...
+</div>
+
+<ng-template #saveButton>
+  <button type="button" class="width-full bg-balanced"
+    (click)="save()"
+  >save</button>
+</ng-template>
+			

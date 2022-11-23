@@ -9,6 +9,7 @@ export class SafariDirectoryManager implements DirectoryManager {
   ) {}
 
   async getDirectory(path: string) {
+    // safari gives you all items up front
     const nextItems = this.files.filter(file => {
       const relative = getWebkitPathRelativeTo(file, this.path)
       return relative.substring(0, path.length).toLowerCase() === path.toLowerCase()
@@ -28,7 +29,7 @@ export class SafariDirectoryManager implements DirectoryManager {
   }
 
   async listFiles(): Promise<DmFileReader[]> {
-    return this.getRelativeItems().map(file => new BrowserDmFileReader(file))
+    return this.getRelativeItems().map(file => new BrowserDmFileReader(file, this))
   }
 
   async findFileByPath (filePath: string ): Promise<BrowserDmFileReader | undefined> {
@@ -42,7 +43,18 @@ export class SafariDirectoryManager implements DirectoryManager {
     
     // safari just gives us every files upfront, find within that (huge) array
     const file = this.files.find(file => file.webkitRelativePath === filePath) as File | undefined
-    return file ? new BrowserDmFileReader(file) : undefined
+    return file ? new BrowserDmFileReader(file, this) : undefined
+  }
+
+  async file(fileName: string, _options?: FileSystemGetFileOptions) {
+    const findFile = await this.findFileByPath(fileName)
+
+    if ( findFile ) {
+      return findFile
+    }
+
+    const superFile = new BrowserDmFileReader(new File([], fileName), this)
+    return Promise.resolve(superFile)
   }
 }
 

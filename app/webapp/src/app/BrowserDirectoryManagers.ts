@@ -1,11 +1,13 @@
-import { path, directoryReadToArray, LikeFile } from "./app.utilities"
+import { path, directoryReadToArray } from "./app.utilities"
 import { BaseDmFileReader, DirectoryManager, DmFileReader } from "./DirectoryManagers"
 
 export class BrowserDmFileReader extends BaseDmFileReader implements DmFileReader {
   name: string
-  window = window as any
-  
-  constructor(public file: File | FileSystemFileHandle) {
+
+  constructor(
+    public file: File | FileSystemFileHandle,
+    public directory: DirectoryManager
+  ) {
     super()
     this.name = file.name
   }
@@ -20,16 +22,20 @@ export class BrowserDmFileReader extends BaseDmFileReader implements DmFileReade
     } else {
       // request where to save
       const id = this.name.replace(/[^a-zA-Z0-9]/g,'-')+'-filePicker'
-      const handle = await this.window.showSaveFilePicker({
-        id: id.slice(0, 32),
+      const savePickerOptions = {
         suggestedName: this.name,
-        types: [{
+        /*types: [{
           description: 'JSON',
           accept: {
             'application/json': ['.json'],
           },
-        }],
-      })
+        }],*/
+      }
+
+      // below, thought to remember last matching file (i think data typing is just missing for it)
+      ;(savePickerOptions as any).id = id.slice(0, 32)
+
+      const handle = await window.showSaveFilePicker(savePickerOptions)
       
       writableStream = await handle.createWritable()
     }
@@ -65,7 +71,7 @@ export class BrowserDirectoryManager implements DirectoryManager {
   constructor(
     public path: string,
     public files: FileSystemFileHandle[], // LikeFile[],
-    public directoryHandler: any,
+    public directoryHandler: FileSystemDirectoryHandle,
   ) {}
 
   async list(): Promise<string[]> {
@@ -87,7 +93,7 @@ export class BrowserDirectoryManager implements DirectoryManager {
   
   async listFiles(): Promise<DmFileReader[]> {
     return this.files.filter(file => file.kind === 'file')
-      .map(file => new BrowserDmFileReader(file))
+      .map(file => new BrowserDmFileReader(file, this))
     /*
     const filePromises: Promise<FileSystemFileHandle>[] = this.files
       .filter(file => file.kind === 'file')
@@ -98,13 +104,19 @@ export class BrowserDirectoryManager implements DirectoryManager {
     */
   }
 
-  async getDirectory(newPath: string) {
+  async getDirectory(
+    newPath: string,
+    options?: FileSystemGetDirectoryOptions
+  ) {
     const newPathArray = newPath.split('/')
-    const dir = await newPathArray.reduce(async (last,current) => {
-      const next = await last
-      const newHandle = next.getDirectoryHandle(current)
+    
+    // traverse through each folder
+    const dir: FileSystemDirectoryHandle = await newPathArray.reduce(async (last,current) => {
+      const next: FileSystemDirectoryHandle = await last
+      const newHandle = next.getDirectoryHandle(current, options)
       return newHandle
     }, Promise.resolve(this.directoryHandler))
+    
     const files: FileSystemFileHandle[] = await directoryReadToArray(dir)
     const fullNewPath = path.join(this.path, newPath)
     const newDir = new BrowserDirectoryManager(
@@ -115,7 +127,18 @@ export class BrowserDirectoryManager implements DirectoryManager {
     return newDir
   }
 
-  async findFileByPath (
+  async file(fileName: string, options?: FileSystemGetFileOptions) {
+    const findFile = await this.findFileByPath(fileName)
+
+    if ( findFile ) {
+      return findFile
+    }
+
+    const fileHandle = await this.directoryHandler.getFileHandle(fileName, options)
+    return new BrowserDmFileReader(fileHandle, this)
+  }
+
+  async findFileByPath(
     path: string,
     directoryHandler: any = this.directoryHandler,
   ): Promise<BrowserDmFileReader | undefined> {
@@ -134,8 +157,11 @@ export class BrowserDirectoryManager implements DirectoryManager {
         console.debug('no matching upper folder', lastParent, directoryHandler)
         return
       }
+
+      const newPath = pathSplit.join('/')
+      const dirMan = await this.getDirectory(lastParent)
       
-      return this.findFileByPath(pathSplit.join('/'), newHandler)
+      return dirMan.findFileByPath(newPath, newHandler)
     }
     
     let files = this.files
@@ -151,6 +177,6 @@ export class BrowserDirectoryManager implements DirectoryManager {
     // when found, convert to File
     // const file = await this.getSystemFile(likeFile)
     
-    return new BrowserDmFileReader(likeFile)
+    return new BrowserDmFileReader(likeFile, this)
   }
 }

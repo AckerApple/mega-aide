@@ -1,229 +1,247 @@
+<h2>{{ platformMap.label }}</h2>
+
 <div style="min-width:50vw">
-  <br />
-  <h3>Platform options</h3>
-  <ng-container *ngTemplateOutlet="platformButtons;context:{platform:platformMap}"></ng-container>
+  <ng-container *ngIf="!view || view==='players'">
 
-  <br />
-  <h3>Player editor</h3>
-  <div class="flex-wrap child-margin-xxs">
-    <button type="button" class="flex1"
-      *ngFor="let controls of platformMap.players;let index=index"
-      [class.active] = "playersMap[index]"
-      (click)="togglePlayerMapByIndex(index, true)"
-      (dblclick)="toggleLockPlayerMapByIndex(index);$event.preventDefault()"
-      (contextmenu)="toggleLockPlayerMapByIndex(index);$event.preventDefault()"
-      title="right click to lock in view"
-    >{{lockPlayerMaps.includes(index) ? '🔒 ' : ''}}Player {{index + 1}}</button>
-    <button type="button" class="flex1 bg-white text-black"
-      (click)="showAllPlayersOf(platformMap)"
-    >👀 Show All</button>
-  </div>
-
-  <div *ngIf="viewPlatformJson" class="child-margin-xxs flex-wrap">
-    <textarea cols="60" rows="12" wrap="off" class="width-full"
-    >{{ platformMap | json }}</textarea>
-  </div>
-  <div *ngIf="editPlatform" class="child-margin-xxs flex-wrap">
-    <div class="flex1">
-      <label for="label">label</label>
-      <input type="text" maxLength="125" class="width-full" [(ngModel)]="editPlatform.label"
-        placeholder="platform titling"
-      />
+    <div class="flex-wrap child-margin-xxs">
+      <button type="button" class="flex1"
+        *ngFor="let controls of platformMap.players;let index=index"
+        [class.active] = "playersMap[index]"
+        (click)="togglePlayerMapByIndex(index, true)"
+        (dblclick)="toggleLockPlayerMapByIndex(index);$event.preventDefault()"
+        (contextmenu)="toggleLockPlayerMapByIndex(index);$event.preventDefault()"
+        title="right click to lock in view"
+      >{{lockPlayerMaps.includes(index) ? '🔒 ' : ''}}Player {{index + 1}}</button>
+      <button type="button" class="flex1 bg-white text-black"
+        (click)="showAllPlayersOf(platformMap)"
+      >👀 Show All</button>
     </div>
-    <div class="flex1">
-      <label for="url">image url</label>
-      <input type="text" maxLength="125" class="width-full" [(ngModel)]="editPlatform.url"
-        placeholder="absolute or relative url"
-      />
-    </div>
-  </div>
-  
-  <platform-filters #filters="platformFilters"></platform-filters>
-  <ng-container *ngIf="players.length">    
-    <platform-visual-filters [filters]="filters"
-      class="flex-right flex-wrap child-margin-xs"
-    >
-      <div *ngIf="lastButtons.gamepads.length">
-        <div>Listen to Gamepad(s) - {{lastButtons.activeGamepads.length}}</div>
-        <select [ngModel]="filters.extra['targetGamepad']"
-          (ngModelChange)="lastButtons.setGameIndex( filters.extra['targetGamepad']=$event )"
+    
+    <platform-filters #filters="platformFilters"></platform-filters>
+    <ng-container *ngIf="players.length">
+      <br />
+      <h3>Display tools</h3>
+      <div class="bg-dark">
+        <platform-visual-filters [filters]="filters"
+          class="flex-right flex-wrap child-margin-smx"
         >
-          <option value="">SELECT GAMEPAD</option>
-          <option *ngFor="let gamepad of lastButtons.gamepads"
-            [value]="gamepad.index"
-          >{{ gamepad.id }}</option>
-          <option value="-1">ALL</option>
-        </select>
+          <div *ngIf="lastButtons.gamepads.length">
+            <div>Watch Gamepad(s)</div>
+            <select [ngModel]="filters.extra['targetGamepad']"
+              (ngModelChange)="lastButtons.setGameIndex( filters.extra['targetGamepad']=$event )"
+            >
+              <option value="">SELECT GAMEPAD</option>
+              <option *ngFor="let gamepad of lastButtons.gamepads"
+                [value]="gamepad.index"
+              >{{ gamepad.id }}</option>
+              <option value="-1">ALL</option>
+            </select>
+          </div>
+    
+          <div *ngIf="lastButtons.gamepads.length">
+            <div>Keyboard lock</div>
+            <input placeholder="focus here then key pushes are protected" (keydown)="$event.preventDefault()" />
+          </div>
+        </platform-visual-filters>
       </div>
-    </platform-visual-filters>
-  </ng-container>
-
-  <div *ngIf="players.length">
-    <div class="flex-wrap child-margin-1">
-      <div class="flex1 bg-black pad-xxs" *ngFor="let player of players">
-        <!--controller image overlay-->
-        <div class="flex-center flex-1">
-          <div class="flex-1 flex-center">
-            <div class="text-center">
+  
+      <div class="flex-wrap child-margin-1">
+        <div class="flex1 bg-black pad-xxs" *ngFor="let player of players">
+          <!--controller image overlay-->
+          <div class="flex-center flex-1">
+            <div class="flex-1 flex-center">
               <div class="text-center">
-                Player {{ player.index + 1 }}&nbsp;
-                <label [for]="'playerToggle'+player.index" class="text-xs">
-                  <input type="checkbox" [id]="'playerToggle'+player.index"
-                    (change)="toggleLockPlayerMapByIndex(player.index)"
-                    [checked] = "lockPlayerMaps.includes(player.index)"
-                    title="lock visibility"
-                  />&nbsp;<span [class.opacity-half]="!lockPlayerMaps.includes(player.index)"
-                  >lock in view</span>
-                </label>
+                <div class="text-center">
+                  Player {{ player.index + 1 }}&nbsp;
+                  <label [for]="'playerToggle'+player.index" class="text-xs">
+                    <input type="checkbox" [id]="'playerToggle'+player.index"
+                      (change)="toggleLockPlayerMapByIndex(player.index)"
+                      [checked] = "lockPlayerMaps.includes(player.index)"
+                      title="lock visibility"
+                    />&nbsp;<span [class.opacity-half]="!lockPlayerMaps.includes(player.index)"
+                    >lock in view</span>
+                  </label>
+                </div>
+  
+                <platform-control-map
+                  [platform]        = "platformMap"
+                  [playerIndex]     = "player.index"
+                  [pressedObject]   = "lastPresses.pressedObject"
+                  [buttonsObject]   = "lastButtons.pressedObject"
+                  [controllerSize]  = "filters.controllerSize"
+                  [useLabels]       = "filters.useLabels"
+                  [(lastDrag)]      = "player.lastDrag"
+                  [(controlListen)] = "controlListen"
+                ></platform-control-map>
               </div>
-
-              <platform-control-map
-                [platform]        = "platformMap"
-                [playerIndex]     = "player.index"
-                [pressedObject]   = "lastPresses.pressedObject"
-                [buttonsObject]   = "lastButtons.pressedObject"
-                [controllerSize]  = "filters.controllerSize"
-                [useLabels]       = "filters.useLabels"
-                [(lastDrag)]      = "player.lastDrag"
-                [(controlListen)] = "controlListen"
-              ></platform-control-map>
+            </div>
+    
+            <!-- controller buttons table -->
+            <div class="text-xs">
+              <ng-container *ngIf="player.lastDrag">
+                <ng-container *ngTemplateOutlet="controlForm;context:{
+                  player: player,
+                  control: player.lastDrag.control
+                }"></ng-container>
+              </ng-container>
+              
+              <div *ngIf="player.showMap">
+                <div class="text-center"><strong>mapping table</strong></div>
+                <table cellPadding="2" cellSpacing="2" border="0" class="width-full bg-dark">
+                  <thead>
+                    <th></th>
+                    <th>name</th>
+                    <th>key</th>
+                    <th title="keyCode">num</th>
+                    <th>button</th>
+                  </thead>
+                  <tbody class="bg-black">
+                    <tr *ngFor="let control of platformMap.players[player.index]"
+                      [ngClass] = "controlListen === control ? 'bg-energized' : ''"
+                      (click)="toggleControlByPlayerIndex(control, player.index)"
+                      class="cursor-pointer hover-bg-energized"
+                      [class.opacity-20]="control === player.lastDrag?.control"
+                      [class.bg-positive]="control === dragRowControl"
+                      
+                      draggable="true"
+                      (dragstart)="dragRowStart(player.index, control)"
+                      (dragover)="$event.preventDefault();dragRowOver(control)"
+                      (dragend)="dragRowEnd(player.index)"
+                      (drop)="dropRow(control, player.index)"
+  
+                      (mouseover)="lastPresses.pressedObject[$any(control.keyCode)] = {code: control.keyCode, key: control.keyName}"
+                      (mouseout)="lastPresses.pressedObject[$any(control.keyCode)] = undefined"          
+                    >
+                      <td class="flex-center pad-top-xs">
+                        <div class="inline-block width-20 height-20"
+                          [style.background-color]="lastPresses.pressedObject[$any(control.keyCode)] ? 'rgba(0, 255, 255, 1)' : (control.color ? 'rgb(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ')' : 'rgb(255,255,255)')"
+                        ></div>
+                      </td>
+                      <td>{{ control.label }}</td>
+                      <td>{{ control.keyName }}</td>
+                      <td>{{ control.keyCode }}</td>
+                      <td nowrap>
+                        {{ control.gamepadCode }}
+                        <ng-container *ngIf="(control.gamepadCode|typeof) === 'string'">
+                          axis
+                        </ng-container>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+                <select (change)="copyPlayerToPlayerByEvent(platformMap.players[player.index], $event)" class="width-full">
+                  <option class="opacity-70">➡️👤 copy to player </option>
+                  <ng-container *ngFor="let control of platformMap.players;let index=index">
+                    <option *ngIf="index !== player.index" [value]="index"
+                    >player {{index+1}}</option>
+                  </ng-container>
+                  <option value="-1">➕ create another player</option>
+                  <!-- overwrite -->
+                  <optgroup label="overwrite player" *ngIf="platformMap.players.length > 1">
+                    <ng-container *ngFor="let control of platformMap.players;let index=index">
+                      <option *ngIf="index !== player.index" [value]="'write:' + index"
+                      >player {{index+1}}</option>
+                    </ng-container>  
+                  </optgroup>
+                  <!-- update geometry -->
+                  <optgroup label="update player geometry" *ngIf="platformMap.players.length > 1" title="matches buttons by label">
+                    <ng-container *ngFor="let control of platformMap.players;let index=index">
+                      <option *ngIf="index !== player.index" [value]="'geometry:' + index"
+                      >player {{index+1}}</option>
+                    </ng-container>  
+                  </optgroup>
+                </select>
+              </div>
             </div>
           </div>
   
-          <!-- controller buttons table -->
-          <div class="text-xs">
-            <ng-container *ngIf="player.lastDrag">
-              <ng-container *ngTemplateOutlet="controlForm;context:{
-                player: player,
-                control: player.lastDrag.control
-              }"></ng-container>
-            </ng-container>
+          <div class="flex-apart text-xs child-margin-xs child-pad-xs">
+            <a type="button" class="nowrap flex1" [class.active]="remapping.active"
+              (click)="remapPlayerAll( platformMap.players[player.index] )"
+            >🔄 remap controls</a>
+  
+            <a type="button" class="nowrap flex1 bg-positive"
+              (click)="platformMap.players[player.index].push({keyName: '', x:platformMap.players.length, y:0, width:4, height:4})"
+            >➕ add button</a>
+  
+            <a type="button" class="nowrap flex1 bg-assertive"
+              (click)="platformMap.players.splice(player.index, 1)"
+            >🗑 remove player</a>
+  
+            <a type="button" class="nowrap flex1 bg-calm" (click)="viewPlayerMap = !viewPlayerMap"
+              [class.active]="viewPlayerMap"
+            >👩‍💻 view json</a>
+  
+            <a type="button" class="nowrap flex1 bg-calm" (click)="player.showMap = !player.showMap"
+              [class.active]="player.showMap"
+            >🗺 view map</a>
+          </div>
+        
+          <div *ngIf="remapping.playerIndex === player.index" class="bg-energized pad">
+            <h3>⏺ button remapping in progress...</h3>
+            Press <b>{{remapping.player[remapping.index].label}}</b> button
+            <p *ngIf="remapping.player[remapping.index].keyName">Currently it's key {{ remapping.player[remapping.index].keyName }}</p>
+            <p *ngIf="remapping.player[remapping.index].gamepadCode">
+              Currently it's {{ (remapping.player[remapping.index].gamepadCode | typeof) === 'string' ? 'axis': 'button' }} {{remapping.player[remapping.index].gamepadCode}}
+            </p>
+            <p>step {{remapping.index+1}} of {{remapping.player.length}}</p>
+            <button type="button" (click)="remapping.end()">🛑 end</button>
+            <button type="button" (click)="remapping.next()">⏭ next</button>
+            <div [nextButton]
+              (nextAxisChange)="remapping.player[remapping.index].gamepadCode=$event;remapping.next()"
+              [nextButtonListening]="remapping.index + 1"
+              (nextButtonChange)="remapping.player[remapping.index].gamepadCode=$event;remapping.next()"
+            ></div>
+          </div>
             
-            <div *ngIf="player.showMap">
-              <div class="text-center"><strong>mapping table</strong></div>
-              <table cellPadding="2" cellSpacing="2" border="0" class="width-full bg-dark">
-                <thead>
-                  <th></th>
-                  <th>name</th>
-                  <th>key</th>
-                  <th title="keyCode">num</th>
-                  <th>button</th>
-                </thead>
-                <tbody class="bg-black">
-                  <tr *ngFor="let control of platformMap.players[player.index]"
-                    [ngClass] = "controlListen === control ? 'bg-energized' : ''"
-                    (click)="toggleControlByPlayerIndex(control, player.index)"
-                    class="cursor-pointer hover-bg-energized"
-                    [class.opacity-20]="control === player.lastDrag?.control"
-                    [class.bg-positive]="control === dragRowControl"
-                    
-                    draggable="true"
-                    (dragstart)="dragRowStart(player.index, control)"
-                    (dragover)="$event.preventDefault();dragRowOver(control)"
-                    (dragend)="dragRowEnd(player.index)"
-                    (drop)="dropRow(control, player.index)"
-
-                    (mouseover)="lastPresses.pressedObject[$any(control.keyCode)] = {code: control.keyCode, key: control.keyName}"
-                    (mouseout)="lastPresses.pressedObject[$any(control.keyCode)] = undefined"          
-                  >
-                    <td class="flex-center pad-top-xs">
-                      <div class="inline-block width-20 height-20"
-                        [style.background-color]="lastPresses.pressedObject[$any(control.keyCode)] ? 'rgba(0, 255, 255, 1)' : (control.color ? 'rgb(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ')' : 'rgb(255,255,255)')"
-                      ></div>
-                    </td>
-                    <td>{{ control.label }}</td>
-                    <td>{{ control.keyName }}</td>
-                    <td>{{ control.keyCode }}</td>
-                    <td nowrap>
-                      {{ control.gamepadCode }}
-                      <ng-container *ngIf="(control.gamepadCode|typeof) === 'string'">
-                        axis
-                      </ng-container>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <select (change)="copyPlayerToPlayerByEvent(platformMap.players[player.index], $event)" class="width-full">
-                <option class="opacity-70">➡️👤 copy to player </option>
-                <ng-container *ngFor="let control of platformMap.players;let index=index">
-                  <option *ngIf="index !== player.index" [value]="index"
-                  >player {{index+1}}</option>
-                </ng-container>
-                <option value="-1">➕ create another player</option>
-                <!-- overwrite -->
-                <optgroup label="overwrite player" *ngIf="platformMap.players.length > 1">
-                  <ng-container *ngFor="let control of platformMap.players;let index=index">
-                    <option *ngIf="index !== player.index" [value]="'write:' + index"
-                    >player {{index+1}}</option>
-                  </ng-container>  
-                </optgroup>
-                <!-- update geometry -->
-                <optgroup label="update player geometry" *ngIf="platformMap.players.length > 1" title="matches buttons by label">
-                  <ng-container *ngFor="let control of platformMap.players;let index=index">
-                    <option *ngIf="index !== player.index" [value]="'geometry:' + index"
-                    >player {{index+1}}</option>
-                  </ng-container>  
-                </optgroup>
-              </select>
-            </div>
+          <div *ngIf="viewPlayerMap">
+            <textarea cols="60" rows="12" wrap="off" class="min-height-400 width-full"
+            >{{ platformMap.players[player.index] | json}}</textarea>
           </div>
         </div>
+      </div>
+    </ng-container>
+  </ng-container>
+</div>
 
-        <div class="flex-apart text-xs child-margin-xs child-pad-xs">
-          <a type="button" class="nowrap flex1" [class.active]="remapping.active"
-            (click)="remapPlayerAll( platformMap.players[player.index] )"
-          >🔄 remap controls</a>
 
-          <a type="button" class="nowrap flex1 bg-positive"
-            (click)="platformMap.players[player.index].push({keyName: '', x:platformMap.players.length, y:0, width:4, height:4})"
-          >➕ add button</a>
+<div *ngIf="view === 'json'">
+  <br />
+  <h3>⚙️ Configuration</h3>
+  <textarea cols="60" rows="12" wrap="off" class="width-full"
+  >{{ platformMap | json }}</textarea>
+  <div class="flex-wrap">
+    <ng-container *ngTemplateOutlet="closeButton"></ng-container>
+  </div>
+</div>
 
-          <a type="button" class="nowrap flex1 bg-assertive"
-            (click)="platformMap.players.splice(player.index, 1)"
-          >🗑 remove player</a>
-
-          <a type="button" class="nowrap flex1 bg-calm" (click)="viewPlayerMap = !viewPlayerMap"
-            [class.active]="viewPlayerMap"
-          >👩‍💻 view json</a>
-
-          <a type="button" class="nowrap flex1 bg-calm" (click)="player.showMap = !player.showMap"
-            [class.active]="player.showMap"
-          >🗺 view map</a>
-        </div>
-      
-        <div *ngIf="remapping.playerIndex === player.index" class="bg-energized pad">
-          <h3>⏺ button remapping in progress...</h3>
-          Press <b>{{remapping.player[remapping.index].label}}</b> button
-          <p *ngIf="remapping.player[remapping.index].keyName">Currently it's key {{ remapping.player[remapping.index].keyName }}</p>
-          <p *ngIf="remapping.player[remapping.index].gamepadCode">
-            Currently it's {{ (remapping.player[remapping.index].gamepadCode | typeof) === 'string' ? 'axis': 'button' }} {{remapping.player[remapping.index].gamepadCode}}
-          </p>
-          <p>step {{remapping.index+1}} of {{remapping.player.length}}</p>
-          <button type="button" (click)="remapping.end()">🛑 end</button>
-          <button type="button" (click)="remapping.next()">⏭ next</button>
-          <div [nextButton]
-            (nextAxisChange)="remapping.player[remapping.index].gamepadCode=$event;remapping.next()"
-            [nextButtonListening]="remapping.index + 1"
-            (nextButtonChange)="remapping.player[remapping.index].gamepadCode=$event;remapping.next()"
-          ></div>
-        </div>
-          
-        <div *ngIf="viewPlayerMap">
-          <textarea cols="60" rows="12" wrap="off" class="min-height-400 width-full"
-          >{{ platformMap.players[player.index] | json}}</textarea>
-        </div>
+<div *ngIf="view === 'edit' && editPlatform">
+  <br />
+  <h3>✏️ Edit platform details</h3>
+  <div class="bg-dark">
+    <div class="child-margin-xs flex-wrap">
+      <div class="flex1">
+        <label for="label">label</label>
+        <input type="text" maxLength="125" class="width-full" [(ngModel)]="editPlatform.label"
+          placeholder="platform titling"
+        />
+      </div>
+      <div class="flex1">
+        <label for="url">image url</label>
+        <input type="text" maxLength="125" class="width-full" [(ngModel)]="editPlatform.url"
+          placeholder="absolute or relative url"
+        />
       </div>
     </div>
+    <div class="flex-wrap">
+      <ng-container *ngTemplateOutlet="closeButton"></ng-container>
+    </div>  
   </div>
 </div>
 
 <br />
-
-<div class="flex-wrap child-margin-xxs">
-  <button type="button" class="bg-balanced flex1"
-    (click)="saveChanges()"
-  >💾 save changes</button>  
-</div>
+<h3>Platform options</h3>
+<ng-container *ngTemplateOutlet="platformButtons;context:{platform:platformMap}"></ng-container>
 
 <ng-template #controlForm let-player="player" let-control="control">
   <div class="flex-stacked max-width-500">
@@ -344,12 +362,19 @@
       (click)="clonePlatform(platform)"
     >📋 clone platform</button>
     <button type="button" class="flex1 bg-white text-dark"
-      (click)="viewPlatformJson = viewPlatformJson === platform ? undefined : platform"
-      [class.active]="viewPlatformJson"
+      (click)="view = view === 'json' ? undefined : 'json'"
+      [class.active]="view === 'json'"
     >⚙️ view config</button>
     <button type="button" class="flex1 bg-calm"
-      (click)="editPlatform = editPlatform === platform ? undefined : platform"
+      (click)="toggleEditPlatform(platform)"
       [class.active]="editPlatform === platform"
     >✏️ edit details</button>
+    <button type="button" class="flex1 bg-balanced active-bg-energized"
+      (click)="saveChanges()"
+    >💾 save changes</button>  
   </div>
+</ng-template>
+
+<ng-template #closeButton>
+  <button type="button" class="bg-dark flex1" (click)="view=undefined">close</button>
 </ng-template>

@@ -1,33 +1,38 @@
-<robust-select-directory label="XArcade XInput" [reloadPath]="session.config.xarcadeXinput.path"
-  (directoryManagerChange)="session.save();readDir($event)"
-  (error)="session.error('could not load XArcade XInput path', $event)"
-  [pickerId]="xarcadeXinputPickerId"
-></robust-select-directory>
-
-<div *ngIf="!mappingFileNames.length">
-  <br />
-  <div class="text-center">
-    ⬆️ Select XArcade XInput folder above to unlock features below ⬇️
-    <br /><br />
-    <a class="text-xs bg-positive pad-h pad-v-xs"
-      (click)="viewMoreInfo = !viewMoreInfo"
-    >ℹ️ more info</a>
-  </div>
-  <p *ngIf="viewMoreInfo" class="bg-positive pad">
-    ℹ️ When you select your XArcade XInput folder, settings files will be read to offer features.
-    <br /><br />
-    Such features include:
-    <li>A robust controller mapping interface</li>
-    <li>and more...</li>
-  </p>
+<div class="text-center">
+  <robust-select-directory label="XArcade XInput" [reloadPath]="session.config.xarcadeXinput.path"
+    (directoryManagerChange)="session.save();readDir($event)"
+    (error)="session.error('could not load XArcade XInput path', $event)"
+    [pickerId]="xarcadeXinputPickerId"
+  ></robust-select-directory>
 </div>
 
-<ng-container *ngIf="mappingFileNames.length">
+<div *ngIf="!xarcade.mappingFileNames.length">
+  <br />
+  <div class="text-center pad">
+    ⬆️ Select XArcade XInput folder above to unlock supportive features
+  </div>
+  <details class="pad">
+    <summary>read more about this app and file access</summary>
+    <div class="bg-dark pad">
+      <p>
+        Once you have selected your XArcade XInput folder, settings files will be read to offer supportive features.
+      </p>
+      Such support features include:
+      <ul>
+        <li>A robust controller mapping interface</li>
+        <li>Add, edit, remove mappings</li>
+        <li>and more...</li>
+      </ul>
+    </div>
+  </details>
+</div>
+
+<ng-container *ngIf="xarcade.mappingFileNames.length">
   <h3>Mapping files</h3>
   <p>Choose a file to work with below...</p>
   <hr class="border-1 border-white" />
   <div class="flex-stacked child-margin-xxs">
-    <ng-container *ngFor="let fileName of mappingFileNames; let index=index">
+    <ng-container *ngFor="let fileName of xarcade.mappingFileNames; let index=index">
       <a class="text-white"
         [routerLink]="'mapping/' + fileName"
       >📄 {{ fileName }}</a>

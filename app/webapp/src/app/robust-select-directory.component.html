@@ -1,20 +1,21 @@
+<!-- search hints: reselect -->
+
 <input class="invisible pos-abs" type="file" directory accept=".folder" webkitdirectory
   [id]="'robustFolderPicker-' + label"
   [name]="'robustFolderPicker-' + label"
   (change)="readInputDirectory($event.target)"
 />
 
-<div class="text-right">
-  <button *ngIf="reloadPath" type="button" class="flex1"
-    [title] = "reloadPath"
-    (click) = "onPathReload(reloadPath)"
-  >🔄 Reload</button>
+<button *ngIf="reloadPath" type="button" class="flex1"
+  [title] = "reloadPath"
+  (click) = "onPathReload(reloadPath)"
+>🔄 Reload</button>
 
-  <button type="button" class="flex1"
-    (click)="selectPath()"
-  >📁 select {{ label }} folder</button>
+<button type="button" class="flex1"
+  (click)="selectPath()"
+  [class.opacity-80] = "directoryManager"
+>📁 {{ directoryManager ? 're' : '' }}select {{ label }} folder</button>
 
-  <div *ngIf="reloadPath" class="text-xs">
-    <strong>{{ label }} path:</strong> {{ reloadPath }}
-  </div>
+<div *ngIf="reloadPath" class="text-xs">
+  <strong>{{ label }} path:</strong> {{ reloadPath }}
 </div>

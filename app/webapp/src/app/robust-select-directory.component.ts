@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { directoryReadToArray } from './app.utilities'
 import { BrowserDirectoryManager } from './BrowserDirectoryManagers'
-import { DirectoryManager, NeutralinoDirectoryManager } from './DirectoryManagers'
+import { DirectoryManager } from './DirectoryManagers'
+import { NeutralinoDirectoryManager } from './NeutralinoDirectoryManager'
 import { SafariDirectoryManager } from './SafariDirectoryManagers'
 
 declare const Neutralino: any
@@ -11,11 +12,11 @@ declare const Neutralino: any
   templateUrl: './robust-select-directory.component.html',
 })
 export class RobustSelectDirectoryComponent {
-  window: any = window
   @Input() label!: string // "LaunchBox"
   @Input() pickerId?: string // ensures loaded path is same as previous
   @Input() reloadPath?: string // C:\blah\blah
   @Output() error = new EventEmitter<Error>()
+  @Input() directoryManager?: DirectoryManager
   @Output() directoryManagerChange = new EventEmitter<DirectoryManager>()
 
   getPickerId() {
@@ -25,7 +26,7 @@ export class RobustSelectDirectoryComponent {
   async onPathReload(path: string) {
     if ( typeof Neutralino === 'object' ) {
       const dm = new NeutralinoDirectoryManager(path)
-      this.directoryManagerChange.emit(dm)        
+      this.directoryManagerChange.emit(this.directoryManager = dm)
     }
   }
 
@@ -36,22 +37,24 @@ export class RobustSelectDirectoryComponent {
       if ( response ) {
         this.reloadPath = response
         const dm = new NeutralinoDirectoryManager(response)
-        this.directoryManagerChange.emit(dm)
+        this.directoryManagerChange.emit(this.directoryManager = dm)
       }
       return
     }
 
+    const canPickDir = window.showDirectoryPicker as any
+
     // chrome
-    if ( this.window.showDirectoryPicker ) {  
+    if ( canPickDir ) {  
       try {
-        const boxDir = await this.window.showDirectoryPicker({
+        const boxDir = await window.showDirectoryPicker({
           id: this.getPickerId(),
           // id: this.getId(),
           mode: 'readwrite'
         })
         const boxFiles = await directoryReadToArray( boxDir )
         const dm = new BrowserDirectoryManager('', boxFiles, boxDir)
-        this.directoryManagerChange.emit(dm)
+        this.directoryManagerChange.emit(this.directoryManager = dm)
         return
       } catch (err: any) {
         if ( err.message.includes('aborted') ) {
@@ -76,11 +79,12 @@ export class RobustSelectDirectoryComponent {
   // safari read directory
   async readInputDirectory(input: any) {
     if ( !input.files ) {
-      return
+      this.error.emit(new Error('no directory with files selected'))
+      return // no files selected
     }
 
     const files = Object.entries(input.files).filter(([key]) => key != 'length').map(([_key, value]) => value) as File[]
     const dm = new SafariDirectoryManager('', files)
-    this.directoryManagerChange.emit(dm)
+    this.directoryManagerChange.emit(this.directoryManager = dm)
   }
 }

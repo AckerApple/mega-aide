@@ -1,7 +1,6 @@
 import { EventEmitter, Injectable } from "@angular/core"
 
 @Injectable() export class LastPresses {
-  window = window as any
   pressedObject: PressedObject = {} // currently pressed in object format
   pressed: LastPress[] = [] // actively pressed
   pastPressArray: LastPress[] = [] // last 5
@@ -11,13 +10,13 @@ import { EventEmitter, Injectable } from "@angular/core"
   keyUpChange = new EventEmitter<LastPress>()
   
   constructor() {
-    this.window.addEventListener('keyup', this.onKeyUp)
-    this.window.addEventListener('keydown', this.onKeyDown)
+    window.addEventListener('keyup', this.onKeyUp)
+    window.addEventListener('keydown', this.onKeyDown)
   }
 
   ngOnDestroy(){
-    this.window.removeEventListener('keyup', this.onKeyUp)
-    this.window.removeEventListener('keydown', this.onKeyDown)
+    window.removeEventListener('keyup', this.onKeyUp)
+    window.removeEventListener('keydown', this.onKeyDown)
   }
 
   keyUp = (event: KeyboardEvent) => {

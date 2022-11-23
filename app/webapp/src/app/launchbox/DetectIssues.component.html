@@ -1,0 +1,185 @@
+<button type="button" (click)="scanXarcade()">🗺 Scan XArcade XInput mappings</button>
+
+<div *ngIf="scanning" class="pad opacity-80">
+  👁 Scanning {{ scanning }} files...
+</div>			
+
+<div *ngIf="stats.hasDefaultMix" class="bg-orange pad">
+  Detected both mapped and unmapped games that depend on XArcade XInput
+  <br /><br />
+  <div class="flex-wrap child-margin-xxs">
+    <details class="max-width-900 flex1 bg-dark">
+      <summary class="pad">read more</summary>
+      <div class="pad">
+        When you open a game, that has a command line "--mapping" argument, it becomes the default next time XArcade is opened.
+        <br /><br />
+        What happens is next time you open a game that has no "--mapping" argument, which means use the default, it will use the mapping from the last game used which could be the wrong button configuration.
+        <br /><br />
+        You should have all games mapped or no games mapped. Otherwise unmapped games can load with wrong mapping after opening a game with mapping.
+        <br /><br />
+        <strong>USE CASE 1</strong>: The buttons used for a game used to work fine, typically a PC Game, but now they partially work, work differently, or do not work at all.
+        <br /><br />
+        <strong>USE CASE 2</strong>: The buttons used for a game used to work fine, typically a PC Game, but now some players are not working
+        <br /><br />
+        <strong>USE CASE 3</strong>: You already know to open XArcade before starting certain games and would like to stop doing this
+        <br />
+      </div>
+    </details>
+    
+    <details class="max-width-900 flex1 bg-dark">
+      <summary class="pad">how to fix</summary>
+      <div class="pad">
+        Using the provided tools, on this page, you can perform any of the following:
+        <ul>
+          <li>set all unmapped to a specific XInput mapping (recommended)</li>
+          <li>set all to unmapped</li>
+          <li>set individual games (safest)</li>
+        </ul>
+      </div>
+    </details>
+  </div>
+</div>
+
+<ng-container *ngIf="searchPlatformGames.length">
+  <br />
+  <h3>Platforms with games using XArcade XInput</h3>
+  <div class="flex-apart flex-wrap">
+    <p class="opacity-80 text-center">👇 Tap a platform below for more details</p>
+    <div>
+      <input type="text" placeholder="🔍 Search by game title"
+        (keyup)="searchBy($any($event.target).value)"
+      />
+    </div>
+  </div>
+  <table cellPadding="8" cellSpacing="1" border="0" class="bg-grey table-lines" style="min-width:40vw">
+    <tHead>
+      <tr class="bg-dark">
+        <th>Platform</th>
+        <th>Mapped</th>
+        <th>Unmapped</th>
+      </tr>
+    </tHead>
+    <!-- platform loop -->
+    <tbody *ngFor="let platform of searchPlatformGames">
+      <tr class="cursor-pointer hover-bg-calm" (click)="platform.xArcadeApps.viewDetails = !platform.xArcadeApps.viewDetails"
+        [class.bg-energized]="platform.xArcadeApps.viewDetails"
+      >
+        <td>{{ platform.name }}</td>
+        <td>{{ platform.xArcadeApps.mapped.length }}</td>
+        <td>{{ platform.xArcadeApps.unmapped.length }}</td>
+      </tr>
+      <tr *ngIf="platform.xArcadeApps.viewDetails">
+        <td colspan="3" class="bg-energized">
+          <ng-container *ngIf="platform.xArcadeApps.unmapped.length">
+            <br *ngIf="platform.xArcadeApps.mapped.length" />
+            <div class="bg-dark pad-xs flex-apart">
+              UNMAPPED
+              <div>
+                <sup class="opacity-80 text-xxs"> (uses default)</sup>
+                <ng-container *ngTemplateOutlet="changeAllGames;context:{games:platform.xArcadeApps.unmapped, platform:platform}"></ng-container>
+              </div>
+            </div>
+            <!-- game table loop -->
+            <ng-container *ngTemplateOutlet="games;context:{games:platform.xArcadeApps.unmapped, platform:platform}"></ng-container>
+          </ng-container>
+
+          <ng-container *ngIf="platform.xArcadeApps.mapped.length">
+            <div class="bg-dark pad-xs flex-apart">
+              ✅ MAPPED
+              <div>
+                <ng-container *ngTemplateOutlet="changeAllGames;context:{games:platform.xArcadeApps.mapped, platform:platform}"></ng-container>
+              </div>
+            </div>
+            <!-- game table loop -->
+            <ng-container *ngTemplateOutlet="games;context:{games:platform.xArcadeApps.mapped, platform:platform}"></ng-container>
+          </ng-container>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <details class="pad bg-orange">
+    <summary>set all platforms to one mapping</summary>
+    <br />
+    ⚠️ This is truly not recommended but if you know what you are doing, have at it.
+    <br /><br />
+    Change every platform game <strong>that currently has an XArcade XInput command</strong>.
+    <br /><br />
+    ⛑ For safety, your change will not be saved until you use the save button that appears on change.
+    <br /><br />
+    <select *ngIf="xarcade.mappingFileNames.length" placeholder="mapping file" class="width-full"
+      (change)="changeAllPlatformsTo($any($event.target).value)"
+    >
+      <option value="">-- set platforms to mapping --</option>
+      <option *ngFor="let item of xarcade.mappingFileNames" [value]="item">{{item}}</option>
+    </select>
+  </details>
+
+  <br />
+  <h3>📈 Mapping usage stats</h3>
+  <table cellPadding="8" cellSpacing="1" border="0" class="bg-grey table-lines" style="min-width:40vw">
+    <tr class="bg-dark">
+      <th>Mapping</th>
+      <th>Use count</th>
+    </tr>
+    <tbody>
+      <tr *ngFor="let item of stats.mapCounts | keyvalue">
+        <td>{{ item.key }}</td>
+        <td>{{ item.value }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <!--{{ mostUsed | json }}-->
+</ng-container>
+
+<div *ngIf="changedPlatformGames.length" class="flex-wrap">
+  <button type="submit" class="flex1" (click)="saveChangedFiles()">
+    💾 save {{changedPlatformGames.length}} changed files
+  </button>
+</div>
+
+<ng-template #games let-games="games" let-platform="platform">
+  <table cellPadding="4" cellSpacing="1" border="0" class="table-lines width-full">
+    <tHead>
+      <tr class="bg-dark">
+        <th>title</th>
+        <th>mapping</th>
+      </tr>
+    </tHead>
+    <tbody>
+      <!-- game loop -->
+      <tr *ngFor="let game of games">
+        <td class="bg-grey">
+          {{ game.details.title }}
+          <div><small class="opacity-80 text-xxs">{{ game.command }}</small></div>
+        </td>
+        <td class="bg-grey hover-bg-calm active-bg-energized cursor-pointer" (click)="game.editMapping ?? game.editMapping = true">
+          <div *ngIf="!game.editMapping; else editMapping" class="cursor">
+            {{ game.mapping }}
+            <div *ngIf="!game.mapping" class="opacity-half text-center">✏️ tap to edit</div>
+          </div>
+          <ng-template #editMapping>
+            <div class="flex-wrap">
+              <select *ngIf="xarcade.mappingFileNames.length" placeholder="mapping file" [(ngModel)]="game.mapping" class="flex-1"
+                (change)="updateGameCommandMapping(game, platform);game.editMapping=false"
+              >
+                <option value="">choose a mapping file</option>
+                <option *ngFor="let item of xarcade.mappingFileNames" [value]="item">{{item}}</option>
+              </select>
+              <button type="button" (click)="game.editMapping = false">close</button>
+            </div>
+          </ng-template>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</ng-template>
+
+<ng-template #changeAllGames let-games="games" let-platform=""platform>
+  <select *ngIf="xarcade.mappingFileNames.length" placeholder="mapping file" class="flex-1"
+    (change)="changePlatformGameCommandMappings(platform, games, $any($event.target).value)"
+  >
+    <option value="">change all to mapping</option>
+    <option *ngFor="let item of xarcade.mappingFileNames" [value]="item">{{item}}</option>
+  </select>
+</ng-template>

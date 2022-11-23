@@ -3,15 +3,18 @@ import { MenuComponent } from './menu.component'
 import { ExitComponent } from './exit.component'
 import { Route, RouterModule, Routes } from '@angular/router'
 import { DebugComponent } from './debug.component'
-import { LaunchBoxComponent } from './launchbox.component'
+
+import { LaunchBoxComponent } from './launchbox/launchbox.component'
+import { DetectIssuesComponent } from './launchbox/DetectIssues.component'
+
 import { XarcadeXinputComponent } from './xarcade-xinput.component'
 import { XinputMappingComponent } from './xinput-mapping.component'
-
 import { PlatformsComponent } from './inputs/platforms.component'
 import { PlatformComponent } from './inputs/platform.component'
 import { InputsComponent } from './inputs.component'
 import { GamepadsComponent } from './gamepads.component'
 import { InputDebugComponent } from './inputs/input-debug.component'
+import { ThemeSettingsComponent } from './launchbox/ThemeSettings.component'
 
 export const launchBox: Route = {
   path: 'launchbox',
@@ -20,7 +23,29 @@ export const launchBox: Route = {
   data: {
     emoji: '🧰',
     description: 'Useful utilities to assist with LaunchBox',
-    wrapClass: 'bg-black radius-25 pad-4x'
+    wrapClass: 'bg-black radius-25 pad-2x'
+  }
+}
+
+export const detectIssues: Route = {
+  path: 'launchbox/detect-issues',
+  title: 'Detect Issues',
+  component: DetectIssuesComponent,
+  data: {
+    emoji: '🔦',
+    description: 'Robot like reporting of potential Launchbox issues',
+    wrapClass: 'bg-black radius-25 pad-2x'
+  }
+}
+
+export const themeSettings: Route = {
+  path: 'launchbox/theme-settings',
+  title: 'Theme Settings',
+  component: ThemeSettingsComponent,
+  data: {
+    emoji: '🎨',
+    description: 'Launchbox settings specific to themes',
+    wrapClass: 'bg-black radius-25 pad-2x'
   }
 }
 
@@ -49,7 +74,7 @@ export const xArcade: Route = {
   data: {
     emoji: '🎮 ➡️ ⌨️',
     description: 'Useful utilities to assist with gamepad to keyboard mappings',
-    wrapClass: 'bg-black radius-25 pad-4x'
+    wrapClass: 'bg-black radius-25 pad-2x'
   }
 }
 
@@ -90,6 +115,8 @@ export const exit: Route = {
 }
 
 export const menu: Route[] = [
+  exit,debugReport, launchBox, themeSettings, detectIssues, inputs,platforms,
+  gamepads, debugKeyboard, xArcade,
   {
     path: 'menu',
     title: 'main menu',
@@ -97,21 +124,21 @@ export const menu: Route[] = [
       emoji: '⠇',
     },
     component: MenuComponent,
-  },exit,debugReport, launchBox, inputs,platforms,{
+  },{
     path: 'inputs/platforms/:platform',
     title: 'platform editor',
     data: {
       emoji: '⚙️',
     },
     component: PlatformComponent,
-  },gamepads,debugKeyboard,xArcade,{
+  },{
     path: 'inputs/xarcade-xinput/mapping/:fileName',
     component: XinputMappingComponent,
-    title: 'XArcade XInput mapping file',
+    title: 'mapping file',
     data: {
       emoji: '🎮 ➡️ ⌨️',
       description: 'A file dedicated to mapping keyboard inputs into gamepad buttons',
-      wrapClass: 'bg-black radius-25 pad-4x'
+      wrapClass: 'bg-black radius-25 pad-2x'
     }
   }
 ]

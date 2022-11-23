@@ -22,12 +22,12 @@ interface PlayersMap {
   providers: [ LastPresses, LastButtonsProvider ]
 })
 export class PlatformComponent {
+  view?: 'json' | 'players' | 'edit'
+
   editPlatform?: PlatformMap
   viewPlayerMap = false
-  viewPlatformJson?: PlatformMap
   controlListen?: Control
   controlMap = controlMap
-  window = window as any
   platformMap!: PlatformMap
 
   controlPressListening = false
@@ -55,7 +55,7 @@ export class PlatformComponent {
     public activatedRoute: ActivatedRoute,
     public router: Router,
   ) {
-    lastButtons.startListening()
+    // lastButtons.startListening() // removed, don't listen until select input used
 
     const platformName = this.activatedRoute.snapshot.paramMap.get('platform')
     this.platformMap = session.platformMap.images.find(platform => platform.label === platformName) as PlatformMap
@@ -63,20 +63,25 @@ export class PlatformComponent {
     if ( !this.platformMap ) {
       this.router.navigateByUrl('/inputs/platforms')
     }
+
+    // start with player one open
+    this.togglePlayerMapByIndex(0, true)
   }
 
   async saveChanges() {
-    // create a new handle
-    const newHandle = await this.window.showSaveFilePicker({
+    const saveOptions = {
       id: PlatformComponent.name,
       suggestedName: 'platform.map.json',
-      types: [{
+      /*types: [{
         description: 'JSON',
         accept: {
           'application/json': ['.json'],
         },
-      }],
-    })
+      }],*/
+    }
+
+    // create a new handle
+    const newHandle = await window.showSaveFilePicker(saveOptions)
 
     // create a FileSystemWritableFileStream to write to
     const writableStream = await newHandle.createWritable()
@@ -266,7 +271,7 @@ export class PlatformComponent {
       playerIndex,
       index: 0, player: realPlayer,
       end: () => {
-        this.window.removeEventListener(eventName, onKey)
+        window.removeEventListener(eventName, onKey)
         this.remapping = {...PlatformComponent.prototype.remapping}
         delete this.controlListen
       },
@@ -291,7 +296,7 @@ export class PlatformComponent {
         remap.next()
       }, 0)
     }
-    this.window.addEventListener(eventName, onKey)
+    window.addEventListener(eventName, onKey)
   }
 
   toggleLockPlayerMapByIndex(index: number) {
@@ -420,6 +425,17 @@ export class PlatformComponent {
   showAllPlayersOf(platformMap: PlatformMap) {
     this.players = platformMap.players.map((_p, index) => ({index}))
     this.rebuildPlayersMap()
+  }
+
+  toggleEditPlatform(platform: PlatformMap) {
+    if ( this.editPlatform === platform ) {
+      delete this.view
+      delete this.editPlatform
+      return
+    }
+    
+    this.view='edit'
+    this.editPlatform = platform
   }
 }
 

@@ -18,7 +18,6 @@ interface GamePadButtons {
   templateUrl: './xinput-mapping.component.html',
   providers: [ LastPresses ],
 }) export class XinputMappingComponent {
-  window = window as any
   windowsKeys: { code: string, num: number, description: string}[] = windowsKeys
   platform = platforms.images.find(platform => platform.label === 'Xbox' || (platform.label.includes('x') && platform.label.includes('box'))) as PlatformMap
   nextKeyListening?: ButtonParameters
@@ -57,16 +56,20 @@ interface GamePadButtons {
 
   async loadMapping( fileName: string ) {
     if ( !this.session.xarcadeDirectory ) {
+      console.warn('no xarcadeDirectory folder defined')
       return
     }
     
-    const mapDir = await this.session.xarcadeDirectory.getDirectory('xarcade-xinput/mappings')
+    fileName = fileName + '.json'
+    const path = 'xarcade-xinput/mappings'
+    const mapDir = await this.session.xarcadeDirectory.getDirectory(path)
     this.file = await mapDir.findFileByPath(fileName)
-
+    
     if ( !this.file ) {
+      console.warn(`Cannot find file ${path}/${fileName}`)
       return
     }
-
+    
     this.json = await this.file.readAsJson() as any
     this.reloadPlayerArray(this.json as any)
   }
