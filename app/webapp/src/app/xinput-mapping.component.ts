@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core'
 import { ActivatedRoute, Route, Router } from '@angular/router'
 import { SessionProvider } from './session.provider'
-import windowsKeys from './windowsKeys.json'
+import windowsKeys from './inputs/windowsKeys.json'
 import gamepad from './gamepad.json'
 import platforms from './platform.map.json'
 import { PlatformMap } from './platforms'

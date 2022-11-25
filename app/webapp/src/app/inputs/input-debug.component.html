@@ -59,6 +59,14 @@
   </div>
 </div>
 
+<details class="pad">
+  <summary>view full map</summary>
+  <br />
+  <!--<textarea cols="60" rows="12" wrap="off">{{ keysMapped | json }}</textarea>-->
+  <ng-container *ngTemplateOutlet="table;context:{pressed:keysMapped}"></ng-container>
+</details>
+			
+
 <!--
   <div *ngIf="viewButtonMap">
     <textarea readonly class="width-full min-height-400" wrap="off"
@@ -73,7 +81,7 @@
       <tr>
         <th>code</th>
         <th>key</th>
-        <th>which</th>
+        <!--<th>which</th>-->
         <th>mappings</th>
       </tr>
     </thead>
@@ -81,7 +89,7 @@
       <tr *ngIf="!pressed.length">
         <td></td>
         <td></td>
-        <td></td>
+        <!--<td></td>-->
         <td class="text-xs">
           <ul class="invisible">
             <li>&nbsp;</li>
@@ -92,7 +100,7 @@
       <tr *ngFor="let lastPress of $any(pressed)">
         <td>{{ lastPress.code }}</td>
         <td>{{ lastPress.key }}</td>
-        <td>{{ lastPress.which }}</td>
+        <!--<td>{{ lastPress.which }}</td>-->
         <td class="text-xxs">
           <ul *ngIf="lastPress.mappings" class="pad-v-0 margin-v-0 pad-left-2x">
             <ng-container *ngTemplateOutlet="mappings;context:{ mappings: lastPress.mappings}"></ng-container>

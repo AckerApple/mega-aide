@@ -3,6 +3,7 @@ import { LastPress, LastPresses } from './LastPresses.provider'
 import { Subscription } from 'rxjs'
 import { SessionProvider } from '../session.provider'
 import { Control, PlatformMap } from '../platforms'
+import windowsKeys from './windowsKeys.json'
 
 interface PressMap {
   platform: PlatformMap
@@ -24,20 +25,27 @@ interface PlatformPress {
   playerPresses: PlayerPress[]
 }
 
+interface Pressed extends LastPress {
+  mappings?: PressMap[]
+}
+
 @Component({
   templateUrl: './input-debug.component.html',
   providers: [ LastPresses ],
 }) export class InputDebugComponent {
+  windowsKeys = windowsKeys
+  keysMapped: Pressed[] = []
   viewButtonMap = false
   // controlMap = controlMap
   subs: Subscription = new Subscription()
-  pressed: (LastPress & { mappings?: PressMap[] })[] = []
-  platformPressed: PlatformPress[] = []
+  pressed: Pressed[] = [] // <table> driven data
+  platformPressed: PlatformPress[] = [] // visual controller display of matches
 
   constructor(
     public session: SessionProvider,
     public lastPresses: LastPresses,
   ) {
+    // remove previous press maps
     this.subs.add( this.lastPresses.keyUpChange.subscribe(keyPress => {
       this.pressed = [...this.lastPresses.pressed]
       this.platformPressed = this.platformPressed.filter(platformPress => {
@@ -59,6 +67,7 @@ interface PlatformPress {
       })
     }))
     
+    // convert keypress into game platform control matches
     this.subs.add( this.lastPresses.keyDownChange.subscribe(_keyPress => {
       this.pressed = [...this.lastPresses.pressed]
       this.pressed.forEach(keyPress => {
@@ -94,9 +103,47 @@ interface PlatformPress {
       })
       })
     }))
+
+    console.log('this.windowsKeys', this.windowsKeys)
+    this.windowsKeys.map(map => {
+      const platformControls = this.getPlatformControlsByPressCode(map.num)
+      
+      platformControls.forEach(item => {
+        const findIndex = this.keysMapped.findIndex(key => map.num === key.code)
+        if ( findIndex >= 0 ) {
+          this.keysMapped[findIndex].mappings?.push( item )
+          return
+        }
+        
+        const pressedObject: Pressed = {
+          which: map.num,
+          code: map.num,
+          key: map.code,
+          mappings: [ item ]
+        }
+
+        this.keysMapped.push(pressedObject)
+      })
+    })
   }
 
   ngOnDestroy(){
     this.subs.unsubscribe()
+  }
+  
+  getPlatformControlsByPressCode(keyPressCode: number): PressMap[] {
+    const matches: PressMap[] = []
+    
+    this.session.platformMap.images.forEach(platform => {
+      platform.players.forEach((player, playerIndex) => {
+        player.forEach(control => {
+          if ( control.keyCode === keyPressCode ) {
+            matches.push({control, platform, playerIndex})
+          }
+        })
+      })
+    })
+
+    return matches
   }
 }
