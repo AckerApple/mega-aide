@@ -53,7 +53,7 @@ This process revolves around using a super great [Launchbox plugin](https://foru
 <a id="-ledblinky-dance-lights-to-music"></a>
 ## 🚦 🕺 LEDBlinky dance lights to music
 
-Documentation tailored for [EHA](https://extremehomearcades.com/home.aspx) but fairly applicable to anyone using LEDBlinky and wanting to have lights dance with the sound of music
+Documentation tailored for [EHA](https://extremehomearcades.com/home.aspx) owners using the Omega software but most steps are fairly applicable to anyone using LEDBlinky and wanting to have lights dance with the sound of music
 
 🧠 **Recommended knowledge**
 - Should know way around LEDBlinky apps
@@ -134,9 +134,12 @@ Documentation tailored for [EHA](https://extremehomearcades.com/home.aspx) but f
     </a>
 
 7. 🔀 Launchbox add "Shuffle Music"
-    - Let's add a new game into LaunchBox so we can have one **favorite** item that will shuffle music
+    - Let's add a new game into LaunchBox so we can have a **favorites** wheel item that will shuffle music
     - Open LaunchBox, not BigBox, and tap the "Add" button
     - Fill out the metadata and ensure to check "☑️ Favorite"
+    - Recommend visiting the Videos tab and drag/drop generic media
+        - Most of us have an existing music platform wheel and you can just reuse media from that
+        - Consider the EHA marquee video or the existing video that appears on music platform wheel
     - Goto "Launching" tab
       - Fill out where the VLC.exe app lives
       - TIP: Review screen shot(s) below or find a rom in LaunchBox that already loads audio and compare file paths
