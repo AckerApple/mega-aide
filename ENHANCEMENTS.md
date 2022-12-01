@@ -105,7 +105,9 @@ Please note documentation tailored for [EHA](https://extremehomearcades.com/home
         - Once the error has settled, immediately attempt to use the "Audio Device and Input" dropdown
         - You should select the value that closely matches your Windows sound recording device
         - The previous error, going forward, show no longer occur if you have performed previous Windows sound steps AND you selected the correct device<br />
+        - IF you cannot get past, try going back to Windows sound especially the recording tab
     - All other settings alter the behavior of the lights and are not as important at this time
+        - You can waste a lot of time here, perhaps mimic screen capture for now
     - Use the "Test" button WHILE some audio is playing through your Windows recording sound device and you should see your lights dance<br />
     <a href="assets/images/LEDBlinky-Music/LEDBlink-Audio.jpg" target="_blank">
       <img src="assets/images/LEDBlinky-Music/LEDBlink-Audio.jpg" alt="📷 photo LEDBlinky music" width="300" border="0" />
