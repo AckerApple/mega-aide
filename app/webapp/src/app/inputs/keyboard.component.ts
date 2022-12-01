@@ -30,11 +30,11 @@ interface Pressed extends LastPress {
 }
 
 @Component({
-  templateUrl: './input-debug.component.html',
+  templateUrl: './keyboard.component.html',
   providers: [ LastPresses ],
-}) export class InputDebugComponent {
+}) export class KeyboardComponent {
   windowsKeys = windowsKeys
-  keysMapped: Pressed[] = []
+  keysMapped: Pressed[][] = [[]]
   viewButtonMap = false
   // controlMap = controlMap
   subs: Subscription = new Subscription()
@@ -104,14 +104,26 @@ interface Pressed extends LastPress {
       })
     }))
 
-    console.log('this.windowsKeys', this.windowsKeys)
     this.windowsKeys.map(map => {
       const platformControls = this.getPlatformControlsByPressCode(map.num)
       
+
       platformControls.forEach(item => {
-        const findIndex = this.keysMapped.findIndex(key => map.num === key.code)
+        let childIndex= -1
+        
+        const findIndex = this.keysMapped.findIndex(group => {
+          const findIndex = group.findIndex(key => map.num === key.code)
+
+          if ( findIndex >= 0 ) {
+            childIndex = findIndex
+            return true
+          }
+
+          return false
+        })
+
         if ( findIndex >= 0 ) {
-          this.keysMapped[findIndex].mappings?.push( item )
+          this.keysMapped[findIndex][childIndex].mappings?.push( item )
           return
         }
         
@@ -122,7 +134,18 @@ interface Pressed extends LastPress {
           mappings: [ item ]
         }
 
-        this.keysMapped.push(pressedObject)
+        this.keysMapped.find((map, index) => {
+          if ( map.length === 5 ) {
+            if ( index === this.keysMapped.length-1 ) {
+              this.keysMapped.push([])
+            }
+            return false
+          }
+
+          this.keysMapped[index].push(pressedObject)
+
+          return true
+        })
       })
     })
   }

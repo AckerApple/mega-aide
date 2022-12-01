@@ -11,11 +11,13 @@
       />
       
       <h2>Currently pressed</h2>
-      <ng-container *ngTemplateOutlet="table;context:{pressed:pressed}"></ng-container>
+      <div class="flex">
+        <ng-container *ngTemplateOutlet="table;context:{pressed:pressed}"></ng-container>
+      </div>
       
       <ng-container *ngIf="lastPresses.pastPressArray.length">
         <h2>Last {{ lastPresses.pastPressArray.length }} pressed</h2>
-        <div class="text-xs">
+        <div class="text-xs flex">
           <ng-container *ngTemplateOutlet="table;context:{pressed:lastPresses.pastPressArray}"></ng-container>
         </div>
       </ng-container>
@@ -63,7 +65,11 @@
   <summary>view full map</summary>
   <br />
   <!--<textarea cols="60" rows="12" wrap="off">{{ keysMapped | json }}</textarea>-->
-  <ng-container *ngTemplateOutlet="table;context:{pressed:keysMapped}"></ng-container>
+  <div class="flex-wrap child-margin-xxs">
+    <ng-container *ngFor="let pressed of keysMapped">
+        <ng-container *ngTemplateOutlet="table;context:{pressed:pressed}"></ng-container>
+    </ng-container>
+  </div>
 </details>
 			
 
@@ -76,13 +82,13 @@
 
 
 <ng-template #table let-pressed="pressed">
-  <table cellPadding="2" cellSpacing="2" border="0" class="width-full bg-dark">
+  <table cellPadding="4" cellSpacing="0" border="0" class="flex2 bg-dark table-lines table-lines-grey">
     <thead>
       <tr>
         <th>code</th>
         <th>key</th>
         <!--<th>which</th>-->
-        <th>mappings</th>
+        <th class="text-left">mappings</th>
       </tr>
     </thead>
     <tbody class="bg-black">
@@ -98,8 +104,8 @@
         </td>
       </tr>
       <tr *ngFor="let lastPress of $any(pressed)">
-        <td>{{ lastPress.code }}</td>
-        <td>{{ lastPress.key }}</td>
+        <td class="text-center">{{ lastPress.code }}</td>
+        <td class="text-center">{{ lastPress.key }}</td>
         <!--<td>{{ lastPress.which }}</td>-->
         <td class="text-xxs">
           <ul *ngIf="lastPress.mappings" class="pad-v-0 margin-v-0 pad-left-2x">

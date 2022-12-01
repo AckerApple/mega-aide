@@ -13,7 +13,7 @@ import { PlatformsComponent } from './inputs/platforms.component'
 import { PlatformComponent } from './inputs/platform.component'
 import { InputsComponent } from './inputs.component'
 import { GamepadsComponent } from './gamepads.component'
-import { InputDebugComponent } from './inputs/input-debug.component'
+import { KeyboardComponent } from './inputs/keyboard.component'
 import { ThemeSettingsComponent } from './launchbox/ThemeSettings.component'
 
 export const launchBox: Route = {
@@ -102,7 +102,7 @@ export const debugKeyboard: Route = {
   data: {
     emoji: '⌨️',
   },
-  component: InputDebugComponent,
+  component: KeyboardComponent,
 }
 
 export const exit: Route = {

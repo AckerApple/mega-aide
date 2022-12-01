@@ -16,7 +16,7 @@ import { PlatformComponent } from './inputs/platform.component'
 import { PlatformsComponent } from './inputs/platforms.component'
 import { InputsComponent } from './inputs.component'
 import { GamepadsComponent } from './gamepads.component'
-import { InputDebugComponent } from './inputs/input-debug.component'
+import { KeyboardComponent } from './inputs/keyboard.component'
 import { PlatformControlMapComponent } from './inputs/platform-control-map.component'
 
 import { PlatformVisualFiltersComponent } from './inputs/platform-visual-filters.component'
@@ -35,7 +35,7 @@ export const declarations = [
   
   PlatformsComponent,
   PlatformComponent,
-  InputDebugComponent,
+  KeyboardComponent,
   PlatformControlMapComponent,
   InputsComponent,
   GamepadsComponent,
