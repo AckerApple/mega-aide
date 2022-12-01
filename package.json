@@ -1,6 +1,6 @@
 {
   "name": "megacade",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "description": "Things learned and things to remember for my Megacade",
   "scripts": {
     "start:webapp": "cd app && npm run start:webapp",

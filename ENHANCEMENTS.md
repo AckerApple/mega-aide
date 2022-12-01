@@ -53,7 +53,9 @@ This process revolves around using a super great [Launchbox plugin](https://foru
 <a id="-ledblinky-dance-lights-to-music"></a>
 ## 🚦 🕺 LEDBlinky dance lights to music
 
-Documentation tailored for [EHA](https://extremehomearcades.com/home.aspx) owners using the Omega software but most steps are fairly applicable to anyone using LEDBlinky and wanting to have lights dance with the sound of music
+8 Steps to get an item in the ❤️ Favorites that shuffles music and makes your LEDBlinky lights dance with the music.
+
+Please note documentation tailored for [EHA](https://extremehomearcades.com/home.aspx) owners using the Omega software but most steps are fairly applicable to anyone using LEDBlinky and wanting to have lights dance with the sound of music
 
 🧠 **Recommended knowledge**
 - Should know way around LEDBlinky apps
