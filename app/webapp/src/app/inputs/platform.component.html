@@ -117,7 +117,9 @@
                           [style.background-color]="lastPresses.pressedObject[$any(control.keyCode)] ? 'rgba(0, 255, 255, 1)' : (control.color ? 'rgb(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ')' : 'rgb(255,255,255)')"
                         ></div>
                       </td>
-                      <td>{{ control.label }}</td>
+                      <td>
+                        {{ control.emoji }} {{ control.label }}
+                      </td>
                       <td>{{ control.keyName }}</td>
                       <td>{{ control.keyCode }}</td>
                       <td nowrap>
@@ -251,10 +253,15 @@
         <div>label</div>
         <input type="text" [(ngModel)]="control.label" class="flex-1" />
       </div>
-
+      
       <div class="flex1 flex-stacked">
-        <div>Gamepad button</div>
+        <div>Button</div>
         <input type="number" [(ngModel)]="control.gamepadCode" class="flex-1" />
+      </div>
+      
+      <div class="flex1 flex-stacked">
+        <div>emoji</div>
+        <input type="text" [(ngModel)]="control.emoji" class="flex-1" />
       </div>
 
       <div class="flex1 flex-stacked">

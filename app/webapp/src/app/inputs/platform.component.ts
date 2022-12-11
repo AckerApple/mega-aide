@@ -64,8 +64,13 @@ export class PlatformComponent {
       this.router.navigateByUrl('/inputs/platforms')
     }
 
-    // start with player one open
-    this.togglePlayerMapByIndex(0, true)
+    const playerIndex = this.activatedRoute.snapshot.queryParams['playerIndex']
+    if ( playerIndex != undefined ) {
+      this.toggleLockPlayerMapByIndex(playerIndex)
+    } else {
+      // start with player one open
+      this.togglePlayerMapByIndex(0, true)
+    }
   }
 
   async saveChanges() {

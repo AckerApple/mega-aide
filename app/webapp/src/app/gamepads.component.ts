@@ -1,10 +1,17 @@
 import { Component } from '@angular/core'
 
+interface GamepadMeta {
+  // is8Way?: boolean
+  debug?: boolean
+  json: string
+}
+
 @Component({
   templateUrl: './gamepads.component.html',
 })
 export class GamepadsComponent {
   // gamepads: Record<string, Gamepad> = {}
+  gamepadsById: {[id: string]: GamepadMeta | undefined} ={}
   gamepads: Gamepad[] = []
   eventHandlers: {eventName: keyof WindowEventMap, handler: any}[] = []
   buttonWatch?: any
@@ -35,7 +42,20 @@ export class GamepadsComponent {
           return // has not changed
         }
 
+        // a change has occurred
+
         this.gamepads[index] = gamepad
+
+        if ( this.gamepadsById[gamepad.id]?.debug ) {
+          this.updateGamepadJson(gamepad)
+        }
+
+        /*if ( gamepad.axes ) {
+          const multipleHolds = gamepad.axes.filter(a => a >= 1 || a <= -1)
+          if ( multipleHolds.length > 1 ) {
+            this.setGamepad8way(gamepad)
+          }
+        }*/
       })
     }, 50)
   }
@@ -76,6 +96,46 @@ export class GamepadsComponent {
     this.gamepads.splice(index, 1) // not connecting, lets remove it
     return gamepad
   }  
+
+  toggleGamepadDebug(gamepad: Gamepad) {
+    const meta= this.updateGamepadJson(gamepad)
+    meta.debug = !meta.debug
+  }
+
+  /*setGamepad8way(gamepad: Gamepad) {
+    this.paramGamepadMeta(gamepad).is8Way =  true
+  }*/
+
+  paramGamepadMeta(gamepad: Gamepad): GamepadMeta {
+    return this.gamepadsById[gamepad.id] = this.gamepadsById[gamepad.id] || { json: this.getGamepadJson(gamepad) }
+  }
+
+  getGamepadJson(gamepad: Gamepad): string {
+    return JSON.stringify({
+      axes: gamepad.axes,
+      buttons: gamepad.buttons,
+      connected: gamepad.connected,
+      hapticActuators: gamepad.hapticActuators,
+      id: gamepad.id,
+      index: gamepad.index,
+      mapping: gamepad.mapping,
+      timestamp: gamepad.timestamp,
+    },null,2)
+  }
+
+  updateGamepadJson(gamepad: Gamepad): GamepadMeta {
+    const json = this.getGamepadJson(gamepad)
+    
+    let meta = this.gamepadsById[gamepad.id]
+    
+    if ( meta ) {
+      meta.json = json
+    } else {
+      meta = this.gamepadsById[gamepad.id] = { json }
+    }
+    
+    return meta
+  }
 }
 
 export function getReadyGamepads(): Gamepad[] {

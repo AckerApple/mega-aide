@@ -26,7 +26,7 @@
           {
             "keyName": "Digit5",
             "shape": "square",
-            "emoji": "▶️",
+            "emoji": "👆",
             "label": "select",
             "color": [
               10,
@@ -77,7 +77,7 @@
           {
             "keyName": "ArrowUp",
             "shape": "square",
-            "emoji": "▶️",
+            "emoji": "⬆️",
             "label": "up",
             "color": [
               5,
@@ -95,7 +95,7 @@
           {
             "keyName": "ArrowRight",
             "shape": "square",
-            "emoji": "▶️",
+            "emoji": "➡️",
             "label": "right",
             "color": [
               5,
@@ -113,7 +113,7 @@
           {
             "keyName": "ArrowDown",
             "shape": "square",
-            "emoji": "▶️",
+            "emoji": "⬇️",
             "label": "down",
             "color": [
               5,
@@ -131,7 +131,7 @@
           {
             "keyName": "ArrowLeft",
             "shape": "square",
-            "emoji": "▶️",
+            "emoji": "⬅️",
             "label": "left",
             "color": [
               5,
@@ -162,7 +162,8 @@
             ],
             "label": "start",
             "keyCode": 50,
-            "gamepadCode": 9
+            "gamepadCode": 9,
+            "emoji": "▶️"
           },
           {
             "keyName": "Digit6",
@@ -178,7 +179,8 @@
             ],
             "label": "select",
             "keyCode": 54,
-            "gamepadCode": 8
+            "gamepadCode": 8,
+            "emoji": "👆"
           },
           {
             "keyName": "KeyA",
@@ -224,7 +226,8 @@
             ],
             "label": "up",
             "keyCode": 82,
-            "gamepadCode": "-1"
+            "gamepadCode": "-1",
+            "emoji": "⬆️"
           },
           {
             "keyName": "KeyF",
@@ -240,7 +243,8 @@
             ],
             "label": "down",
             "keyCode": 70,
-            "gamepadCode": "+1"
+            "gamepadCode": "+1",
+            "emoji": "⬇️"
           },
           {
             "keyName": "KeyD",
@@ -256,7 +260,8 @@
             ],
             "label": "left",
             "keyCode": 68,
-            "gamepadCode": "-0"
+            "gamepadCode": "-0",
+            "emoji": "⬅️"
           },
           {
             "keyName": "KeyG",
@@ -272,7 +277,8 @@
             ],
             "label": "right",
             "keyCode": 71,
-            "gamepadCode": "+0"
+            "gamepadCode": "+0",
+            "emoji": "➡️"
           }
         ],
         [
@@ -290,7 +296,8 @@
             ],
             "label": "start",
             "keyCode": 51,
-            "gamepadCode": 9
+            "gamepadCode": 9,
+            "emoji": "▶️"
           },
           {
             "keyName": "Digit7",
@@ -306,7 +313,8 @@
             ],
             "label": "select",
             "keyCode": 55,
-            "gamepadCode": 8
+            "gamepadCode": 8,
+            "emoji": "👆"
           },
           {
             "keyName": "ControlRight",
@@ -352,7 +360,8 @@
             ],
             "label": "up",
             "keyCode": 189,
-            "gamepadCode": "-1"
+            "gamepadCode": "-1",
+            "emoji": "⬆️"
           },
           {
             "keyName": "BracketLeft",
@@ -368,7 +377,8 @@
             ],
             "label": "down",
             "keyCode": 219,
-            "gamepadCode": "+1"
+            "gamepadCode": "+1",
+            "emoji": "⬇️"
           },
           {
             "keyName": "Digit9",
@@ -384,7 +394,8 @@
             ],
             "label": "left",
             "keyCode": 57,
-            "gamepadCode": "-0"
+            "gamepadCode": "-0",
+            "emoji": "⬅️"
           },
           {
             "keyName": "KeyT",
@@ -400,7 +411,8 @@
             ],
             "label": "right",
             "keyCode": 84,
-            "gamepadCode": "+0"
+            "gamepadCode": "+0",
+            "emoji": "➡️"
           }
         ],
         [
@@ -418,7 +430,8 @@
             ],
             "label": "start",
             "keyCode": 52,
-            "gamepadCode": 9
+            "gamepadCode": 9,
+            "emoji": "▶️"
           },
           {
             "keyName": "Digit8",
@@ -434,7 +447,8 @@
             ],
             "label": "select",
             "keyCode": 56,
-            "gamepadCode": 8
+            "gamepadCode": 8,
+            "emoji": "👆"
           },
           {
             "keyName": "KeyB",
@@ -480,7 +494,8 @@
             ],
             "label": "up",
             "keyCode": 89,
-            "gamepadCode": "-1"
+            "gamepadCode": "-1",
+            "emoji": "⬆️"
           },
           {
             "keyName": "KeyN",
@@ -496,7 +511,8 @@
             ],
             "label": "down",
             "keyCode": 78,
-            "gamepadCode": "+1"
+            "gamepadCode": "+1",
+            "emoji": "⬇️"
           },
           {
             "keyName": "Period",
@@ -512,7 +528,8 @@
             ],
             "label": "left",
             "keyCode": 190,
-            "gamepadCode": "-0"
+            "gamepadCode": "-0",
+            "emoji": "⬅️"
           },
           {
             "keyName": "KeyU",
@@ -528,7 +545,8 @@
             ],
             "label": "right",
             "keyCode": 85,
-            "gamepadCode": "+0"
+            "gamepadCode": "+0",
+            "emoji": "➡️"
           }
         ]
       ]
@@ -566,7 +584,8 @@
             "width": 5.4,
             "shape": "square",
             "height": 5.7,
-            "keyCode": 53
+            "keyCode": 53,
+            "emoji": "👆"
           },
           {
             "keyName": "AltLeft",
@@ -580,7 +599,8 @@
               221
             ],
             "label": "triangle",
-            "keyCode": 18
+            "keyCode": 18,
+            "emoji": "🔼"
           },
           {
             "keyName": "KeyZ",
@@ -594,7 +614,8 @@
               172
             ],
             "label": "circle",
-            "keyCode": 90
+            "keyCode": 90,
+            "emoji": "⏺"
           },
           {
             "keyName": "ShiftLeft",
@@ -608,7 +629,8 @@
               205
             ],
             "label": "x",
-            "keyCode": 16
+            "keyCode": 16,
+            "emoji": "❎"
           },
           {
             "keyName": "ControlLeft",
@@ -622,7 +644,8 @@
               224
             ],
             "label": "square",
-            "keyCode": 17
+            "keyCode": 17,
+            "emoji": "⏹"
           },
           {
             "keyName": "ArrowUp",
@@ -637,7 +660,8 @@
               5
             ],
             "label": "up",
-            "keyCode": 38
+            "keyCode": 38,
+            "emoji": "⬆️"
           },
           {
             "keyName": "ArrowDown",
@@ -652,7 +676,8 @@
               5
             ],
             "label": "down",
-            "keyCode": 40
+            "keyCode": 40,
+            "emoji": "⬇️"
           },
           {
             "keyName": "ArrowLeft",
@@ -667,7 +692,8 @@
               5
             ],
             "label": "left",
-            "keyCode": 37
+            "keyCode": 37,
+            "emoji": "⬅️"
           },
           {
             "keyName": "ArrowRight",
@@ -682,7 +708,8 @@
               5
             ],
             "label": "right",
-            "keyCode": 39
+            "keyCode": 39,
+            "emoji": "➡️"
           },
           {
             "keyName": "Space",
@@ -772,7 +799,8 @@
             "y": 38.611111111111114,
             "width": 5.4,
             "shape": "square",
-            "height": 5.7
+            "height": 5.7,
+            "emoji": "👆"
           },
           {
             "keyName": "KeyS",
@@ -838,7 +866,8 @@
               5,
               5
             ],
-            "label": "up"
+            "label": "up",
+            "emoji": "⬆️"
           },
           {
             "keyName": "KeyF",
@@ -852,7 +881,8 @@
               5,
               5
             ],
-            "label": "down"
+            "label": "down",
+            "emoji": "⬇️"
           },
           {
             "keyName": "KeyD",
@@ -866,7 +896,8 @@
               5,
               5
             ],
-            "label": "left"
+            "label": "left",
+            "emoji": "⬅️"
           },
           {
             "keyName": "KeyG",
@@ -880,7 +911,8 @@
               5,
               5
             ],
-            "label": "right"
+            "label": "right",
+            "emoji": "➡️"
           },
           {
             "keyName": "KeyQ",
@@ -966,7 +998,8 @@
             "y": 38.611111111111114,
             "width": 5.4,
             "shape": "square",
-            "height": 5.7
+            "height": 5.7,
+            "emoji": "👆"
           },
           {
             "keyName": "ShiftRight",
@@ -1032,7 +1065,8 @@
               5,
               5
             ],
-            "label": "up"
+            "label": "up",
+            "emoji": "⬆️"
           },
           {
             "keyName": "BracketLeft",
@@ -1046,7 +1080,8 @@
               5,
               5
             ],
-            "label": "down"
+            "label": "down",
+            "emoji": "⬇️"
           },
           {
             "keyName": "Digit9",
@@ -1060,7 +1095,8 @@
               5,
               5
             ],
-            "label": "left"
+            "label": "left",
+            "emoji": "⬅️"
           },
           {
             "keyName": "KeyT",
@@ -1074,7 +1110,8 @@
               5,
               5
             ],
-            "label": "right"
+            "label": "right",
+            "emoji": "➡️"
           },
           {
             "keyName": "End",
@@ -1132,7 +1169,8 @@
             "y": 38.611111111111114,
             "width": 5.4,
             "shape": "square",
-            "height": 5.7
+            "height": 5.7,
+            "emoji": "👆"
           },
           {
             "keyName": "KeyE",
@@ -1198,7 +1236,8 @@
               5,
               5
             ],
-            "label": "up"
+            "label": "up",
+            "emoji": "⬆️"
           },
           {
             "keyName": "KeyN",
@@ -1212,7 +1251,8 @@
               5,
               5
             ],
-            "label": "down"
+            "label": "down",
+            "emoji": "⬇️"
           },
           {
             "keyName": "Period",
@@ -1226,7 +1266,8 @@
               5,
               5
             ],
-            "label": "left"
+            "label": "left",
+            "emoji": "⬅️"
           },
           {
             "keyName": "KeyU",
@@ -1240,7 +1281,8 @@
               5,
               5
             ],
-            "label": "right"
+            "label": "right",
+            "emoji": "➡️"
           },
           {
             "keyName": "Home",
@@ -1559,7 +1601,8 @@
               5
             ],
             "label": "up",
-            "keyCode": 38
+            "keyCode": 38,
+            "emoji": "⬆️"
           },
           {
             "keyName": "ArrowDown",
@@ -1574,7 +1617,8 @@
               5
             ],
             "label": "down",
-            "keyCode": 40
+            "keyCode": 40,
+            "emoji": "⬇️"
           },
           {
             "keyName": "ArrowLeft",
@@ -1589,7 +1633,8 @@
               5
             ],
             "label": "left",
-            "keyCode": 37
+            "keyCode": 37,
+            "emoji": "⬅️"
           },
           {
             "keyName": "ArrowRight",
@@ -1604,7 +1649,8 @@
               5
             ],
             "label": "right",
-            "keyCode": 39
+            "keyCode": 39,
+            "emoji": "➡️"
           },
           {
             "keyName": "Space",
@@ -1767,7 +1813,8 @@
               5
             ],
             "label": "up",
-            "keyCode": 82
+            "keyCode": 82,
+            "emoji": "⬆️"
           },
           {
             "keyName": "KeyF",
@@ -1782,7 +1829,8 @@
               5
             ],
             "label": "down",
-            "keyCode": 70
+            "keyCode": 70,
+            "emoji": "⬇️"
           },
           {
             "keyName": "KeyD",
@@ -1797,7 +1845,8 @@
               5
             ],
             "label": "left",
-            "keyCode": 68
+            "keyCode": 68,
+            "emoji": "⬅️"
           },
           {
             "keyName": "KeyG",
@@ -1990,7 +2039,8 @@
               5
             ],
             "label": "down",
-            "keyCode": 219
+            "keyCode": 219,
+            "emoji": "⬇️"
           },
           {
             "keyName": "Digit9",
@@ -2005,7 +2055,8 @@
               5
             ],
             "label": "left",
-            "keyCode": 57
+            "keyCode": 57,
+            "emoji": "⬅️"
           },
           {
             "keyName": "KeyT",
@@ -2020,7 +2071,8 @@
               5
             ],
             "label": "right",
-            "keyCode": 84
+            "keyCode": 84,
+            "emoji": "➡️"
           },
           {
             "keyName": "End",
@@ -2183,7 +2235,8 @@
               5
             ],
             "label": "up",
-            "keyCode": 89
+            "keyCode": 89,
+            "emoji": "⬆️"
           },
           {
             "keyName": "KeyN",
@@ -2198,7 +2251,8 @@
               5
             ],
             "label": "down",
-            "keyCode": 78
+            "keyCode": 78,
+            "emoji": "⬇️"
           },
           {
             "keyName": "Period",
@@ -2213,7 +2267,8 @@
               5
             ],
             "label": "left",
-            "keyCode": 190
+            "keyCode": 190,
+            "emoji": "⬅️"
           },
           {
             "keyName": "KeyU",
@@ -2228,7 +2283,8 @@
               5
             ],
             "label": "right",
-            "keyCode": 85
+            "keyCode": 85,
+            "emoji": "➡️"
           },
           {
             "keyName": "Home",

@@ -1,8 +1,8 @@
 import { Component } from '@angular/core'
-import { DirectoryManager } from './DirectoryManagers'
 import { SessionProvider } from './session.provider'
 import { openAnchor } from './app.component'
 import { XArcadeXInputProvider } from './XArcadeXInput.provider'
+import { DirectoryManager } from 'ack-angular-components/directory-managers/DirectoryManagers'
 export const xarcadeXinputPickerId = 'xarcadeXinputPicker'
 
 @Component({

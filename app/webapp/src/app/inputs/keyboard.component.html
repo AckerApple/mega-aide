@@ -106,7 +106,6 @@
       <tr *ngFor="let lastPress of $any(pressed)">
         <td class="text-center">{{ lastPress.code }}</td>
         <td class="text-center">{{ lastPress.key }}</td>
-        <!--<td>{{ lastPress.which }}</td>-->
         <td class="text-xxs">
           <ul *ngIf="lastPress.mappings" class="pad-v-0 margin-v-0 pad-left-2x">
             <ng-container *ngTemplateOutlet="mappings;context:{ mappings: lastPress.mappings}"></ng-container>
@@ -119,9 +118,21 @@
 
 <ng-template #mappings let-mappings="mappings">
   <div *ngIf="mappings.length === 1">
-    {{ mappings[0].platform.label }} P{{ mappings[0].playerIndex + 1 }} {{ mappings[0].control.label }}
+    <a [href]="'/inputs/platforms/' + mappings[0].platform.label + '?playerIndex=' + mappings[0].playerIndex" class="no-a-style">
+      {{ mappings[0].control.emoji }} {{ mappings[0].platform.label }} P{{ mappings[0].playerIndex + 1 }} {{ mappings[0].control.label }}
+    </a>
   </div>
-  <div *ngIf="mappings.length > 1">
-    <li *ngFor="let map of mappings">{{ map.platform.label }} P{{ map.playerIndex + 1 }} {{map.control.label}}</li>
-  </div>
+  <details *ngIf="mappings.length > 1">
+    <summary>
+      {{ mappings.length }} mappings
+      <!--{{ mappings[0].control.emoji }} {{ mappings[0].platform.label }} P{{ mappings[0].playerIndex + 1 }} {{mappings[0].control.label}}-->
+      <ng-container *ngFor="let map of mappings">&nbsp;{{ map.control.emoji }}</ng-container>
+    </summary>
+    <br />   
+    <li *ngFor="let map of mappings">
+      <a [href]="'/inputs/platforms/' + map.platform.label + '?playerIndex=' + map.playerIndex" class="no-a-style">
+        {{ map.control.emoji }} {{ map.platform.label }} P{{ map.playerIndex + 1 }} {{map.control.label}}
+      </a>
+    </li>
+  </details>
 </ng-template>

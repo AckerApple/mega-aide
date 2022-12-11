@@ -47,6 +47,11 @@ interface Pressed extends LastPress {
   ) {
     // remove previous press maps
     this.subs.add( this.lastPresses.keyUpChange.subscribe(keyPress => {
+      if ( !keyPress ) {
+        console.warn('Invalid keyPress', keyPress)
+        return
+      }
+
       this.pressed = [...this.lastPresses.pressed]
       this.platformPressed = this.platformPressed.filter(platformPress => {
         platformPress.playerPresses = platformPress.playerPresses.filter(playerPress => {
@@ -107,7 +112,6 @@ interface Pressed extends LastPress {
     this.windowsKeys.map(map => {
       const platformControls = this.getPlatformControlsByPressCode(map.num)
       
-
       platformControls.forEach(item => {
         let childIndex= -1
         

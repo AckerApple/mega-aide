@@ -7,8 +7,7 @@ import platforms from './platform.map.json'
 import { PlatformMap } from './platforms'
 import { LastPresses } from './inputs/LastPresses.provider'
 import { Remap } from './inputs/platform-control-map.component'
-import { xarcadeXinputPickerId } from './xarcade-xinput.component'
-import { DmFileReader } from './DirectoryManagers'
+import { DmFileReader } from 'ack-angular-components/directory-managers/DirectoryManagers'
 
 interface GamePadButtons {
   [index: string]: boolean // true IF is axis

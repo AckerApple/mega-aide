@@ -1,6 +1,6 @@
 import { EventEmitter, Injectable } from "@angular/core"
+import { DirectoryManager, DmFileReader } from "ack-angular-components/directory-managers/DirectoryManagers"
 import { getOs, getStorage, saveStorage } from "./app.utilities"
-import { DirectoryManager, DmFileReader } from "./DirectoryManagers"
 import platformMap from './platform.map.json'
 import { PlatformsMapping } from "./platforms"
 

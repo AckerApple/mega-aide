@@ -1,7 +1,7 @@
 import { Component, ComponentFactoryResolver, ɵɵsetComponentScope } from '@angular/core'
 import { Router } from '@angular/router'
+import { DmFileReader } from 'ack-angular-components/directory-managers/DirectoryManagers'
 import { Subscription } from 'rxjs'
-import { DmFileReader } from '../DirectoryManagers'
 import { SessionProvider, WriteFile } from '../session.provider'
 import { XArcadeXInputProvider } from '../XArcadeXInput.provider'
 import { xmlDocToString } from '../xml.functions'

@@ -1,5 +1,5 @@
-import { DmFileReader } from "../DirectoryManagers"
-import { path } from '../app.utilities'
+import { DmFileReader } from 'ack-angular-components/directory-managers/DirectoryManagers'
+import { path } from 'ack-angular-components'
 
 export class BigBoxFileSettings {
   settings: BigBoxSetting[] = []

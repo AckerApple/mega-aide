@@ -12,6 +12,7 @@
 - [🧟‍♀️ House of the Dead remake](#-🧟‍♀️-house-of-the-dead-remake)
 - [🟡 Baby PAC-man](#-baby-pac-man)
 - [🤠 Wild West Shootout](#-wild-west-shootout)
+- [⠷ Tetris Worlds](#-tetris-worlds)
 
 Some games do not come on EHA Omega drive or some are outdated. Here are some Acker Apple must haves.
 
@@ -155,3 +156,20 @@ Several issues I experienced with my machine:
     - Ensure Borderless Gaming is set to startup with Windows so game always opens correctly
 
 Keywords: argonlefou DemulShooter cowboy wws gun4ir
+
+<a id="-tetris-worlds"></a>
+⠷ Tetris Worlds
+
+GOAL: 4 Player Tetris
+
+**SYMPTOMS**:
+
+1. Having button conflict with 🐬 Dolphin GameCube Tetris Worlds. Really want to play 4 player. However, pushing the right direction on players 2 and 3 cause player 1 down to activate.
+2. It seems Tetris Worlds is running in a different Dolphin then some of the others, not 100% sure. I tried running the game with xarcade involved and I can even map the buttons however when game launches it ignores all my efforts.
+
+**Knowledge**: The Dolphin that loads Tetris Worlds, by default, has player 1 buttons on other controllers. I think this is so something complex with many buttons, like Zelda, can be played from the button console. However because of this player 1 shares buttons with other players.
+
+✅ **FIX**:
+
+To fix. Open the Dolphin app specific to Tetris Worlds. At the very top you will see "Player 1 Standard Controller" with a configure button, tap on it. Review the player 1 buttons. I used middle mouse click to remove many overlapping buttons. Close and you are all set
+Reply6m

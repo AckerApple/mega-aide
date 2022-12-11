@@ -1,4 +1,4 @@
-import { DirectoryManager } from './DirectoryManagers'
+import { DirectoryManager } from "ack-angular-components/directory-managers/DirectoryManagers"
 
 export const xarcadeXinputPickerId = 'xarcadeXinputPicker'
 

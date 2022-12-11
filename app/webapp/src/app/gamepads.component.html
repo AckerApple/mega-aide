@@ -7,31 +7,46 @@
     <h3 class="bg-dark margin-0 pad-xs">Gamepad {{ gamepad?.index || index }}</h3>
     <ng-container *ngIf="gamepad; else noGamepad">
       <div class="pad-xxs">
-        <div>{{ gamepad.id }}</div>
-        <div>
-          MAPPING: {{ gamepad.mapping || 'unknown' }}
+        <div *ngIf="!gamepadsById[gamepad.id]?.debug; else debugTemplate">
+          <div>{{ gamepad.id }}</div>
+          <div>
+            MAPPING: {{ gamepad.mapping || 'unknown' }}
+          </div>
+          <strong>AXES</strong>
+          <div class="flex-wrap child-flex1 child-margin-xxs">
+            <span class="pos-rel" *ngFor="let axis of gamepad.axes; let index=index">
+              <small class="pos-abs left-0 top-0 opacity-60 pad-xs text-xxs">{{index}}</small>
+              <a class="block radius-10 pad-xxs bg-positive text-center"
+                [class.bg-energized]="[1,-1].includes(axis)"
+              >
+                {{ axis | number }}
+              </a>
+            </span>
+          </div>
+          <strong>BUTTONS: {{ gamepad.buttons.length }}</strong>
+          <div class="flex-wrap child-flex-1 child-margin-xxs">
+            <a class="radius-10 pad-xxs bg-positive text-center" *ngFor="let button of gamepad.buttons; let index = index"
+              [class.bg-energized]="button.pressed"
+              [class.bg-calm]="button.touched"
+            >{{ index }}</a>
+          </div>
+          <div>
+            vibrationActuator: {{ $any(gamepad).vibrationActuator }}
+          </div>
         </div>
-        <strong>AXES</strong>
-        <div class="flex-wrap child-flex1 child-margin-xxs">
-          <span class="pos-rel" *ngFor="let axis of gamepad.axes; let index=index">
-            <small class="pos-abs left-0 top-0 opacity-60 pad-xs text-xxs">{{index}}</small>
-            <a class="block radius-10 pad-xxs bg-positive text-center"
-              [class.bg-energized]="[1,-1].includes(axis)"
-            >
-              {{ axis | number }}
-            </a>
-          </span>
+        <ng-template #debugTemplate>
+          <textarea rows="12" wrap="off" class="width-full">{{ gamepadsById[gamepad.id]?.json }}</textarea>
+        </ng-template>
+      </div>
+      <div>
+        <button type="button" (click)="toggleGamepadDebug(gamepad)" class="width-full"
+          [class.bg-energized]="gamepadsById[gamepad.id]?.debug"
+        >🐞 debug info</button>
+        <!--
+        <div *ngIf="gamepadsById[gamepad.id]?.is8Way">
+          8WAY DETECTED!
         </div>
-        <strong>BUTTONS: {{ gamepad.buttons.length }}</strong>
-        <div class="flex-wrap child-flex-1 child-margin-xxs">
-          <a class="radius-10 pad-xxs bg-positive text-center" *ngFor="let button of gamepad.buttons; let index = index"
-            [class.bg-energized]="button.pressed"
-            [class.bg-calm]="button.touched"
-          >{{ index }}</a>
-        </div>
-        <div>
-          vibrationActuator: {{ $any(gamepad).vibrationActuator }}
-        </div>
+        --->
       </div>
     </ng-container>
     <ng-template #noGamepad>

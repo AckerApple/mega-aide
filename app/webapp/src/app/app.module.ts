@@ -9,6 +9,7 @@ import { SessionProvider } from './session.provider'
 
 import { AppComponent } from './app.component'
 import declarations from './app.declarations'
+import { AckComponentsModule } from "ack-angular-components"
 
 @NgModule({
   declarations,
@@ -19,6 +20,7 @@ import declarations from './app.declarations'
     FormsModule,
     AckModule,
     AckRouterModule,
+    AckComponentsModule,
   ],
   providers: [ SessionProvider ],
   bootstrap: [ AppComponent ]

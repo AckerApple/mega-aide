@@ -1,9 +1,8 @@
-import { DirectoryManager, DmFileReader } from '../DirectoryManagers'
 import { Component } from '@angular/core'
+import { DirectoryManager } from 'ack-angular-components/directory-managers/DirectoryManagers'
 import { SessionProvider } from '../session.provider'
 
 declare const Neutralino: any
-
 
 @Component({
   templateUrl: './launchbox.component.html',

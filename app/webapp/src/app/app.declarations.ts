@@ -1,5 +1,4 @@
 import { AppComponent } from './app.component'
-import { RobustSelectDirectoryComponent } from './robust-select-directory.component'
 import { DebugComponent } from './debug.component'
 
 import { NextKeyDirective } from './nextKey.directive'
@@ -47,7 +46,6 @@ export const declarations = [
   ThemeSettingsComponent,
 
   XarcadeXinputComponent,
-  RobustSelectDirectoryComponent,
   XinputMappingComponent,
   PlatformVisualFiltersComponent,
   PlatformFiltersDirective,

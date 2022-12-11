@@ -1,10 +1,10 @@
 import { Component } from '@angular/core'
 import { Router } from '@angular/router'
-import { DmFileReader, DirectoryManager } from '../DirectoryManagers'
 import { SessionProvider } from '../session.provider'
-import { path } from '../app.utilities'
 import { BigBoxFileSettings } from './BigBoxFileSettings.class'
 import { xmlDocToString } from '../xml.functions'
+import { DirectoryManager, DmFileReader } from 'ack-angular-components/directory-managers/DirectoryManagers'
+import { path } from 'ack-angular-components'
 
 @Component({
   templateUrl: './ThemeSettings.component.html',
