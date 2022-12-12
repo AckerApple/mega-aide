@@ -12,10 +12,10 @@ export class XarcadeXinputComponent {
   xarcadeXinputPickerId = xarcadeXinputPickerId
   openAnchor = openAnchor
   configHasChanges? = false
-  xarcade = new XArcadeXInputProvider()
-
+  
   constructor(
     public session: SessionProvider,
+    public xarcade: XArcadeXInputProvider,
   ) {
     if ( this.session.xarcadeDirectory ) {
       this.readDir( this.session.xarcadeDirectory )

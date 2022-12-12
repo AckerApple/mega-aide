@@ -19,8 +19,9 @@ export class Control {
   color?: number[] // [number, number, number]
 
   // gamepads
+  type?: 'button' | 'axis'
   gamepadCode?: number | string
-  // gamepadAxis?: string // +2 === positive movement in axis index 2
+  gamepadAxis?: string // +2 === positive movement in axis index 2
 
   // geometry
   x!: number // percent

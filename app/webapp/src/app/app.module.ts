@@ -10,6 +10,7 @@ import { SessionProvider } from './session.provider'
 import { AppComponent } from './app.component'
 import declarations from './app.declarations'
 import { AckComponentsModule } from "ack-angular-components"
+import { XArcadeXInputProvider } from "./XArcadeXInput.provider"
 
 @NgModule({
   declarations,
@@ -22,7 +23,7 @@ import { AckComponentsModule } from "ack-angular-components"
     AckRouterModule,
     AckComponentsModule,
   ],
-  providers: [ SessionProvider ],
+  providers: [ SessionProvider, XArcadeXInputProvider ],
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }

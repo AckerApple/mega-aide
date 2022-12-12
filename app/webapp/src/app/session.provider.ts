@@ -49,7 +49,9 @@ export class SessionProvider {
   }
 
   error(message: string, err?: any) {
-    this.lastError = Object.getOwnPropertyNames(err).reduce((a, key) => (a[key] = err[key]) && a || a, {} as any)
+    const lastError = Object.getOwnPropertyNames(err).reduce((a, key) => (a[key] = err[key]) && a || a, {} as any) as any
+    lastError.message = lastError.message || err.message
+    this.lastError = lastError
     console.error('🔴 ' + message, err)
   }
 

@@ -442,6 +442,18 @@ export class PlatformComponent {
     this.view='edit'
     this.editPlatform = platform
   }
+
+  addButtonToPlayer(index: number, players: Control[][]) {
+    const newButton = {
+      keyName: '',
+      x: players.length,
+      y:0,
+      width:4,
+      height:4
+    }
+    
+    players[index].push(newButton)
+  }
 }
 
 export function hexToRgb(hex: string): [number, number, number] {

@@ -10,11 +10,11 @@
     [style.left.%]="control.x"
     [style.width.%] = "control.width || 4"
     [style.height.%] = "control.height || 4"
-    [title] = "control.label+' - keyCode:' + remapped[index].keyCode"
+    [title] = "control.label+' - keyCode:' + (remapped[index] && remapped[index].keyCode)"
     style="text-shadow:1px 1px 1px #000;text-decoration: none;"
     [style.font-size.%]="(52 + controllerSize) - ((useLabels ? control.label : control.keyName) || '').length * 3"
-    [class.opacity-80]="!pressedObject[$any(remapped[index].keyCode)] && !buttonsObject[$any(control.gamepadCode)]"
-    [style.background-color]="pressedObject[$any(remapped[index].keyCode)] || buttonsObject[$any(control.gamepadCode)] ? 'rgba(0, 255, 255, 1)' : (control.color ? 'rgba(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ', 1)' : 'rgba(255,255,255,1)')"
+    [class.opacity-80]="remapped[index] && !pressedObject[$any(remapped[index].keyCode)] && !buttonsObject[$any(control.gamepadCode)]"
+    [style.background-color]="remapped[index] && pressedObject[$any(remapped[index].keyCode)] || buttonsObject[$any(control.gamepadCode)] ? 'rgba(0, 255, 255, 1)' : (control.color ? 'rgba(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ', 1)' : 'rgba(255,255,255,1)')"
 
     startByEvent="contextmenu"
     [(nextKey)]="control.keyName"
@@ -25,7 +25,7 @@
     (nextButtonListeningChange)="controlListenChange.emit(controlListen=$event ? control : undefined)"
   >
     <ng-container *ngIf="controlListen === control; else label">press key</ng-container>
-    <ng-template #label>{{ useLabels ? control.label : remapped[index].keyName }}</ng-template>
+    <ng-template #label>{{ useLabels ? control.label : (remapped[index] && remapped[index].keyName) }}</ng-template>
   </a>
   <img [src]="platform.url" alt="" border="0"
     [style.height.rem]="controllerSize"

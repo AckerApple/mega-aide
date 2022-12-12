@@ -17,6 +17,7 @@ interface GamePadButtons {
   templateUrl: './xinput-mapping.component.html',
   providers: [ LastPresses ],
 }) export class XinputMappingComponent {
+  fileName!: string
   windowsKeys: { code: string, num: number, description: string}[] = windowsKeys
   platform = platforms.images.find(platform => platform.label === 'Xbox' || (platform.label.includes('x') && platform.label.includes('box'))) as PlatformMap
   nextKeyListening?: ButtonParameters
@@ -45,7 +46,7 @@ interface GamePadButtons {
   }
 
   getFileName() {
-    return this.activatedRoute.snapshot.paramMap.get('fileName')
+    return this.fileName = this.activatedRoute.snapshot.paramMap.get('fileName') as string
   }
 
   // for pipe keyvalue to maintain order
@@ -73,6 +74,10 @@ interface GamePadButtons {
     this.reloadPlayerArray(this.json as any)
   }
 
+  keyNameToNum(key: string) {
+    return this.windowsKeys.find(x => x.code === key)?.num
+  }
+
   reloadPlayerArray(json: XInputFile) {
     this.playerArray = Object.entries(json).reduce((all, [key, value]: [string, [number, string]]) => {
       const playerIndex = value[0]
@@ -87,7 +92,7 @@ interface GamePadButtons {
       all[ playerIndex ].keys[ key ] = all[ playerIndex ].keys[ key ] || []
       const buttonParams: ButtonParameters = {
         key,
-        num: this.windowsKeys.find(x => x.code === key)?.num,
+        num: this.keyNameToNum(key),
         button: rightValues[0] as string,
         parameters: rightValues.slice(1, rightValues.length) as number[]
       }
@@ -140,7 +145,7 @@ interface GamePadButtons {
     }
     
     const newKey = match.code // string example LControlKey
-    keys[ newKey ] = keys[ oldKey ]
+    keys[ newKey ] = keys[ oldKey ] || {}
     keys[ newKey ].num = keyCode
     
     if ( newKey !== oldKey ) {

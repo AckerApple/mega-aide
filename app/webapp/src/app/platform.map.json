@@ -1515,7 +1515,9 @@
             "y": 25.886,
             "height": 7,
             "width": 5.1,
-            "keyCode": 49
+            "keyCode": 49,
+            "gamepadCode": 9,
+            "type": "button"
           },
           {
             "keyName": "Digit5",
@@ -1530,7 +1532,9 @@
             "width": 5.4,
             "shape": "circle",
             "height": 7.6,
-            "keyCode": 53
+            "keyCode": 53,
+            "gamepadCode": 8,
+            "type": "button"
           },
           {
             "keyName": "AltLeft",
@@ -1544,7 +1548,10 @@
               221
             ],
             "label": "Y",
-            "keyCode": 18
+            "keyCode": 18,
+            "type": "button",
+            "gamepadCode": 3,
+            "emoji": "Y"
           },
           {
             "keyName": "KeyZ",
@@ -1558,7 +1565,11 @@
               172
             ],
             "label": "B",
-            "keyCode": 90
+            "keyCode": 90,
+            "type": "button",
+            "gamepadCode": 1,
+            "shape": "circle",
+            "emoji": "B"
           },
           {
             "keyName": "Escape",
@@ -1572,7 +1583,12 @@
               205
             ],
             "label": "A",
-            "keyCode": 16
+            "keyCode": 16,
+            "type": "button",
+            "gamepadAxis": "LeftStickX",
+            "gamepadCode": 0,
+            "emoji": "X",
+            "shape": "circle"
           },
           {
             "keyName": "ControlLeft",
@@ -1586,7 +1602,10 @@
               224
             ],
             "label": "X",
-            "keyCode": 17
+            "keyCode": 17,
+            "emoji": "X",
+            "gamepadCode": 2,
+            "type": "button"
           },
           {
             "keyName": "ArrowUp",
@@ -1602,7 +1621,9 @@
             ],
             "label": "up",
             "keyCode": 38,
-            "emoji": "⬆️"
+            "emoji": "⬆️",
+            "type": "button",
+            "gamepadCode": 12
           },
           {
             "keyName": "ArrowDown",
@@ -1618,7 +1639,9 @@
             ],
             "label": "down",
             "keyCode": 40,
-            "emoji": "⬇️"
+            "emoji": "⬇️",
+            "type": "button",
+            "gamepadCode": 13
           },
           {
             "keyName": "ArrowLeft",
@@ -1634,7 +1657,9 @@
             ],
             "label": "left",
             "keyCode": 37,
-            "emoji": "⬅️"
+            "emoji": "⬅️",
+            "gamepadCode": 14,
+            "type": "button"
           },
           {
             "keyName": "ArrowRight",
@@ -1650,7 +1675,9 @@
             ],
             "label": "right",
             "keyCode": 39,
-            "emoji": "➡️"
+            "emoji": "➡️",
+            "gamepadCode": 15,
+            "type": "button"
           },
           {
             "keyName": "Space",
@@ -1665,7 +1692,9 @@
               5
             ],
             "label": "RightBumper",
-            "keyCode": 32
+            "keyCode": 32,
+            "type": "button",
+            "gamepadCode": 5
           },
           {
             "keyName": "KeyC",
@@ -1680,7 +1709,9 @@
               5
             ],
             "label": "LeftBumper",
-            "keyCode": 67
+            "keyCode": 67,
+            "type": "button",
+            "gamepadCode": 4
           },
           {
             "keyName": "KeyX",
@@ -1695,7 +1726,9 @@
               5
             ],
             "label": "RightTrigger",
-            "keyCode": 88
+            "keyCode": 88,
+            "gamepadCode": 7,
+            "type": "button"
           },
           {
             "keyName": "KeyV",
@@ -1710,7 +1743,9 @@
               5
             ],
             "label": "LeftTrigger",
-            "keyCode": 86
+            "keyCode": 86,
+            "gamepadCode": 6,
+            "type": "button"
           }
         ],
         [
@@ -1727,7 +1762,9 @@
             "y": 25.886,
             "height": 7,
             "width": 5.1,
-            "keyCode": 50
+            "keyCode": 50,
+            "gamepadCode": 9,
+            "type": "button"
           },
           {
             "keyName": "KeyS",
@@ -1741,7 +1778,10 @@
               221
             ],
             "label": "Y",
-            "keyCode": 83
+            "keyCode": 83,
+            "gamepadCode": 3,
+            "type": "button",
+            "emoji": "Y"
           },
           {
             "keyName": "KeyI",
@@ -1755,7 +1795,10 @@
               172
             ],
             "label": "B",
-            "keyCode": 73
+            "keyCode": 73,
+            "gamepadCode": 1,
+            "type": "button",
+            "emoji": "B"
           },
           {
             "keyName": "KeyW",
@@ -1769,7 +1812,10 @@
               205
             ],
             "label": "A",
-            "keyCode": 87
+            "keyCode": 87,
+            "gamepadCode": 0,
+            "type": "button",
+            "emoji": "A"
           },
           {
             "keyName": "KeyA",
@@ -1783,7 +1829,10 @@
               224
             ],
             "label": "X",
-            "keyCode": 65
+            "keyCode": 65,
+            "gamepadCode": 2,
+            "type": "button",
+            "emoji": "X"
           },
           {
             "keyName": "Digit6",
@@ -1798,7 +1847,9 @@
             "width": 5.4,
             "shape": "circle",
             "height": 7.6,
-            "keyCode": 54
+            "keyCode": 54,
+            "gamepadCode": 8,
+            "type": "button"
           },
           {
             "keyName": "KeyR",
@@ -1814,7 +1865,9 @@
             ],
             "label": "up",
             "keyCode": 82,
-            "emoji": "⬆️"
+            "emoji": "⬆️",
+            "gamepadCode": 12,
+            "type": "button"
           },
           {
             "keyName": "KeyF",
@@ -1830,7 +1883,9 @@
             ],
             "label": "down",
             "keyCode": 70,
-            "emoji": "⬇️"
+            "emoji": "⬇️",
+            "gamepadCode": 13,
+            "type": "button"
           },
           {
             "keyName": "KeyD",
@@ -1846,7 +1901,9 @@
             ],
             "label": "left",
             "keyCode": 68,
-            "emoji": "⬅️"
+            "emoji": "⬅️",
+            "gamepadCode": 14,
+            "type": "button"
           },
           {
             "keyName": "KeyG",
@@ -1861,7 +1918,9 @@
               5
             ],
             "label": "right",
-            "keyCode": 71
+            "keyCode": 71,
+            "gamepadCode": 15,
+            "type": "button"
           },
           {
             "keyName": "KeyK",
@@ -1876,7 +1935,9 @@
               5
             ],
             "label": "RightBumper",
-            "keyCode": 75
+            "keyCode": 75,
+            "gamepadCode": 5,
+            "type": "button"
           },
           {
             "keyName": "KeyQ",
@@ -1891,7 +1952,9 @@
               5
             ],
             "label": "LeftBumper",
-            "keyCode": 81
+            "keyCode": 81,
+            "gamepadCode": 4,
+            "type": "button"
           },
           {
             "keyName": "KeyL",
@@ -1906,7 +1969,9 @@
               5
             ],
             "label": "RightTrigger",
-            "keyCode": 76
+            "keyCode": 76,
+            "gamepadCode": 7,
+            "type": "button"
           },
           {
             "keyName": "KeyJ",
@@ -1921,7 +1986,9 @@
               5
             ],
             "label": "LeftTrigger",
-            "keyCode": 74
+            "keyCode": 74,
+            "gamepadCode": 6,
+            "type": "button"
           }
         ],
         [
@@ -1967,7 +2034,10 @@
               221
             ],
             "label": "Y",
-            "keyCode": 16
+            "keyCode": 16,
+            "gamepadCode": 3,
+            "type": "button",
+            "emoji": "Y"
           },
           {
             "keyName": "PageUp",
@@ -1981,7 +2051,10 @@
               172
             ],
             "label": "B",
-            "keyCode": 33
+            "keyCode": 33,
+            "gamepadCode": 1,
+            "type": "button",
+            "emoji": "B"
           },
           {
             "keyName": "KeyO",
@@ -1995,7 +2068,10 @@
               205
             ],
             "label": "A",
-            "keyCode": 79
+            "keyCode": 79,
+            "gamepadCode": 0,
+            "type": "button",
+            "emoji": "A"
           },
           {
             "keyName": "ControlRight",
@@ -2009,7 +2085,10 @@
               224
             ],
             "label": "X",
-            "keyCode": 17
+            "keyCode": 17,
+            "gamepadCode": 2,
+            "type": "button",
+            "emoji": "X"
           },
           {
             "keyName": "Minus",
@@ -2024,7 +2103,9 @@
               5
             ],
             "label": "up",
-            "keyCode": 189
+            "keyCode": 189,
+            "gamepadCode": 12,
+            "type": "button"
           },
           {
             "keyName": "BracketLeft",
@@ -2040,7 +2121,9 @@
             ],
             "label": "down",
             "keyCode": 219,
-            "emoji": "⬇️"
+            "emoji": "⬇️",
+            "gamepadCode": 13,
+            "type": "button"
           },
           {
             "keyName": "Digit9",
@@ -2056,7 +2139,9 @@
             ],
             "label": "left",
             "keyCode": 57,
-            "emoji": "⬅️"
+            "emoji": "⬅️",
+            "gamepadCode": 14,
+            "type": "button"
           },
           {
             "keyName": "KeyT",
@@ -2072,7 +2157,9 @@
             ],
             "label": "right",
             "keyCode": 84,
-            "emoji": "➡️"
+            "emoji": "➡️",
+            "gamepadCode": 15,
+            "type": "button"
           },
           {
             "keyName": "End",
@@ -2087,7 +2174,9 @@
               5
             ],
             "label": "RightBumper",
-            "keyCode": 35
+            "keyCode": 35,
+            "gamepadCode": 5,
+            "type": "button"
           },
           {
             "keyName": "Comma",
@@ -2102,7 +2191,9 @@
               5
             ],
             "label": "LeftBumper",
-            "keyCode": 188
+            "keyCode": 188,
+            "gamepadCode": 4,
+            "type": "button"
           },
           {
             "keyName": "KeyX",
@@ -2117,7 +2208,9 @@
               5
             ],
             "label": "RightTrigger",
-            "keyCode": 88
+            "keyCode": 88,
+            "gamepadCode": 7,
+            "type": "button"
           },
           {
             "keyName": "KeyV",
@@ -2132,7 +2225,9 @@
               5
             ],
             "label": "LeftTrigger",
-            "keyCode": 86
+            "keyCode": 86,
+            "gamepadCode": 6,
+            "type": "button"
           }
         ],
         [
@@ -2164,7 +2259,9 @@
             "width": 5.4,
             "shape": "circle",
             "height": 7.6,
-            "keyCode": 56
+            "keyCode": 56,
+            "gamepadCode": 8,
+            "type": "button"
           },
           {
             "keyName": "KeyE",
@@ -2178,7 +2275,11 @@
               221
             ],
             "label": "Y",
-            "keyCode": 69
+            "keyCode": 69,
+            "gamepadCode": 3,
+            "type": "button",
+            "emoji": "Y",
+            "shape": "circle"
           },
           {
             "keyName": "Digit0",
@@ -2192,7 +2293,11 @@
               172
             ],
             "label": "B",
-            "keyCode": 48
+            "keyCode": 48,
+            "gamepadCode": 1,
+            "type": "button",
+            "emoji": "B",
+            "shape": "circle"
           },
           {
             "keyName": "KeyM",
@@ -2206,7 +2311,11 @@
               205
             ],
             "label": "A",
-            "keyCode": 77
+            "keyCode": 77,
+            "gamepadCode": 0,
+            "type": "button",
+            "emoji": "A",
+            "shape": "circle"
           },
           {
             "keyName": "KeyB",
@@ -2220,7 +2329,11 @@
               224
             ],
             "label": "X",
-            "keyCode": 66
+            "keyCode": 66,
+            "gamepadCode": 2,
+            "type": "button",
+            "emoji": "X",
+            "shape": "circle"
           },
           {
             "keyName": "KeyY",
@@ -2236,7 +2349,9 @@
             ],
             "label": "up",
             "keyCode": 89,
-            "emoji": "⬆️"
+            "emoji": "⬆️",
+            "gamepadCode": 12,
+            "type": "button"
           },
           {
             "keyName": "KeyN",
@@ -2252,7 +2367,9 @@
             ],
             "label": "down",
             "keyCode": 78,
-            "emoji": "⬇️"
+            "emoji": "⬇️",
+            "gamepadCode": 13,
+            "type": "button"
           },
           {
             "keyName": "Period",
@@ -2268,7 +2385,9 @@
             ],
             "label": "left",
             "keyCode": 190,
-            "emoji": "⬅️"
+            "emoji": "⬅️",
+            "gamepadCode": 14,
+            "type": "button"
           },
           {
             "keyName": "KeyU",
@@ -2284,7 +2403,9 @@
             ],
             "label": "right",
             "keyCode": 85,
-            "emoji": "➡️"
+            "emoji": "➡️",
+            "gamepadCode": 15,
+            "type": "button"
           },
           {
             "keyName": "Home",
@@ -2299,7 +2420,9 @@
               5
             ],
             "label": "RightBumper",
-            "keyCode": 36
+            "keyCode": 36,
+            "gamepadCode": 5,
+            "type": "button"
           },
           {
             "keyName": "KeyH",
@@ -2314,7 +2437,9 @@
               5
             ],
             "label": "LeftBumper",
-            "keyCode": 72
+            "keyCode": 72,
+            "gamepadCode": 4,
+            "type": "button"
           },
           {
             "keyName": "KeyX",
@@ -2329,7 +2454,9 @@
               5
             ],
             "label": "RightTrigger",
-            "keyCode": 88
+            "keyCode": 88,
+            "gamepadCode": 7,
+            "type": "button"
           },
           {
             "keyName": "KeyV",
@@ -2344,7 +2471,9 @@
               5
             ],
             "label": "LeftTrigger",
-            "keyCode": 86
+            "keyCode": 86,
+            "gamepadCode": 6,
+            "type": "button"
           }
         ]
       ]

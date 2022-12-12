@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges } from '@angular/core'
 import { Control, PlatformMap } from '../platforms'
-import { LastButton, LastButtons } from './LastButtons.provider'
-import { LastPress, PressedObject } from './LastPresses.provider'
+import { LastButtons } from './LastButtons.provider'
+import { PressedObject } from './LastPresses.provider'
 
 @Component({
   selector: 'platform-control-map',
@@ -11,7 +11,7 @@ export class PlatformControlMapComponent {
   @Output() lastDragChange = new EventEmitter<LastDrag>()
   @Output() controlClick = new EventEmitter<Control>()
   
-  @Input() controlListen?: Control
+  @Input() controlListen?: Control // indication of listening for next key press
   @Output() controlListenChange = new EventEmitter<Control>()
   
   @Input() lastDrag?: LastDrag
@@ -34,7 +34,7 @@ export class PlatformControlMapComponent {
   }
 
   ngOnChanges(changes: SimpleChanges){
-    if ( changes['platform'] || changes['remap'] ) {
+    if ( changes['controls'] || changes['platform'] || changes['remap'] ) {
       this.remapPlatform()
     }
   }

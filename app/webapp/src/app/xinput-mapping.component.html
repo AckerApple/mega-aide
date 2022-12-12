@@ -1,3 +1,4 @@
+<h2>{{fileName}}</h2>
 <div>
   <platform-filters #filters="platformFilters" [controllerSize]="12" useLabels="1"></platform-filters>
   <platform-visual-filters [filters]="filters" class="flex-right flex-wrap child-margin-xs"
@@ -40,7 +41,8 @@
           <ng-container *ngIf="editRow !== keyvalue.value">
             <td class="pad-xxs">
               {{ keyvalue.value.button }}
-              <div *ngFor="let parameter of keyvalue.value.parameters">{{parameter}}</div>
+              <!--axis-->
+              <span *ngFor="let parameter of keyvalue.value.parameters">{{parameter}}</span>
             </td>
             <td class="pad-xxs">
               <!-- on remap listen -->
@@ -51,7 +53,6 @@
               <!-- keyname -->
               <ng-template #buttonValue>{{ keyvalue.key }}</ng-template>
             </td>
-            <td>{{ keyvalue.value.num }}</td>
           </ng-container>
           
           <ng-container *ngIf="editRow === keyvalue.value">
@@ -60,16 +61,44 @@
                 <option value=""></option>
                 <option *ngFor="let item of gamepad | keyvalue" [value]="item.key">{{item.key}}</option>
               </select>
-              <div *ngFor="let parameter of keyvalue.value.parameters">{{parameter}}</div>
+              
+              <!--axis-->
+              <ng-container *ngIf="gamepad[keyvalue.value.button]">
+                <ng-container *ngFor="let parameter of keyvalue.value.parameters; let index = index">
+                  <div class="flex-valign-center flex-wrap">
+                    <input type="number" [(ngModel)]="keyvalue.value.parameters[index]" class="width-100" />
+                    <div class="flex-valign-center child-margin-1">
+                      <a class="text-xs" (click)="keyvalue.value.parameters.splice(index,1)" 
+                        title="removes parameters to indicate up"
+                      >⬆️</a>
+                      <a [class.text-xs]="!keyvalue.value.button.includes('X')" (click)="keyvalue.value.parameters[index] = -1" 
+                        title="sets param to -1"
+                      >⬅️</a>
+                      <a class="text-xs" (click)="keyvalue.value.parameters.splice(index,1)" 
+                        title="removes parameters to indicate right"
+                      >➡️</a>
+                      <a [class.text-xs]="!keyvalue.value.button.includes('Y')" (click)="keyvalue.value.parameters[index] = -1" 
+                        title="sets param to -1"
+                      >⬇️</a>
+                    </div>
+                  </div>
+                </ng-container>
+                <ng-container *ngIf="keyvalue.value.parameters?.length !== 1">
+                  <button type="button" class="text-xs"
+                    (click)="(keyvalue.value.parameters = keyvalue.value.parameters || []).push(-1)"
+                    title="typically only used to signify ⬅️ LEFT and ⬇️ DOWN"
+                  >+param</button>
+                </ng-container>
+              </ng-container>
             </td>
             <td class="bg-grey-2x pad-xxs">
-              <select [(ngModel)]="keyvalue.key">
+              <select [(ngModel)]="keyvalue.key" (change)="keyvalue.value.num=keyNameToNum(keyvalue.key)">
                 <option value=""></option>
                 <option *ngFor="let item of windowsKeys" [value]="item.code">{{ item.code }}</option>
               </select>
             </td>
           </ng-container>
-  
+          <td>{{ keyvalue.value.num }}</td>
           <td>
             <button type="button" class="pad-xxs"
               nextKey

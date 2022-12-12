@@ -19,8 +19,6 @@
     
     <platform-filters #filters="platformFilters"></platform-filters>
     <ng-container *ngIf="players.length">
-      <br />
-      <h3>Display tools</h3>
       <div class="bg-dark">
         <platform-visual-filters [filters]="filters"
           class="flex-right flex-wrap child-margin-smx"
@@ -163,7 +161,7 @@
             >🔄 remap controls</a>
   
             <a type="button" class="nowrap flex1 bg-positive"
-              (click)="platformMap.players[player.index].push({keyName: '', x:platformMap.players.length, y:0, width:4, height:4})"
+              (click)="addButtonToPlayer(player.index, platformMap.players)"
             >➕ add button</a>
   
             <a type="button" class="nowrap flex1 bg-assertive"
@@ -255,8 +253,33 @@
       </div>
       
       <div class="flex1 flex-stacked">
-        <div>Button</div>
-        <input type="number" [(ngModel)]="control.gamepadCode" class="flex-1" />
+        <div class="flex child-margin-h-xxs">
+          <span>
+            <input type="radio" [(ngModel)]="control.type" value="button" id="buttonRadio" [checked]="!control.type" />
+            <label for="buttonRadio" class="cursor-pointer">
+              Button
+            </label>
+          </span>
+          <span>
+            <input type="radio" [(ngModel)]="control.type" value="axis" id="axisRadio" />
+            <label for="axisRadio" class="cursor-pointer">
+              Axis
+            </label>
+          </span>
+        </div>
+        <ng-container *ngIf="control.type === 'axis'; else buttonAssign">
+          <select [(ngModel)]="control.gamepadAxis">
+            <option value="LeftStickX">LeftStickX</option>
+            <option value="LeftStickY">LeftStickY</option>
+            <option value="RightStickX">RightStickX</option>
+            <option value="RightStickY">RightStickY</option>
+          </select>             
+        </ng-container>
+        <ng-template #buttonAssign>
+          <input type="number" [(ngModel)]="control.gamepadCode" class="flex-1"
+            (change)="control.type='button'"
+          />
+        </ng-template>
       </div>
       
       <div class="flex1 flex-stacked">

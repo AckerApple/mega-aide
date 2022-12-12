@@ -10,12 +10,11 @@ import { xmlDocToString } from '../xml.functions'
   templateUrl: './DetectIssues.component.html',
 })
 export class DetectIssuesComponent {
-  xarcade = new XArcadeXInputProvider()
   scanning = 0
   
   platformGames: PlatformGameApp[] = [] // platforms with games that have mappings
   searchPlatformGames: PlatformGameApp[] = [] // platforms with games that have mappings
-
+  
   stats: {
     hasDefaultMix?: boolean
     mapCounts: { [name: string]: number }
@@ -29,11 +28,12 @@ export class DetectIssuesComponent {
   savingFiles?: WriteFile[]
   
   subs = new Subscription()
-
+  
   constructor(
     public session: SessionProvider,
     public router: Router,
-  ) {
+    public xarcade: XArcadeXInputProvider,
+    ) {
     // how to react to our files being saved
     this.subs.add(
       this.session.$filesSaved.subscribe(saved => {
