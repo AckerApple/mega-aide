@@ -118,10 +118,17 @@
           </tr>
         </tBody>
       </table>
-      <div class="flex-wrap margin-v gap">
+      <div class="flex-wrap margin-v gap-xs">
         <button *ngIf="!selected.hasXinput" type="button" class="bg-balanced flex1"
           (click)="addXinputIntoSelected()"
-          >+ADD XINPUT</button>
+        >+ADD XINPUT</button>
+
+        <a type="button" routerLink="/🧰/↩" class="bg-calm"
+          [queryParams]="{
+            path:selected.game.platform.file.directory.path,
+            file:selected.game.platform.file.name
+          }"
+        >↩️ FILE BACKUPS</a>
 
         <button *ngIf="selected.hasXinput" type="button" class="bg-assertive flex1"
           (click)="removeXinputFromSelected()"
