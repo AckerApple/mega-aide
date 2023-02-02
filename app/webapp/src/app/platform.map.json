@@ -1,0 +1,3233 @@
+{
+  "images": [
+    {
+      "label": "Nintendo",
+      "url": "assets/maps/nintendo.png",
+      "players": [
+        [
+          {
+            "keyName": "Digit1",
+            "shape": "square",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "x": 49.497,
+            "y": 57.398,
+            "width": 7,
+            "height": 5.7,
+            "keyCode": 49,
+            "gamepadButton": 9,
+            "gamepadCode": "9"
+          },
+          {
+            "keyName": "Digit5",
+            "shape": "square",
+            "emoji": "👆",
+            "label": "select",
+            "color": [
+              10,
+              10,
+              10
+            ],
+            "x": 38,
+            "y": 57.37,
+            "width": 7,
+            "height": 5.7,
+            "keyCode": 53,
+            "gamepadButton": 8,
+            "gamepadCode": "8"
+          },
+          {
+            "keyName": "ControlLeft",
+            "x": 76,
+            "y": 54.95495495495496,
+            "width": 8,
+            "height": 11,
+            "shape": "circle",
+            "label": "A",
+            "color": [
+              187,
+              38,
+              35
+            ],
+            "keyCode": 17,
+            "gamepadButton": 1,
+            "gamepadCode": "1"
+          },
+          {
+            "keyName": "AltLeft",
+            "x": 64.56,
+            "y": 54.508,
+            "width": 8.2,
+            "height": 11.8,
+            "color": [
+              187,
+              38,
+              35
+            ],
+            "label": "B",
+            "keyCode": 18,
+            "gamepadButton": 0,
+            "gamepadCode": "0"
+          },
+          {
+            "keyName": "ArrowUp",
+            "shape": "square",
+            "emoji": "⬆️",
+            "label": "up",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "x": 18.8,
+            "y": 42.04204204204204,
+            "width": 4.9,
+            "height": 5.7,
+            "keyCode": 38,
+            "gamepadAxis": "-1",
+            "gamepadButton": "-1",
+            "gamepadCode": "-1"
+          },
+          {
+            "keyName": "ArrowRight",
+            "shape": "square",
+            "emoji": "➡️",
+            "label": "right",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "x": 25,
+            "y": 51.651651651651655,
+            "width": 4.9,
+            "height": 5.7,
+            "keyCode": 39,
+            "gamepadAxis": "+0",
+            "gamepadButton": "+0",
+            "gamepadCode": "+0"
+          },
+          {
+            "keyName": "ArrowDown",
+            "shape": "square",
+            "emoji": "⬇️",
+            "label": "down",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "x": 18.8,
+            "y": 60.36036036036037,
+            "width": 4.9,
+            "height": 5.7,
+            "keyCode": 40,
+            "gamepadAxis": "+1",
+            "gamepadButton": "+1",
+            "gamepadCode": "+1"
+          },
+          {
+            "keyName": "ArrowLeft",
+            "shape": "square",
+            "emoji": "⬅️",
+            "label": "left",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "x": 12.6,
+            "y": 51.35135135135135,
+            "width": 4.9,
+            "height": 5.7,
+            "keyCode": 37,
+            "gamepadAxis": "-0",
+            "gamepadButton": "-0",
+            "gamepadCode": "-0"
+          }
+        ],
+        [
+          {
+            "keyName": "Digit2",
+            "x": 49.8,
+            "y": 58.25825825825825,
+            "width": 6.4,
+            "height": 4.5,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "start",
+            "keyCode": 50,
+            "gamepadButton": 9,
+            "emoji": "▶️",
+            "gamepadCode": "9"
+          },
+          {
+            "keyName": "Digit6",
+            "x": 38,
+            "y": 57.65765765765766,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "select",
+            "keyCode": 54,
+            "gamepadButton": 8,
+            "emoji": "👆",
+            "gamepadCode": "8"
+          },
+          {
+            "keyName": "KeyA",
+            "x": 75.8,
+            "y": 54.65465465465466,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "A",
+            "keyCode": 65,
+            "gamepadButton": 1,
+            "gamepadCode": "1"
+          },
+          {
+            "keyName": "KeyS",
+            "x": 64.4,
+            "y": 54.35435435435435,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "B",
+            "keyCode": 83,
+            "gamepadButton": 0,
+            "gamepadCode": "0"
+          },
+          {
+            "keyName": "KeyR",
+            "x": 18,
+            "y": 42.94294294294294,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "up",
+            "keyCode": 82,
+            "gamepadButton": "-1",
+            "emoji": "⬆️",
+            "gamepadCode": "-1"
+          },
+          {
+            "keyName": "KeyF",
+            "x": 17.599999999999998,
+            "y": 60.66066066066066,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "down",
+            "keyCode": 70,
+            "gamepadButton": "+1",
+            "emoji": "⬇️",
+            "gamepadCode": "+1"
+          },
+          {
+            "keyName": "KeyD",
+            "x": 12.4,
+            "y": 52.25225225225225,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "left",
+            "keyCode": 68,
+            "gamepadButton": "-0",
+            "emoji": "⬅️",
+            "gamepadCode": "-0"
+          },
+          {
+            "keyName": "KeyG",
+            "x": 23,
+            "y": 52.25225225225225,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "right",
+            "keyCode": 71,
+            "gamepadButton": "+0",
+            "emoji": "➡️",
+            "gamepadCode": "+0"
+          }
+        ],
+        [
+          {
+            "keyName": "Digit3",
+            "x": 49.8,
+            "y": 58.25825825825825,
+            "width": 6.4,
+            "height": 4.5,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "start",
+            "keyCode": 51,
+            "gamepadButton": 9,
+            "emoji": "▶️",
+            "gamepadCode": "9"
+          },
+          {
+            "keyName": "Digit7",
+            "x": 38,
+            "y": 57.65765765765766,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "select",
+            "keyCode": 55,
+            "gamepadButton": 8,
+            "emoji": "👆",
+            "gamepadCode": "8"
+          },
+          {
+            "keyName": "ControlRight",
+            "x": 75.8,
+            "y": 54.65465465465466,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "A",
+            "keyCode": 17,
+            "gamepadButton": 1,
+            "gamepadCode": "1"
+          },
+          {
+            "keyName": "ShiftRight",
+            "x": 64.4,
+            "y": 54.35435435435435,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "B",
+            "keyCode": 16,
+            "gamepadButton": 0,
+            "gamepadCode": "0"
+          },
+          {
+            "keyName": "Minus",
+            "x": 18,
+            "y": 42.94294294294294,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "up",
+            "keyCode": 189,
+            "gamepadButton": "-1",
+            "emoji": "⬆️",
+            "gamepadCode": "-1"
+          },
+          {
+            "keyName": "BracketLeft",
+            "x": 17.599999999999998,
+            "y": 60.66066066066066,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "down",
+            "keyCode": 219,
+            "gamepadButton": "+1",
+            "emoji": "⬇️",
+            "gamepadCode": "+1"
+          },
+          {
+            "keyName": "Digit9",
+            "x": 12.4,
+            "y": 52.25225225225225,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "left",
+            "keyCode": 57,
+            "gamepadButton": "-0",
+            "emoji": "⬅️",
+            "gamepadCode": "-0"
+          },
+          {
+            "keyName": "KeyT",
+            "x": 23,
+            "y": 52.25225225225225,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "right",
+            "keyCode": 84,
+            "gamepadButton": "+0",
+            "emoji": "➡️",
+            "gamepadCode": "+0"
+          }
+        ],
+        [
+          {
+            "keyName": "Digit4",
+            "x": 49.8,
+            "y": 58.25825825825825,
+            "width": 6.4,
+            "height": 4.5,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "start",
+            "keyCode": 52,
+            "gamepadButton": 9,
+            "emoji": "▶️",
+            "gamepadCode": "9"
+          },
+          {
+            "keyName": "Digit8",
+            "x": 38,
+            "y": 57.65765765765766,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "select",
+            "keyCode": 56,
+            "gamepadButton": 8,
+            "emoji": "👆",
+            "gamepadCode": "8"
+          },
+          {
+            "keyName": "KeyB",
+            "x": 75.8,
+            "y": 54.65465465465466,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "A",
+            "keyCode": 66,
+            "gamepadButton": 1,
+            "gamepadCode": "1"
+          },
+          {
+            "keyName": "KeyE",
+            "x": 64.4,
+            "y": 54.35435435435435,
+            "width": 8.3,
+            "height": 11.9,
+            "color": [
+              189,
+              34,
+              31
+            ],
+            "label": "B",
+            "keyCode": 69,
+            "gamepadButton": 0,
+            "gamepadCode": "0"
+          },
+          {
+            "keyName": "KeyY",
+            "x": 18,
+            "y": 42.94294294294294,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "up",
+            "keyCode": 89,
+            "gamepadButton": "-1",
+            "emoji": "⬆️",
+            "gamepadCode": "-1"
+          },
+          {
+            "keyName": "KeyN",
+            "x": 17.599999999999998,
+            "y": 60.66066066066066,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "down",
+            "keyCode": 78,
+            "gamepadButton": "+1",
+            "emoji": "⬇️",
+            "gamepadCode": "+1"
+          },
+          {
+            "keyName": "Period",
+            "x": 12.4,
+            "y": 52.25225225225225,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "left",
+            "keyCode": 190,
+            "gamepadButton": "-0",
+            "emoji": "⬅️",
+            "gamepadCode": "-0"
+          },
+          {
+            "keyName": "KeyU",
+            "x": 23,
+            "y": 52.25225225225225,
+            "width": 6.6,
+            "height": 5.1,
+            "shape": "square",
+            "color": [
+              13,
+              13,
+              13
+            ],
+            "label": "right",
+            "keyCode": 85,
+            "gamepadButton": "+0",
+            "emoji": "➡️",
+            "gamepadCode": "+0"
+          }
+        ]
+      ]
+    },
+    {
+      "label": "PlayStation",
+      "url": "assets/maps/PlayStation-DualShock.png",
+      "players": [
+        [
+          {
+            "keyName": "Digit1",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 55.234375,
+            "y": 38.333333333333336,
+            "height": 7,
+            "width": 5.1,
+            "keyCode": 49,
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Digit5",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "select",
+            "x": 38.75,
+            "y": 38.611111111111114,
+            "width": 5.4,
+            "shape": "square",
+            "height": 5.7,
+            "keyCode": 53,
+            "emoji": "👆",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "AltLeft",
+            "x": 73.25349301397206,
+            "y": 23.04964539007092,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "triangle",
+            "keyCode": 18,
+            "emoji": "🔼",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyZ",
+            "x": 80.23952095808383,
+            "y": 35.1063829787234,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "circle",
+            "keyCode": 90,
+            "emoji": "⏺",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "ShiftLeft",
+            "x": 72.85429141716567,
+            "y": 47.16312056737589,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "x",
+            "keyCode": 16,
+            "emoji": "❎",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "ControlLeft",
+            "x": 65.6686626746507,
+            "y": 34.57446808510639,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              236,
+              197,
+              224
+            ],
+            "label": "square",
+            "keyCode": 17,
+            "emoji": "⏹",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "ArrowUp",
+            "x": 20.958083832335326,
+            "y": 28.723404255319153,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up",
+            "keyCode": 38,
+            "emoji": "⬆️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "ArrowDown",
+            "x": 21.35728542914172,
+            "y": 44.148936170212764,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down",
+            "keyCode": 40,
+            "emoji": "⬇️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "ArrowLeft",
+            "x": 16.46706586826347,
+            "y": 37.234042553191486,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left",
+            "keyCode": 37,
+            "emoji": "⬅️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "ArrowRight",
+            "x": 25.948103792415168,
+            "y": 36.702127659574465,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right",
+            "keyCode": 39,
+            "emoji": "➡️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Space",
+            "x": 70.95808383233533,
+            "y": 8.687943262411348,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "R1",
+            "keyCode": 32,
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyC",
+            "x": 18.562874251497004,
+            "y": 9.397163120567376,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "L1",
+            "keyCode": 67,
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyX",
+            "x": 70.85828343313374,
+            "y": 0.8865248226950355,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "R2",
+            "keyCode": 88,
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyV",
+            "x": 18.529,
+            "y": 0.733,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "L2",
+            "keyCode": 86,
+            "gamepadCode": ""
+          }
+        ],
+        [
+          {
+            "keyName": "Digit2",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 55.234375,
+            "y": 38.333333333333336,
+            "height": 7,
+            "width": 5.1,
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Digit6",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "select",
+            "x": 38.75,
+            "y": 38.611111111111114,
+            "width": 5.4,
+            "shape": "square",
+            "height": 5.7,
+            "emoji": "👆",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyS",
+            "x": 73.25349301397206,
+            "y": 23.04964539007092,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "triangle",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyI",
+            "x": 80.23952095808383,
+            "y": 35.1063829787234,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "circle",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyW",
+            "x": 72.85429141716567,
+            "y": 47.16312056737589,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "x",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyA",
+            "x": 65.6686626746507,
+            "y": 35.785,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              236,
+              197,
+              224
+            ],
+            "label": "square",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyR",
+            "x": 20.958083832335326,
+            "y": 28.723404255319153,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up",
+            "emoji": "⬆️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyF",
+            "x": 21.35728542914172,
+            "y": 44.148936170212764,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down",
+            "emoji": "⬇️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyD",
+            "x": 16.46706586826347,
+            "y": 37.234042553191486,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left",
+            "emoji": "⬅️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyG",
+            "x": 25.948103792415168,
+            "y": 36.702127659574465,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right",
+            "emoji": "➡️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyQ",
+            "x": 70.95808383233533,
+            "y": 8.687943262411348,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "R1",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyJ",
+            "x": 18.562874251497004,
+            "y": 9.397163120567376,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "L1",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyK",
+            "x": 70.85828343313374,
+            "y": 0.8865248226950355,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "R2",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyL",
+            "x": 18.529,
+            "y": 0.733,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "L2",
+            "gamepadCode": ""
+          }
+        ],
+        [
+          {
+            "keyName": "Digit3",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 55.234375,
+            "y": 38.333333333333336,
+            "height": 7,
+            "width": 5.1,
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Digit7",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "select",
+            "x": 38.75,
+            "y": 38.611111111111114,
+            "width": 5.4,
+            "shape": "square",
+            "height": 5.7,
+            "emoji": "👆",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "ShiftRight",
+            "x": 73.25349301397206,
+            "y": 23.04964539007092,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "triangle",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "PageUp",
+            "x": 80.23952095808383,
+            "y": 35.1063829787234,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "circle",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyO",
+            "x": 72.85429141716567,
+            "y": 47.16312056737589,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "x",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "ControlRight",
+            "x": 65.6686626746507,
+            "y": 35.785,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              236,
+              197,
+              224
+            ],
+            "label": "square",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Minus",
+            "x": 20.958083832335326,
+            "y": 28.723404255319153,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up",
+            "emoji": "⬆️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "BracketLeft",
+            "x": 21.35728542914172,
+            "y": 44.148936170212764,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down",
+            "emoji": "⬇️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Digit9",
+            "x": 16.46706586826347,
+            "y": 37.234042553191486,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left",
+            "emoji": "⬅️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyT",
+            "x": 25.948103792415168,
+            "y": 36.702127659574465,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right",
+            "emoji": "➡️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "End",
+            "x": 70.95808383233533,
+            "y": 8.687943262411348,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "R1",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "PageUp",
+            "x": 18.562874251497004,
+            "y": 9.397163120567376,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "L1",
+            "gamepadCode": ""
+          }
+        ],
+        [
+          {
+            "keyName": "Digit4",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 55.234375,
+            "y": 38.333333333333336,
+            "height": 7,
+            "width": 5.1,
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Digit8",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "select",
+            "x": 38.75,
+            "y": 38.611111111111114,
+            "width": 5.4,
+            "shape": "square",
+            "height": 5.7,
+            "emoji": "👆",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyE",
+            "x": 73.25349301397206,
+            "y": 23.04964539007092,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "triangle",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Digit0",
+            "x": 80.23952095808383,
+            "y": 35.1063829787234,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "circle",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyM",
+            "x": 72.85429141716567,
+            "y": 47.16312056737589,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "x",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyB",
+            "x": 65.6686626746507,
+            "y": 35.785,
+            "width": 6.3,
+            "height": 10.8,
+            "color": [
+              236,
+              197,
+              224
+            ],
+            "label": "square",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyY",
+            "x": 20.958083832335326,
+            "y": 28.723404255319153,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up",
+            "emoji": "⬆️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyN",
+            "x": 21.35728542914172,
+            "y": 44.148936170212764,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down",
+            "emoji": "⬇️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Period",
+            "x": 16.46706586826347,
+            "y": 37.234042553191486,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left",
+            "emoji": "⬅️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyU",
+            "x": 25.948103792415168,
+            "y": 36.702127659574465,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right",
+            "emoji": "➡️",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Home",
+            "x": 70.95808383233533,
+            "y": 8.687943262411348,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "R1",
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "KeyH",
+            "x": 18.562874251497004,
+            "y": 9.397163120567376,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "L1",
+            "gamepadCode": ""
+          }
+        ]
+      ]
+    },
+    {
+      "label": "Super Nintendo",
+      "url": "assets/maps/snes.png",
+      "players": [
+        [
+          {
+            "index": 1,
+            "keyName": "Digit1",
+            "x": 47.9646017699115,
+            "y": 49.01574803149607,
+            "width": 7.5,
+            "height": 16,
+            "color": [
+              18,
+              18,
+              18
+            ],
+            "label": "start",
+            "gamepadCode": "",
+            "keyCode": 49
+          },
+          {
+            "index": 1,
+            "keyName": "Digit5",
+            "x": 37.78761061946903,
+            "y": 50.39370078740157,
+            "width": 7.5,
+            "height": 16,
+            "color": [
+              18,
+              18,
+              18
+            ],
+            "label": "select",
+            "gamepadCode": "",
+            "keyCode": 53
+          },
+          {
+            "index": 1,
+            "keyName": "",
+            "x": 83.1858407079646,
+            "y": 41.732283464566926,
+            "width": 7.5,
+            "height": 16,
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "A",
+            "gamepadCode": ""
+          },
+          {
+            "index": 1,
+            "keyName": "",
+            "x": 73.788,
+            "y": 56.838,
+            "width": 7.5,
+            "height": 16,
+            "color": [
+              255,
+              232,
+              39
+            ],
+            "label": "B",
+            "gamepadCode": ""
+          },
+          {
+            "index": 1,
+            "keyName": "",
+            "x": 64.42477876106196,
+            "y": 39.37007874015748,
+            "width": 7.5,
+            "height": 16,
+            "color": [
+              1,
+              140,
+              50
+            ],
+            "label": "Y",
+            "gamepadCode": ""
+          },
+          {
+            "index": 1,
+            "keyName": "",
+            "x": 73.71681415929203,
+            "y": 24.409448818897637,
+            "width": 7.5,
+            "height": 16,
+            "color": [
+              0,
+              50,
+              177
+            ],
+            "label": "X",
+            "gamepadCode": ""
+          },
+          {
+            "index": 1,
+            "keyName": "ArrowUp",
+            "x": 18.849557522123895,
+            "y": 29.92125984251969,
+            "width": 5.6,
+            "height": 12.2,
+            "color": [
+              0,
+              50,
+              177
+            ],
+            "label": "up",
+            "shape": "square",
+            "gamepadCode": "",
+            "keyCode": 38
+          },
+          {
+            "index": 1,
+            "keyName": "ArrowLeft",
+            "x": 13.628318584070797,
+            "y": 42.125984251968504,
+            "width": 5.6,
+            "height": 12.2,
+            "color": [
+              0,
+              50,
+              177
+            ],
+            "label": "left",
+            "shape": "square",
+            "gamepadCode": "",
+            "keyCode": 37
+          },
+          {
+            "index": 1,
+            "keyName": "ArrowRight",
+            "x": 24.424778761061948,
+            "y": 43.30708661417323,
+            "width": 5.6,
+            "height": 12.2,
+            "color": [
+              0,
+              50,
+              177
+            ],
+            "label": "right",
+            "shape": "square",
+            "gamepadCode": "",
+            "keyCode": 39
+          },
+          {
+            "index": 1,
+            "keyName": "ArrowDown",
+            "x": 19.115044247787612,
+            "y": 55.51181102362205,
+            "width": 5.6,
+            "height": 12.2,
+            "color": [
+              0,
+              50,
+              177
+            ],
+            "label": "down",
+            "shape": "square",
+            "gamepadCode": "",
+            "keyCode": 40
+          },
+          {
+            "index": 1,
+            "keyName": "",
+            "x": 13.362831858407079,
+            "y": -0.19685039370078738,
+            "width": 17.7,
+            "height": 12.2,
+            "color": [
+              0,
+              50,
+              177
+            ],
+            "label": "L1",
+            "shape": "square",
+            "gamepadCode": ""
+          },
+          {
+            "index": 1,
+            "keyName": "",
+            "x": 67.9646017699115,
+            "y": -1.7716535433070866,
+            "width": 17.7,
+            "height": 12.2,
+            "color": [
+              0,
+              50,
+              177
+            ],
+            "label": "R1",
+            "shape": "square",
+            "gamepadCode": ""
+          }
+        ]
+      ]
+    },
+    {
+      "label": "Xbox",
+      "url": "assets/maps/xbox.png",
+      "players": [
+        [
+          {
+            "keyName": "Digit1",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 53.83,
+            "y": 25.886,
+            "height": 7,
+            "width": 5.1,
+            "keyCode": 49,
+            "gamepadButton": 9,
+            "type": "button",
+            "gamepadCode": "9"
+          },
+          {
+            "keyName": "Digit5",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "Back",
+            "x": 40.942,
+            "y": 26.574803149606304,
+            "width": 5.4,
+            "shape": "circle",
+            "height": 7.6,
+            "keyCode": 53,
+            "gamepadButton": 8,
+            "type": "button",
+            "gamepadCode": "8"
+          },
+          {
+            "keyName": "AltLeft",
+            "x": 69.58904109589041,
+            "y": 17.716535433070867,
+            "width": 6.3,
+            "height": 9.3,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "Y",
+            "keyCode": 18,
+            "type": "button",
+            "gamepadButton": 3,
+            "emoji": "Y",
+            "gamepadCode": "3"
+          },
+          {
+            "keyName": "KeyZ",
+            "x": 75.314,
+            "y": 26.042,
+            "width": 6.3,
+            "height": 8.9,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "B",
+            "keyCode": 90,
+            "type": "button",
+            "gamepadButton": 1,
+            "shape": "circle",
+            "emoji": "B",
+            "gamepadCode": "1"
+          },
+          {
+            "x": 69.312,
+            "y": 33.785,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "A",
+            "type": "button",
+            "gamepadButton": 0,
+            "emoji": "A",
+            "shape": "circle",
+            "gamepadCode": "0"
+          },
+          {
+            "keyName": "ControlLeft",
+            "x": 63.505,
+            "y": 25.393700787401574,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              236,
+              197,
+              224
+            ],
+            "label": "X",
+            "keyCode": 162,
+            "emoji": "X",
+            "gamepadButton": 2,
+            "type": "button",
+            "gamepadCode": "2"
+          },
+          {
+            "keyName": "ArrowUp",
+            "x": 35.75342465753425,
+            "y": 37.79527559055118,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up",
+            "keyCode": 38,
+            "emoji": "⬆️",
+            "type": "button",
+            "gamepadButton": 12,
+            "gamepadCode": "12"
+          },
+          {
+            "keyName": "ArrowDown",
+            "x": 36.325385694249654,
+            "y": 54.32595573440644,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down",
+            "keyCode": 40,
+            "emoji": "⬇️",
+            "type": "button",
+            "gamepadButton": 13,
+            "gamepadCode": "13"
+          },
+          {
+            "keyName": "ArrowLeft",
+            "x": 28.190743338008417,
+            "y": 48.2897384305835,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left",
+            "keyCode": 37,
+            "emoji": "⬅️",
+            "gamepadButton": 14,
+            "type": "button",
+            "gamepadCode": "14"
+          },
+          {
+            "keyName": "ArrowRight",
+            "x": 39.130434782608695,
+            "y": 48.2897384305835,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right",
+            "keyCode": 39,
+            "emoji": "➡️",
+            "gamepadButton": 15,
+            "type": "button",
+            "gamepadCode": "15"
+          },
+          {
+            "keyName": "Space",
+            "x": 63.83561643835617,
+            "y": 10.62992125984252,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightBumper",
+            "keyCode": 32,
+            "type": "button",
+            "gamepadButton": 5,
+            "gamepadCode": "5"
+          },
+          {
+            "keyName": "KeyC",
+            "x": 25.068493150684933,
+            "y": 10.826771653543307,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftBumper",
+            "keyCode": 67,
+            "type": "button",
+            "gamepadButton": 4,
+            "gamepadCode": "4"
+          },
+          {
+            "keyName": "KeyX",
+            "x": 65.34246575342466,
+            "y": 2.098,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightTrigger",
+            "keyCode": 88,
+            "gamepadButton": 7,
+            "type": "button",
+            "gamepadCode": "7"
+          },
+          {
+            "keyName": "KeyV",
+            "x": 23.972602739726025,
+            "y": 1.968503937007874,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftTrigger",
+            "keyCode": 86,
+            "gamepadButton": 6,
+            "type": "button",
+            "gamepadCode": "6"
+          },
+          {
+            "keyName": "",
+            "x": 26.227208976157083,
+            "y": 19.3158953722334,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickUp",
+            "emoji": "⬆️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickY",
+            "gamepadDirection": "1",
+            "gamepadCode": "LeftStickY1"
+          },
+          {
+            "keyName": "",
+            "x": 25.806451612903224,
+            "y": 30.784708249496983,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickDown",
+            "emoji": "⬇️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickY",
+            "gamepadDirection": "-1",
+            "gamepadCode": "LeftStickY-1"
+          },
+          {
+            "keyName": "",
+            "x": 15.708274894810659,
+            "y": 27.16297786720322,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickLeft",
+            "emoji": "⬅️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickX",
+            "gamepadDirection": "-1",
+            "gamepadCode": "LeftStickX-1"
+          },
+          {
+            "keyName": "",
+            "x": 30.269058295964125,
+            "y": 27.819548872180448,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickRight",
+            "emoji": "➡️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickX",
+            "gamepadDirection": "1",
+            "gamepadCode": "LeftStickX1"
+          },
+          {
+            "keyName": "",
+            "x": 59.88779803646563,
+            "y": 38.22937625754527,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickUp",
+            "emoji": "⬆️",
+            "type": "axis",
+            "gamepadAxis": "RightStickY",
+            "gamepadDirection": "1",
+            "gamepadCode": "RightStickY1"
+          },
+          {
+            "keyName": "",
+            "x": 60.02805049088359,
+            "y": 49.69818913480885,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickDown",
+            "emoji": "⬇️",
+            "type": "axis",
+            "gamepadAxis": "RightStickY",
+            "gamepadDirection": "-1",
+            "gamepadCode": "RightStickY-1"
+          },
+          {
+            "keyName": "",
+            "x": 51.332398316970554,
+            "y": 45.87525150905433,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickLeft",
+            "emoji": "⬅️",
+            "type": "axis",
+            "gamepadAxis": "RightStickX",
+            "gamepadDirection": "-1",
+            "gamepadCode": "RightStickX-1"
+          },
+          {
+            "keyName": "",
+            "x": 64.09537166900421,
+            "y": 46.076458752515094,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickRight",
+            "emoji": "➡️",
+            "type": "axis",
+            "gamepadAxis": "RightStickX",
+            "gamepadDirection": "1",
+            "gamepadCode": "RightStickX1"
+          }
+        ],
+        [
+          {
+            "keyName": "Digit2",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 53.83,
+            "y": 25.886,
+            "height": 7,
+            "width": 5.1,
+            "keyCode": 50,
+            "gamepadButton": 9,
+            "type": "button",
+            "gamepadCode": "9"
+          },
+          {
+            "keyName": "KeyS",
+            "x": 69.58904109589041,
+            "y": 17.716535433070867,
+            "width": 6.3,
+            "height": 9.3,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "Y",
+            "keyCode": 83,
+            "gamepadButton": 3,
+            "type": "button",
+            "emoji": "Y",
+            "gamepadCode": "3"
+          },
+          {
+            "keyName": "KeyI",
+            "x": 75.314,
+            "y": 26.042,
+            "width": 6.3,
+            "height": 8.9,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "B",
+            "keyCode": 73,
+            "gamepadButton": 1,
+            "type": "button",
+            "emoji": "B",
+            "gamepadCode": "1"
+          },
+          {
+            "keyName": "KeyW",
+            "x": 69.312,
+            "y": 33.785,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "A",
+            "keyCode": 87,
+            "gamepadButton": 0,
+            "type": "button",
+            "emoji": "A",
+            "gamepadCode": "0"
+          },
+          {
+            "keyName": "KeyA",
+            "x": 63.505,
+            "y": 25.393700787401574,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              236,
+              197,
+              224
+            ],
+            "label": "X",
+            "keyCode": 65,
+            "gamepadButton": 2,
+            "type": "button",
+            "emoji": "X",
+            "gamepadCode": "2"
+          },
+          {
+            "keyName": "Digit6",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "Back",
+            "x": 41.20234604105572,
+            "y": 26.105263157894736,
+            "width": 5.4,
+            "shape": "circle",
+            "height": 7.6,
+            "keyCode": 54,
+            "gamepadButton": 8,
+            "type": "button",
+            "gamepadCode": "8"
+          },
+          {
+            "keyName": "KeyR",
+            "x": 35.75342465753425,
+            "y": 37.79527559055118,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up",
+            "keyCode": 82,
+            "emoji": "⬆️",
+            "gamepadButton": 12,
+            "type": "button",
+            "gamepadCode": "12"
+          },
+          {
+            "keyName": "KeyF",
+            "x": 36.43835616438356,
+            "y": 51.181102362204726,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down",
+            "keyCode": 70,
+            "emoji": "⬇️",
+            "gamepadButton": 13,
+            "type": "button",
+            "gamepadCode": "13"
+          },
+          {
+            "keyName": "KeyD",
+            "x": 31.232876712328768,
+            "y": 45.86614173228347,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left",
+            "keyCode": 68,
+            "emoji": "⬅️",
+            "gamepadButton": 14,
+            "type": "button",
+            "gamepadCode": "14"
+          },
+          {
+            "keyName": "KeyG",
+            "x": 40.821917808219176,
+            "y": 43.89763779527559,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right",
+            "keyCode": 71,
+            "gamepadButton": 15,
+            "type": "button",
+            "gamepadCode": "15"
+          },
+          {
+            "keyName": "KeyK",
+            "x": 63.83561643835617,
+            "y": 10.62992125984252,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightBumper",
+            "keyCode": 75,
+            "gamepadButton": 5,
+            "type": "button",
+            "gamepadCode": "5"
+          },
+          {
+            "keyName": "KeyQ",
+            "x": 25.068493150684933,
+            "y": 10.826771653543307,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftBumper",
+            "keyCode": 81,
+            "gamepadButton": 4,
+            "type": "button",
+            "gamepadCode": "4"
+          },
+          {
+            "keyName": "KeyL",
+            "x": 65.34246575342466,
+            "y": 2.098,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightTrigger",
+            "keyCode": 76,
+            "gamepadButton": 7,
+            "type": "button",
+            "gamepadCode": "7"
+          },
+          {
+            "keyName": "KeyJ",
+            "x": 23.972602739726025,
+            "y": 1.968503937007874,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftTrigger",
+            "keyCode": 74,
+            "gamepadButton": 6,
+            "type": "button",
+            "gamepadCode": "6"
+          },
+          {
+            "keyName": "",
+            "x": 26.227208976157083,
+            "y": 19.3158953722334,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickUp",
+            "emoji": "⬆️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickY",
+            "gamepadDirection": "1",
+            "gamepadCode": "LeftStickY1"
+          },
+          {
+            "keyName": "",
+            "x": 25.806451612903224,
+            "y": 30.784708249496983,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickDown",
+            "emoji": "⬇️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickY",
+            "gamepadDirection": "-1",
+            "gamepadCode": "LeftStickY-1"
+          },
+          {
+            "keyName": "",
+            "x": 15.708274894810659,
+            "y": 27.16297786720322,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickLeft",
+            "emoji": "⬅️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickX",
+            "gamepadDirection": "-1",
+            "gamepadCode": "LeftStickX-1"
+          },
+          {
+            "keyName": "",
+            "x": 30.269058295964125,
+            "y": 27.819548872180448,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickRight",
+            "emoji": "➡️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickX",
+            "gamepadDirection": "1",
+            "gamepadCode": "LeftStickX1"
+          },
+          {
+            "keyName": "",
+            "x": 59.88779803646563,
+            "y": 38.22937625754527,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickUp",
+            "emoji": "⬆️",
+            "type": "axis",
+            "gamepadAxis": "RightStickY",
+            "gamepadDirection": "1",
+            "gamepadCode": "RightStickY1"
+          },
+          {
+            "keyName": "",
+            "x": 60.02805049088359,
+            "y": 49.69818913480885,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickDown",
+            "emoji": "⬇️",
+            "type": "axis",
+            "gamepadAxis": "RightStickY",
+            "gamepadDirection": "-1",
+            "gamepadCode": "RightStickY-1"
+          },
+          {
+            "keyName": "",
+            "x": 51.332398316970554,
+            "y": 45.87525150905433,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickLeft",
+            "emoji": "⬅️",
+            "type": "axis",
+            "gamepadAxis": "RightStickX",
+            "gamepadDirection": "-1",
+            "gamepadCode": "RightStickX-1"
+          },
+          {
+            "keyName": "",
+            "x": 64.09537166900421,
+            "y": 46.076458752515094,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickRight",
+            "emoji": "➡️",
+            "type": "axis",
+            "gamepadAxis": "RightStickX",
+            "gamepadDirection": "1",
+            "gamepadCode": "RightStickX1"
+          }
+        ],
+        [
+          {
+            "keyName": "Digit3",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 53.83,
+            "y": 25.886,
+            "height": 7,
+            "width": 5.1,
+            "keyCode": 51,
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Digit7",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "Back",
+            "x": 40.942,
+            "y": 26.574803149606304,
+            "width": 5.4,
+            "shape": "circle",
+            "height": 7.6,
+            "keyCode": 55,
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "ShiftRight",
+            "x": 69.58904109589041,
+            "y": 17.716535433070867,
+            "width": 6.3,
+            "height": 9.3,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "Y",
+            "keyCode": 16,
+            "gamepadButton": 3,
+            "type": "button",
+            "emoji": "Y",
+            "gamepadCode": "3"
+          },
+          {
+            "keyName": "PageUp",
+            "x": 75.314,
+            "y": 26.042,
+            "width": 6.3,
+            "height": 8.9,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "B",
+            "keyCode": 33,
+            "gamepadButton": 1,
+            "type": "button",
+            "emoji": "B",
+            "gamepadCode": "1"
+          },
+          {
+            "keyName": "KeyO",
+            "x": 69.312,
+            "y": 33.785,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "A",
+            "keyCode": 79,
+            "gamepadButton": 0,
+            "type": "button",
+            "emoji": "A",
+            "gamepadCode": "0"
+          },
+          {
+            "keyName": "ControlRight",
+            "x": 63.505,
+            "y": 25.393700787401574,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              236,
+              197,
+              224
+            ],
+            "label": "X",
+            "keyCode": 17,
+            "gamepadButton": 2,
+            "type": "button",
+            "emoji": "X",
+            "gamepadCode": "2"
+          },
+          {
+            "keyName": "Minus",
+            "x": 35.75342465753425,
+            "y": 37.79527559055118,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up",
+            "keyCode": 189,
+            "gamepadButton": 12,
+            "type": "button",
+            "gamepadCode": "12"
+          },
+          {
+            "keyName": "BracketLeft",
+            "x": 36.43835616438356,
+            "y": 51.181102362204726,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down",
+            "keyCode": 219,
+            "emoji": "⬇️",
+            "gamepadButton": 13,
+            "type": "button",
+            "gamepadCode": "13"
+          },
+          {
+            "keyName": "Digit9",
+            "x": 31.232876712328768,
+            "y": 45.86614173228347,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left",
+            "keyCode": 57,
+            "emoji": "⬅️",
+            "gamepadButton": 14,
+            "type": "button",
+            "gamepadCode": "14"
+          },
+          {
+            "keyName": "KeyT",
+            "x": 40.821917808219176,
+            "y": 43.89763779527559,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right",
+            "keyCode": 84,
+            "emoji": "➡️",
+            "gamepadButton": 15,
+            "type": "button",
+            "gamepadCode": "15"
+          },
+          {
+            "keyName": "End",
+            "x": 63.83561643835617,
+            "y": 10.62992125984252,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightBumper",
+            "keyCode": 35,
+            "gamepadButton": 5,
+            "type": "button",
+            "gamepadCode": "5"
+          },
+          {
+            "keyName": "Comma",
+            "x": 25.068493150684933,
+            "y": 10.826771653543307,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftBumper",
+            "keyCode": 188,
+            "gamepadButton": 4,
+            "type": "button",
+            "gamepadCode": "4"
+          },
+          {
+            "x": 65.34246575342466,
+            "y": 2.098,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightTrigger",
+            "gamepadButton": 7,
+            "type": "button",
+            "gamepadCode": "7"
+          },
+          {
+            "x": 23.972602739726025,
+            "y": 1.968503937007874,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftTrigger",
+            "gamepadButton": 6,
+            "type": "button",
+            "gamepadCode": "6"
+          },
+          {
+            "keyName": "",
+            "x": 26.227208976157083,
+            "y": 19.3158953722334,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickUp",
+            "emoji": "⬆️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickY",
+            "gamepadDirection": "1",
+            "gamepadCode": "LeftStickY1"
+          },
+          {
+            "keyName": "",
+            "x": 25.806451612903224,
+            "y": 30.784708249496983,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickDown",
+            "emoji": "⬇️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickY",
+            "gamepadDirection": "-1",
+            "gamepadCode": "LeftStickY-1"
+          },
+          {
+            "keyName": "",
+            "x": 15.708274894810659,
+            "y": 27.16297786720322,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickLeft",
+            "emoji": "⬅️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickX",
+            "gamepadDirection": "-1",
+            "gamepadCode": "LeftStickX-1"
+          },
+          {
+            "keyName": "",
+            "x": 30.269058295964125,
+            "y": 27.819548872180448,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickRight",
+            "emoji": "➡️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickX",
+            "gamepadDirection": "1",
+            "gamepadCode": "LeftStickX1"
+          },
+          {
+            "keyName": "",
+            "x": 59.88779803646563,
+            "y": 38.22937625754527,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickUp",
+            "emoji": "⬆️",
+            "type": "axis",
+            "gamepadAxis": "RightStickY",
+            "gamepadDirection": "1",
+            "gamepadCode": "RightStickY1"
+          },
+          {
+            "keyName": "",
+            "x": 60.02805049088359,
+            "y": 49.69818913480885,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickDown",
+            "emoji": "⬇️",
+            "type": "axis",
+            "gamepadAxis": "RightStickY",
+            "gamepadDirection": "-1",
+            "gamepadCode": "RightStickY-1"
+          },
+          {
+            "keyName": "",
+            "x": 51.332398316970554,
+            "y": 45.87525150905433,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickLeft",
+            "emoji": "⬅️",
+            "type": "axis",
+            "gamepadAxis": "RightStickX",
+            "gamepadDirection": "-1",
+            "gamepadCode": "RightStickX-1"
+          },
+          {
+            "keyName": "",
+            "x": 64.09537166900421,
+            "y": 46.076458752515094,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickRight",
+            "emoji": "➡️",
+            "type": "axis",
+            "gamepadAxis": "RightStickX",
+            "gamepadDirection": "1",
+            "gamepadCode": "RightStickX1"
+          }
+        ],
+        [
+          {
+            "keyName": "Digit4",
+            "emoji": "▶️",
+            "label": "start",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "x": 53.83,
+            "y": 25.886,
+            "height": 7,
+            "width": 5.1,
+            "keyCode": 52,
+            "gamepadCode": ""
+          },
+          {
+            "keyName": "Digit8",
+            "color": [
+              255,
+              0,
+              0
+            ],
+            "label": "Back",
+            "x": 40.942,
+            "y": 26.574803149606304,
+            "width": 5.4,
+            "shape": "circle",
+            "height": 7.6,
+            "keyCode": 56,
+            "gamepadButton": 8,
+            "type": "button",
+            "gamepadCode": "8"
+          },
+          {
+            "keyName": "KeyE",
+            "x": 69.58904109589041,
+            "y": 17.716535433070867,
+            "width": 6.3,
+            "height": 9.3,
+            "color": [
+              155,
+              233,
+              221
+            ],
+            "label": "Y",
+            "keyCode": 69,
+            "gamepadButton": 3,
+            "type": "button",
+            "emoji": "Y",
+            "shape": "circle",
+            "gamepadCode": "3"
+          },
+          {
+            "keyName": "Digit0",
+            "x": 75.314,
+            "y": 26.042,
+            "width": 6.3,
+            "height": 8.9,
+            "color": [
+              236,
+              165,
+              172
+            ],
+            "label": "B",
+            "keyCode": 48,
+            "gamepadButton": 1,
+            "type": "button",
+            "emoji": "B",
+            "shape": "circle",
+            "gamepadCode": "1"
+          },
+          {
+            "keyName": "KeyM",
+            "x": 69.312,
+            "y": 33.785,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              136,
+              170,
+              205
+            ],
+            "label": "A",
+            "keyCode": 77,
+            "gamepadButton": 0,
+            "type": "button",
+            "emoji": "A",
+            "shape": "circle",
+            "gamepadCode": "0"
+          },
+          {
+            "keyName": "KeyB",
+            "x": 63.505,
+            "y": 25.393700787401574,
+            "width": 6.3,
+            "height": 9,
+            "color": [
+              236,
+              197,
+              224
+            ],
+            "label": "X",
+            "keyCode": 66,
+            "gamepadButton": 2,
+            "type": "button",
+            "emoji": "X",
+            "shape": "circle",
+            "gamepadCode": "2"
+          },
+          {
+            "keyName": "KeyY",
+            "x": 35.75342465753425,
+            "y": 37.79527559055118,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "up",
+            "keyCode": 89,
+            "emoji": "⬆️",
+            "gamepadButton": 12,
+            "type": "button",
+            "gamepadCode": "12"
+          },
+          {
+            "keyName": "KeyN",
+            "x": 36.43835616438356,
+            "y": 51.181102362204726,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "down",
+            "keyCode": 78,
+            "emoji": "⬇️",
+            "gamepadButton": 13,
+            "type": "button",
+            "gamepadCode": "13"
+          },
+          {
+            "keyName": "Period",
+            "x": 31.232876712328768,
+            "y": 45.86614173228347,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "left",
+            "keyCode": 190,
+            "emoji": "⬅️",
+            "gamepadButton": 14,
+            "type": "button",
+            "gamepadCode": "14"
+          },
+          {
+            "keyName": "KeyU",
+            "x": 40.821917808219176,
+            "y": 43.89763779527559,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "right",
+            "keyCode": 85,
+            "emoji": "➡️",
+            "gamepadButton": 15,
+            "type": "button",
+            "gamepadCode": "15"
+          },
+          {
+            "keyName": "Home",
+            "x": 63.83561643835617,
+            "y": 10.62992125984252,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightBumper",
+            "keyCode": 36,
+            "gamepadButton": 5,
+            "type": "button",
+            "gamepadCode": "5"
+          },
+          {
+            "keyName": "KeyH",
+            "x": 25.068493150684933,
+            "y": 10.826771653543307,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftBumper",
+            "keyCode": 72,
+            "gamepadButton": 4,
+            "type": "button",
+            "gamepadCode": "4"
+          },
+          {
+            "x": 65.34246575342466,
+            "y": 2.098,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightTrigger",
+            "gamepadButton": 7,
+            "type": "button",
+            "gamepadCode": "7"
+          },
+          {
+            "x": 23.972602739726025,
+            "y": 1.968503937007874,
+            "width": 9.6,
+            "height": 7,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftTrigger",
+            "gamepadButton": 6,
+            "type": "button",
+            "gamepadCode": "6"
+          },
+          {
+            "keyName": "",
+            "x": 26.227208976157083,
+            "y": 19.3158953722334,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickUp",
+            "emoji": "⬆️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickY",
+            "gamepadDirection": "1",
+            "gamepadCode": "LeftStickY1"
+          },
+          {
+            "keyName": "",
+            "x": 25.806451612903224,
+            "y": 30.784708249496983,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickDown",
+            "emoji": "⬇️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickY",
+            "gamepadDirection": "-1",
+            "gamepadCode": "LeftStickY-1"
+          },
+          {
+            "keyName": "",
+            "x": 15.708274894810659,
+            "y": 27.16297786720322,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickLeft",
+            "emoji": "⬅️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickX",
+            "gamepadDirection": "-1",
+            "gamepadCode": "LeftStickX-1"
+          },
+          {
+            "keyName": "",
+            "x": 30.269058295964125,
+            "y": 27.819548872180448,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "LeftStickRight",
+            "emoji": "➡️",
+            "type": "axis",
+            "gamepadAxis": "LeftStickX",
+            "gamepadDirection": "1",
+            "gamepadCode": "LeftStickX1"
+          },
+          {
+            "keyName": "",
+            "x": 59.88779803646563,
+            "y": 38.22937625754527,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickUp",
+            "emoji": "⬆️",
+            "type": "axis",
+            "gamepadAxis": "RightStickY",
+            "gamepadDirection": "1",
+            "gamepadCode": "RightStickY1"
+          },
+          {
+            "keyName": "",
+            "x": 60.02805049088359,
+            "y": 49.69818913480885,
+            "width": 4.1,
+            "height": 9.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickDown",
+            "emoji": "⬇️",
+            "type": "axis",
+            "gamepadAxis": "RightStickY",
+            "gamepadDirection": "-1",
+            "gamepadCode": "RightStickY-1"
+          },
+          {
+            "keyName": "",
+            "x": 51.332398316970554,
+            "y": 45.87525150905433,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickLeft",
+            "emoji": "⬅️",
+            "type": "axis",
+            "gamepadAxis": "RightStickX",
+            "gamepadDirection": "-1",
+            "gamepadCode": "RightStickX-1"
+          },
+          {
+            "keyName": "",
+            "x": 64.09537166900421,
+            "y": 46.076458752515094,
+            "width": 9.1,
+            "height": 4.1,
+            "shape": "square",
+            "color": [
+              5,
+              5,
+              5
+            ],
+            "label": "RightStickRight",
+            "emoji": "➡️",
+            "type": "axis",
+            "gamepadAxis": "RightStickX",
+            "gamepadDirection": "1",
+            "gamepadCode": "RightStickX1"
+          }
+        ]
+      ]
+    }
+  ]
+}

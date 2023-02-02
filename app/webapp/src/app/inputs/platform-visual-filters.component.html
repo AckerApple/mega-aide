@@ -1,0 +1,24 @@
+<ng-content></ng-content>
+<div>
+  <div>display size</div>
+  <div>
+    <input type="range" min="2" max="40"
+      [(ngModel)]="filters.controllerSize"
+    />
+  </div>
+</div>
+<div>
+  <div>
+    <label for="labelType">labels - {{filters.labelType}}</label>
+  </div>
+  <div>
+    <select id="labelType" [(ngModel)]="filters.labelType">
+      <option [value]="true">show</option>
+      <option value="keyboard">keyboard</option>
+      <option value="">hide</option>
+    </select>       
+    <!--
+      <input type="checkbox" id="labelType" [(ngModel)]="filters.labelType" />&nbsp;buttons
+    -->
+  </div>
+</div>

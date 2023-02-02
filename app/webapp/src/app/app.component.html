@@ -1,0 +1,189 @@
+<!-- Toolbar -->
+<div class="toolbar" role="banner">
+  <div style="background-color: #1976d2">
+    <ng-container *ngTemplateOutlet="toolbar"></ng-container>
+  </div>
+  <div class="opacity-20" style="height:4px;background-color: black;"></div>
+  <div class="opacity-10" style="height:4px;background-color: black;"></div>
+</div>
+
+<ng-template #toolbar>
+  <div class="flex-apart pad-h-xs">
+    <h1>🕹 Mega-aide</h1>
+    <div>
+      <div class="child-margin-left child-margin-top-xs flex-wrap flex-valign-center">
+        <sup>v{{ version }}</sup>
+        <div *ngIf="session.os" title="quit">
+          <a (click)="close()">🅧</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="pad-xs gap text-smx border-top border-white flex-valign-center flex-wrap"
+    style="background-color: rgb(5, 46, 124);"
+  >
+    <loading-icon class="pos-abs right-0" [show]="session.loading"></loading-icon>
+    <a *ngIf="routeState.RouteWatchReporter.$history.length > 1"
+      [@fadeInOutUp]="1"
+      [title]="'back upto ' + routeState.RouteWatchReporter.$history.length + ' times'"
+      (click)="routeState.goBackOrUp()"
+    >⬅️</a>
+    <a *ngIf="routeState.current.config?.path !== 'menu'"
+      [@fadeInOutUp]="1"
+      title="navigate up" (click)="routeState.goUp()"
+    >⬆️</a>
+    <div *ngFor="let item of routeState.crumbArray;let index=index"
+      [@fadeInOutUp]="1"
+    >
+      <span *ngIf="index > 0" class="opacity-80">/&nbsp;&nbsp;&nbsp;</span>
+      <ng-container *ngIf="index === routeState.crumbArray.length - 1; else link">
+        <span title="you are here"
+        >{{item.config.data ? item.config.data['emoji']+' ' : ''}}{{ $any(item.config.title || item.config.path) | titlecase }}</span>
+      </ng-container>
+      <ng-template #link>
+        <a class="text-white no-a-style underline"
+          [routerLink]="item.config.path"
+        >{{item.config.data ? item.config.data['emoji']+' ' : ''}}<u>{{ $any(item.config.title || item.config.path) | titlecase }}</u></a>
+      </ng-template>
+    </div>
+  </div>
+</ng-template>
+
+<!-- ensure proper top spacing before content -->
+<div class="invisible">
+  <ng-container *ngTemplateOutlet="toolbar"></ng-container>
+</div>
+
+<div class="content" role="main">
+  <div *ngIf="session.config.showWarn" [@fadeInOutUp]="1" class="margin-v pos-rel">
+    <span class="pos-abs right-0 top-0" style="z-index: 1;">
+      <a (click)="session.config.showWarn = false;session.save()" class="cursor-pointer">🅧&nbsp;</a>
+    </span>
+    <ng-container *ngTemplateOutlet="warnTemplate"></ng-container>
+  </div>
+  
+  <ng-container *ngIf="routeState.current.config && routeState.current.config.data">
+    <ng-container *ngTemplateOutlet="title;context:{title:routeState.current.config.title || routeState.current.config.data['title']}"></ng-container>
+    <ng-template #title let-title="title">
+      <h2>
+        {{routeState.current.config.data ? routeState.current.config.data['emoji'] + '&nbsp;' : ''}}
+        {{ title | titlecase }}
+      </h2>
+    </ng-template>
+    <div>{{ routeState.current.config.data['description'] }}</div>
+  </ng-container>
+  
+  <div style="min-width:70vw" class="flex-stacked">
+    <div [ngClass]="routeState.current.config && routeState.current.config.data && routeState.current.config.data['wrapClass']"
+      [@slideInOutLeftKids]="{value:fx.id, params:{time:'500ms'}}"
+      [@absoluteKids]="{value:fx.id, params:{time:'500ms'}}"
+      (@absoluteKids.start)="inFx=true"
+      (@absoluteKids.done)="inFx=false"
+      [ngStyle]="inFx ? {position:'relative',overflow:'hidden'} : null"
+      style="min-height:50vh;"
+    >
+      <router-outlet #routerOutlet="outlet"></router-outlet>
+      <route-reporter #routeState="RouteReporter"></route-reporter>
+      <fx-tracker #fx="FxTracker" [activatedRoute]="routeState.activated"></fx-tracker>      
+    </div>
+    <div *ngIf="routeState.current.config?.path !== 'menu'"
+      [@fadeInOutUp]="1"
+      class="flex-1 flex margin-top"
+    >
+      <button type="button" class="bg-dark flex-1 pad"
+        title="navigate back or up" (click)="routeState.goBackOrUp()"
+      >⬅️ BACK</button>
+    </div>
+  </div>
+
+  <br /><br />
+  
+  <div class="text-center text-white text-xs">
+    <div class="opacity-half">🔗 helpful links</div>
+    <div class="bg-black text-white pad radius-10">
+      <a class="text-white nowrap" target="_blank"
+        href="https://github.com/AckerApple/mega-aide"
+        (click)="openAnchor($event)"
+      >📕 problem solving docs</a>
+      
+      <sup class="pad-h-xs text-3x">.</sup>
+      
+      <a class="nowrap" href="https://extremehomearcades.com/"
+        style="color:#07e843"
+        (click)="openAnchor($event)"
+      >Extreme Home Arcades</a>
+      
+      <sup class="pad-h-xs text-3x">.</sup>
+      
+      <a class="text-white nowrap" href="https://www.facebook.com/groups/573694766593010"
+        (click)="openAnchor($event)"
+      >🏘 EHA Unite Group</a>
+      
+      <sup class="pad-h-xs text-3x">.</sup>
+
+      <a class="nowrap text-white" target="_blank"
+        [attr.href]="session.reportIssueLink"
+        (click)="session.openAnchor($event)"
+      >🐞 report issue with this app</a>
+    </div>
+  </div>
+  
+  <br />
+  <ng-container *ngTemplateOutlet="warnTemplate"></ng-container>
+
+  <br />
+
+  <div style="z-index:-11;width:100vw;height:100vh;background-color: #333;"
+    class="pos-fixed top-0 left-0"
+  >&nbsp;</div>
+  <svg id="clouds" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2611.084 485.677"
+    style="width:100vw;"
+  >
+    <title>Gray Clouds Background</title>
+    <path id="Path_39" data-name="Path 39" d="M2379.709,863.793c10-93-77-171-168-149-52-114-225-105-264,15-75,3-140,59-152,133-30,2.83-66.725,9.829-93.5,26.25-26.771-16.421-63.5-23.42-93.5-26.25-12-74-77-130-152-133-39-120-212-129-264-15-54.084-13.075-106.753,9.173-138.488,48.9-31.734-39.726-84.4-61.974-138.487-48.9-52-114-225-105-264,15a162.027,162.027,0,0,0-103.147,43.044c-30.633-45.365-87.1-72.091-145.206-58.044-52-114-225-105-264,15-75,3-140,59-152,133-53,5-127,23-130,83-2,42,35,72,70,86,49,20,106,18,157,5a165.625,165.625,0,0,0,120,0c47,94,178,113,251,33,61.112,8.015,113.854-5.72,150.492-29.764a165.62,165.62,0,0,0,110.861-3.236c47,94,178,113,251,33,31.385,4.116,60.563,2.495,86.487-3.311,25.924,5.806,55.1,7.427,86.488,3.311,73,80,204,61,251-33a165.625,165.625,0,0,0,120,0c51,13,108,15,157-5a147.188,147.188,0,0,0,33.5-18.694,147.217,147.217,0,0,0,33.5,18.694c49,20,106,18,157,5a165.625,165.625,0,0,0,120,0c47,94,178,113,251,33C2446.709,1093.793,2554.709,922.793,2379.709,863.793Z" transform="translate(142.69 -634.312)" fill="#eee"/>
+  </svg>
+
+</div>
+
+<!-- fixed elements below here -->
+
+<ack-fixed-element-stage></ack-fixed-element-stage>
+
+<div class="pos-fixed right-0 top-0 pad-xs text-xxs max-width-600" style="z-index:7">
+  <div class="flex-stacked gap">
+    <div class="bg-dark radius-10 pad opacity-80" *ngFor="let item of session.tips.tips" [@fadeInOutUp]="1">
+      {{ item.message }}
+    </div>
+  </div>
+</div>
+
+
+<ack-modal
+  [showModel]="session.toSaveFiles.length"
+  (showModelChange)="session.toSaveFiles.length=0"
+  wrapContentClass="valign-center"
+>
+  <div class="flex-center flex-valign-center overflow">
+    <div class="pad bg-grey radius-5">
+      <save-files [(toWrite)]="session.toSaveFiles" (saved)="session.$filesSaved.emit($event)"></save-files>
+    </div>
+  </div>
+</ack-modal>
+
+<ng-template #warnTemplate>
+  <div class="opacity-70 pad-xs bg-warning text-warning">
+    ✅ This app is in a known to be safe state. It is still recommended to perform manual backups of files BEFORE using any 💾 file saving abilities of this app.
+    <br />
+    <br />
+    👉 You can test your device capabilities <a routerLink="🐞">here</a>
+  </div>
+</ng-template>
+
+<ack-modal *ngIf="session.filePreview" valign="center" (close)="session.filePreview=undefined">
+  <div class="bg-dark pad radius-10">
+    <h4>📄 {{session.filePreview.file.name}}</h4>
+    <textarea style="width:90vw;height:90vh" wrap="off"
+      class="bg-dark text-white"
+    >{{ session.filePreview.string }}</textarea>
+  </div>
+</ack-modal>

@@ -1,0 +1,10 @@
+<ng-container *ngIf="session.xarcadeDirectory; else selectPath">
+  <directory-backups [directory]="session.xarcadeDirectory"
+    [path]="path"
+    [fileName]="fileName"
+  ></directory-backups>
+</ng-container>
+
+<ng-template #selectPath>
+  <select-xarcade-xinput-path (change)="initLoadFolders()"></select-xarcade-xinput-path>
+</ng-template>

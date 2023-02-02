@@ -1,0 +1,21 @@
+<div class="flex-stacked child-margin-xxs">
+  <button class="flex-wrap flex-valign-center" *ngFor="let control of session.platforms.images"
+    [routerLink]="control.label"
+  >
+    <div style="min-height:6rem" class="flex-valign-center">
+      <img src="{{control.url}}" alt="" border="0"
+        style="width:8rem"
+      />
+    </div>
+    <h2 class="flex-1 text-left pad-left">{{control.label}}</h2>
+  </button>
+  <button class="flex-wrap flex-valign-center bg-balanced"
+    [routerLink]="'untitled-' + session.platforms.images.length"
+    (click)="session.platforms.images.push({label: 'untitled-'+session.platforms.images.length, url: '', players:[]})"
+  >
+    <div style="width:8rem;min-height:6rem" class="flex-valign-center flex-center">
+      <span>➕</span>
+    </div>
+    <h2 class="flex-1 text-left pad-left">add platform</h2>
+  </button>
+</div>

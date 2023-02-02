@@ -1,0 +1,18 @@
+<div class="text-right">
+  <robust-select-directory label="🚦 LEDBlinky" [reloadPath]="session.config.ledBlinky.path"
+    [(directoryManager)]="session.ledBlinky.directory"
+    (directoryManagerChange)="session.save()"
+    (error)="session.error('could not load LEDBlinky path', $event)"
+    [pickerId]="session.ledBlinky.pickerId"
+  ></robust-select-directory>
+</div>
+
+<div *ngIf="session.ledBlinky.directory" [@fadeInOutUp]="1">
+  <div>
+    <div class="text-center text-xs opacity-half">choose a tool below</div>
+    
+    <menu-stack-list [menu]="menu" class="flex-1 flex-center"
+      btnClass="bg-positive"
+    ></menu-stack-list>
+  </div>
+</div>

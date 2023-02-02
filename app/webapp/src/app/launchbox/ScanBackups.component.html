@@ -1,0 +1,60 @@
+<div *ngIf="session.launchBox.directory"
+  [@fadeInOutUp]="1"
+>
+  <div class="flex-wrap gap">
+    <div class="flex1 flex-stacked" *ngFor="let scan of scans">
+      <div class="pad flex-1 radius-top-10"
+        [class.bg-energized]="scan.isOld"
+        [class.bg-assertive]="!scan.hasBackup"
+        [class.bg-balanced]="!scan.isOld && scan.hasBackup"
+      >
+        <div>
+          <small class="text-xs opacity-60">📁 {{scan.path}}</small>
+        </div>
+        <div>
+          <strong class="flex1">📄 {{scan.fileName}}</strong>
+        </div>
+        <div *ngIf="!scan.found">
+          ⚠️ Cannot file original file let alone a backup
+        </div>
+        <div *ngIf="scan.lastBackupDate">
+          <div><small>last backup</small></div>
+          {{ scan.lastBackupDate | date : 'medium' }}
+        </div>
+        <div *ngIf="!scan.lastBackupDate">
+          ⚠️ file has no local backups
+        </div>
+      </div>
+
+      <div class="flex">
+        <button type="button" class="radius-top-0 flex1 radius-right-0"
+          (click)="createBackupOfScan(scan)"
+        >backup</button>
+        <a type="button" class="radius-top-0 flex1 radius-left-0 bg-grey"
+          routerLink="/🧰/↩"
+          [queryParams]="{path: scan.path, file: scan.fileName}"
+        >view backups</a>
+      </div>
+    </div>
+  </div>
+  
+  <br />
+  
+  <details>
+    <summary>read more here about backup support</summary>
+    <br />
+    <p>Specific files have been reported to fail and cause LaunchBox to become unusable. Use this tool to ensure you have local backups of most important files</p>
+    <img src="assets/troubleshooting/settings_bad.jpg" alt="bad settings file" border="0"
+      class="width-full max-width-900"
+    />
+  </details>
+  
+  <br />
+  <div class="opacity-half">
+    <strong>backup folder names</strong>: {{ session.config.backupFolderNames.join(',') }}
+  </div>
+</div>
+
+<div *ngIf="!session.launchBox.directory" [@fadeInOutUp]="1">
+  <select-launchbox></select-launchbox>
+</div>

@@ -1,0 +1,37 @@
+<h3>💾 Save Files</h3>
+
+<ol class="child-pad-xs child-margin-xxs">
+  <li *ngFor="let item of toWrite">
+    📄 {{ item.file.name }} <a (click)="session.filePreview=item">🔎</a>
+    <div class="text-xxs opacity-60">{{item.file.directory.path}}</div>
+  </li>
+</ol>
+
+<div class="pad">
+  <input type="checkbox" [(ngModel)]="saveWithBackupFolder" id="saveWithBackupFolder" />&nbsp;
+  <label for="saveWithBackupFolder">
+    Create backups within a "{{session.config.backupFolderNames[0]}}" folder
+  </label>
+</div>
+
+<div *ngIf="saving; else saveButton">
+  saving {{ saving }} files...
+</div>
+
+<ng-template #saveButton>
+  <div class="flex">
+    <button type="button" class="width-full bg-balanced"
+      (click)="save()"
+    >save</button>
+    <button type="button" class="width-full bg-dark text-white"
+      (click)="save()"
+    >cancel</button>
+  </div>
+
+  <details class="margin-top pad-xxs bg-grey text-xs">
+    <summary>read more here</summary>
+    <p>This software is currently maintain by primarily one person.</p>
+    <p>Accidental failure(s) can happen.</p>
+    <p>It is recommended you have a master backup of your files.</p>
+  </details>
+</ng-template>

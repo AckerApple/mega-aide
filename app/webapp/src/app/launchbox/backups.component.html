@@ -1,0 +1,10 @@
+<ng-container *ngIf="session.launchBox.directory; else selectLaunchBox">
+  <directory-backups [directory]="session.launchBox.directory"
+    [path]="path"
+    [fileName]="fileName"
+  ></directory-backups>
+</ng-container>
+
+<ng-template #selectLaunchBox>
+  <select-launchbox></select-launchbox>
+</ng-template>

@@ -1,0 +1,29 @@
+<div class="text-right">
+  <robust-select-directory label="🎮 XArcade XInput" [reloadPath]="session.config.xarcadeXinput.path"
+    [(directoryManager)]="session.xarcadeDirectory"
+    (directoryManagerChange)="change.emit(session.xarcadeDirectory)"
+    (error)="session.error('could not load XArcade XInput path', $event)"
+    [pickerId]="xarcadeXinputPickerId"
+  ></robust-select-directory>
+</div>
+
+<div *ngIf="!session.xarcadeDirectory">
+  <br />
+  <div class="text-center pad">
+    ⬆️ Select XArcade XInput folder above to unlock supportive features
+  </div>
+  <details class="pad">
+    <summary>📁 read more about this app and what it does with folder access</summary>
+    <div class="bg-dark pad">
+      <p>
+        Once you have selected your XArcade XInput folder, settings files will be read to offer supportive features.
+      </p>
+      Such support features include:
+      <ul>
+        <li>A robust controller mapping interface</li>
+        <li>Add, edit, remove mappings</li>
+        <li>and more...</li>
+      </ul>
+    </div>
+  </details>
+</div>

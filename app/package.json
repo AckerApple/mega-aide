@@ -1,0 +1,27 @@
+{
+  "name": "mega-aide",
+  "version": "0.0.0",
+  "description": "Things learned and things to remember for my Megacade",
+  "scripts": {
+    "build": "npm run build:webapp && npm run build:neutralino",
+    "build:neutralino": "neu build --release && npm run dist:rename:mac && npm run dist:move",
+    "build:webapp": "cd webapp && npm run build && cd ../ && npm run build:resources",
+    "build:webapp:watch": "cd webapp && npm run build:watch",
+    "build:resources": "npm run resources:copy && npm run resources:write",
+    "resources:copy": "cp -r resources/neutralino resources/webapp/neutralino",
+    "resources:write": "node resources-write.js",
+    "dist:rename:mac": "mv dist/myapp/myapp-mac_x64 dist/myapp/myapp-mac_x64.app",
+    "start": "neu run",
+    "clear:webapp": "cd webapp && npm run clear",
+    "start:webapp": "cd webapp && npm run start",
+    "dist:clear": "rm -rf dist/myapp/mac && rm -rf dist/myapp/windows && rm -rf dist/myapp/linux",
+    "dist:folders": "mkdir dist/myapp/mac && mkdir dist/myapp/windows && mkdir dist/myapp/linux",
+    "dist:move": "npm run dist:clear && npm run dist:folders && npm run dist:linux && npm run dist:mac && npm run dist:win && npm run dist:resources && npm run dist:dll",
+    "dist:linux": "mv dist/myapp/myapp-linux_x64 dist/myapp/linux/myapp-linux_x64 && mv dist/myapp/myapp-linux_arm64 dist/myapp/linux/myapp-linux_arm64 && mv dist/myapp/myapp-linux_armhf dist/myapp/linux/myapp-linux_armhf",
+    "dist:mac": "mv dist/myapp/myapp-mac_x64.app dist/myapp/mac/myapp-mac_x64.app",
+    "dist:win": "mv dist/myapp/myapp-win_x64.exe dist/myapp/windows/myapp-win_x64.exe",
+    "dist:resources": "cp dist/myapp/resources.neu dist/myapp/windows/resources.neu && cp dist/myapp/resources.neu dist/myapp/mac/resources.neu && cp dist/myapp/resources.neu dist/myapp/linux/resources.neu && rm dist/myapp/resources.neu",
+    "dist:dll": "cp dist/myapp/WebView2Loader.dll dist/myapp/windows/WebView2Loader.dll && cp dist/myapp/WebView2Loader.dll dist/myapp/mac/WebView2Loader.dll && cp dist/myapp/WebView2Loader.dll dist/myapp/linux/WebView2Loader.dll && rm dist/myapp/WebView2Loader.dll",
+    "dist:readme": "cp download-README.md dist/myapp/README.md"
+  }
+}

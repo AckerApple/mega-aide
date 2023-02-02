@@ -1,0 +1,98 @@
+<div class="text-left">
+  <a *ngIf="columns.length > 1 && back.observers.length" (click)="back.emit()">
+    ⬆️ <ng-container *ngIf="parent">{{ parent.name }}</ng-container>
+  </a>              
+</div>
+<div class="flex-stacked child-margin-xxs" [ngClass]="wrapClass">
+  <table cellPadding="0" cellSpacing="0" border="0">
+    <tHead>
+      <ng-container *ngIf="columnSchema.length > 1">
+        <ng-container *ngFor="let schema of columnSchema; let columnIndex=index">
+          <th *ngIf="columnIndex > 0">
+            <ng-container *ngIf="$any(schema).label; guessLabelInLoop">
+              {{$any(schema).label}}
+            </ng-container>
+          </th>
+          <ng-template #guessLabelInLoop>
+            <ng-template #guessLabel let-schema="schema"></ng-template>
+          </ng-template>
+        </ng-container>
+      </ng-container>
+    </tHead>
+    <tbody>
+      <tr *ngFor="let item of columns[columns.length - 1]; let index=index"
+        [@fadeInOutUp]="1"
+        class="pad-xxs hover-bg-energized" [class.bg-grey]="index % 2"
+      >
+        <!-- when no schema, one column with just name -->
+        <ng-container *ngIf="!columnSchema?.length">
+          <td class="pad-xxs width-full">
+            <ng-container *ngTemplateOutlet="nameTemplate;context:{item:item, schema:{name:'name'}}"></ng-container>
+          </td>
+        </ng-container>
+        
+        <!-- when schema-->
+        <ng-container *ngFor="let schema of columnSchema; let columnIndex=index">
+          <td class="pad-xxs nowrap" [class.width-full]="columnIndex===0">
+            <ng-container [ngSwitch]="$any(schema).type">
+              <ng-container *ngSwitchCase="'name'">
+                <ng-container *ngTemplateOutlet="nameTemplate;context:{item:item, schema}"></ng-container>
+              </ng-container>
+              <ng-container *ngSwitchCase="'date'">
+                <ng-container *ngTemplateOutlet="dateTemplate;context:{item:item, schema:schema}"></ng-container>
+              </ng-container>
+              <ng-container *ngSwitchCase="'size'">
+                <ng-container *ngTemplateOutlet="sizeTemplate;context:{item:item, schema:schema}"></ng-container>
+              </ng-container>
+              <ng-container *ngSwitchDefault>
+                <ng-container *ngTemplateOutlet="$any(schema).template || schema;context:{item:item, parent:parent, schema:schema}"></ng-container>
+              </ng-container>
+            </ng-container>
+          </td>
+        </ng-container>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<ng-template #guessLabel let-schema="schema">
+  <ng-container [ngSwitch]="$any(schema).type">
+    <!--
+      <ng-container *ngSwitchCase="date">
+  
+      </ng-container>
+      <ng-container *ngSwitchCase="size">size</ng-container>
+    -->
+    <ng-container *ngSwitchDefault>
+      {{$any(schema).name}}
+    </ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #dateTemplate let-item="item" let-schema="schema">
+  <a class="block text-white cursor-pointer no-a-style opacity-70"
+    (click)="item.kind === 'DIRECTORY' && parent = item;itemClick.emit(item)"
+  >
+    <ng-container *ngIf="item[schema.name]">
+      {{ item[schema.name] | date : 'mediumDate' }}&nbsp;at&nbsp;
+      {{ item[schema.name] | date : 'shortTime' }}
+    </ng-container>
+  </a>
+</ng-template>
+
+<ng-template #sizeTemplate let-item="item" let-schema="schema">
+  <a class="block text-white cursor-pointer no-a-style opacity-80"
+    (click)="item.kind === 'DIRECTORY' && parent = item;itemClick.emit(item)"
+  >
+    <ng-container *ngIf="item[schema.name]">
+      {{ ((item[schema.name || 'size'] || 0) / 1000 / 1000) | number }} MB
+    </ng-container>
+  </a>
+</ng-template>
+
+<ng-template #nameTemplate let-item="item" let-schema="schema">
+  <a class="block text-white cursor-pointer no-a-style"
+    (click)="item.kind === 'DIRECTORY' && parent = item;itemClick.emit(item)"
+    [routerLink]="routerLinkBase ? routerLinkBase + item.name : undefined"
+  >{{item.kind === 'DIRECTORY' ? '📁' : '📄'}} {{ item[schema.name || 'name'] }}</a>
+</ng-template>

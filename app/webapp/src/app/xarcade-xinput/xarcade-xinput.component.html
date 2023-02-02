@@ -1,0 +1,48 @@
+<select-xarcade-xinput-path (change)="session.save();readDir($event)"></select-xarcade-xinput-path>
+
+<ng-template #finderOptions let-item="item" let-parent="parent">
+  <a *ngIf="item.kind !== 'DIRECTORY'" (click)="removeByParent(parent,item)"
+  >🗑</a>
+</ng-template>
+
+<ng-container *ngIf="xarcade.mappingFiles.length">
+  <h3>Mapping files</h3>
+  <p>Choose a file to work with below...</p>
+  <hr class="border-1 border-white" />
+  <finder-files [columns]="[xarcade.mappingFiles]" routerLinkBase="mapping/">
+    <finder-column type="name"></finder-column>
+    <finder-column [template]="finderOptions"></finder-column>
+  </finder-files>
+</ng-container>
+
+<div *ngIf="session.xarcadeDirectory" [@fadeInOutUp]="1" class="flex-wrap gap-xs">
+  <button type="button" class="bg-calm flex1" (click)="addFile()"
+  >⊕ add file</button>
+
+  <a routerLink="↩" type="button" class="flex1">↩️ file backups</a>
+</div>
+
+<br />
+
+<div class="flex-wrap child-margin-xxs">
+  <a *ngIf="session.launchBox.directory && session.launchBox.xarcadeDir === session.xarcadeDirectory"
+    class="flex-1" type="button" routerLink="/launchbox"
+  >🧰 LaunchBox</a>
+  
+  <button type="button" *ngIf="configHasChanges" class="bg-balanced flex1 active-bg-energized"
+    (click)="saveFiles()"
+  >💾 save changes</button>
+</div>
+
+<br />
+
+<div class="text-center child-margin-xs pad">
+  <div class="opacity-80 text-xs">🔗 helpful links</div>
+  <a href="https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms.keys"
+    (click)="openAnchor($event)" target="_blank" class="text-white underline"
+  >Windows keys</a>
+
+  <a href="https://github.com/mikew/xarcade-xinput"
+    (click)="openAnchor($event)" target="_blank" class="text-white underline"
+  >XArcade XInput</a>
+</div>

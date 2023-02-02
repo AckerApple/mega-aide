@@ -1,0 +1,191 @@
+import { DirectoryManager } from 'ack-angular-components/directory-managers/DirectoryManagers';
+import { Component, EventEmitter, Output } from '@angular/core'
+import { delay } from '../delay';
+
+interface Test {
+  pass?: boolean
+  label: string
+  name: 'create-file' | 'delete-file' | 'create-folder' | 'delete-folder' | 'create-sub-file' | 'delete-sub-file'
+  error?: any
+}
+
+const createFileName = 'create-file-test.json'
+const createFolderName = 'create-folder-test'
+
+@Component({
+  selector: 'filesystem-tester',
+  templateUrl: './filesystem-tester.component.html',
+}) export class FileSystemComponent {
+  @Output() $error = new EventEmitter<Error>()
+  @Output() linkClick = new EventEmitter<MouseEvent>()
+  testDir?: DirectoryManager
+  tests: Test[] = [{
+    label: 'create file',
+    name: 'create-file',
+  },{
+    label: 'delete file',
+    name: 'delete-file',
+  },{
+    label: 'create folder',
+    name: 'create-folder',
+  },{
+    label: 'create sub file',
+    name: 'create-sub-file',
+  },{
+    label: 'delete sub file',
+    name: 'delete-sub-file',
+  },{
+    label: 'delete folder',
+    name: 'delete-folder',
+  }]
+  passes?: boolean
+
+  links = [{
+    url: 'https://caniuse.com/?search=showDirectoryPicker',
+    label: 'showDirectoryPicker',
+  }, {
+    url: 'https://caniuse.com/?search=createWritable',
+    label: 'createWritable',
+  }, {
+    url: 'https://caniuse.com/?search=queryPermission',
+    label: 'queryPermission',
+  }, {
+    url: 'https://caniuse.com/?search=FileSystemSyncAccessHandle.write',
+    label: 'FileSystemSyncAccessHandle.write',
+  }]
+
+
+  async testDirectory(dir: DirectoryManager) {
+    delete this.passes // clear previous results
+
+    for (let index=0; index < this.tests.length; ++index) {
+      const test = this.tests[index]
+
+      switch (test.name) {
+        case 'create-file':
+          await this.testCreateFile(test, dir)
+          break
+        case 'delete-file':
+          await this.testDeleteFile(test, dir)
+          break
+        case 'create-folder':
+          await this.testCreateFolder(test, dir)
+          break
+        case 'create-sub-file':
+          await this.testCreateSubFile(test, dir)
+          break
+        case 'delete-sub-file':
+          await this.testDeleteSubFile(test, dir)
+          break
+          case 'delete-folder':
+          await this.testDeleteFolder(test, dir)
+          break
+      }
+
+      await delay(800)
+    }
+
+    this.passes = this.tests.every(x => x.pass)
+  }
+
+  async testCreateFile(test: Test, dir: DirectoryManager) {    
+    try {
+      const newFile = await dir.file(createFileName, { create: true })
+      const content = '{}'
+      await newFile.write(content)
+      const readResult = await newFile.readAsText()
+      test.pass = readResult === content
+
+      if ( !test.pass ) {
+        test.error = 'possibly wrote file but failed to read'
+      }
+    } catch (err: any) {
+      test.pass = false
+      test.error = err.message
+      console.error(err)
+    }
+  }
+
+  async testDeleteFile(test: Test, dir: DirectoryManager) {    
+    try {
+      await dir.removeEntry(createFileName)
+      const fileNames = await dir.listFiles()
+      test.pass = !fileNames.includes(createFileName)
+      
+      if ( !test.pass ) {
+        test.error = `Could not delete file ${createFileName}`
+      }
+    } catch (err: any) {
+      test.pass = false
+      test.error = err.message
+      console.error(err)
+    }
+  }
+
+  async testCreateSubFile(test: Test, dir: DirectoryManager) {    
+    try {
+      const path = createFolderName+'/'+createFileName
+      const newFile = await dir.file(path, { create: true })
+      const content = '{}'
+      await newFile.write(content)
+      const readResult = await newFile.readAsText()
+      test.pass = readResult === content
+
+      if ( !test.pass ) {
+        test.error = 'possibly wrote sub file but failed to read'
+      }
+    } catch (err: any) {
+      test.pass = false
+      test.error = err.message
+      console.error(err)
+    }
+  }
+
+  async testDeleteSubFile(test: Test, dir: DirectoryManager) {    
+    try {
+      const path = createFolderName+'/'+createFileName
+      await dir.removeEntry(path)
+      const fileNames = await dir.listFiles()
+      test.pass = !fileNames.includes(createFileName)
+      
+      if ( !test.pass ) {
+        test.error = `Could not delete sub file ${createFileName}`
+      }
+    } catch (err: any) {
+      test.pass = false
+      test.error = err.message
+      console.error(err)
+    }
+  }
+
+  async testCreateFolder(test: Test, dir: DirectoryManager) {    
+    try {
+      await dir.createDirectory(createFolderName)
+      const names = await dir.listFolders()
+      test.pass = names.includes(createFolderName)
+      if ( !test.pass ) {
+        test.error = `Could not create folder ${createFolderName}.`
+      }
+    } catch (err: any) {
+      test.pass = false
+      test.error = err.message
+      console.error(err)
+    }
+  }
+
+  async testDeleteFolder(test: Test, dir: DirectoryManager) {    
+    try {
+      await dir.removeEntry(createFolderName)
+      const fileNames = await dir.listFolders()
+      test.pass = !fileNames.includes(createFolderName)
+      
+      if ( !test.pass ) {
+        test.error = `Could not delete folder ${createFileName}`
+      }
+    } catch (err: any) {
+      test.pass = false
+      test.error = err.message
+      console.error(err)
+    }
+  }  
+}

@@ -1,0 +1,203 @@
+<h2 id="map-file-name" [(contentModel)]="fileName" (blur)="renameTo(fileName)">{{fileName}}</h2>
+<a (click)="focusFileName()" class="text-xxs opacity-60">rename file above</a>
+
+<div>
+  <platform-filters #filters="platformFilters" [controllerSize]="12" [labelType]="true"></platform-filters>
+  <platform-visual-filters [filters]="filters"
+    class="flex-right flex-wrap child-margin-xs"
+  ></platform-visual-filters>
+
+  <div *ngIf="!playerArray.length" class="margin-xs pad-xs bg-warning text-warning">
+    No players have been defined. Tap <a (click)="addPlayer()" class="underline">here</a> to add your first player
+  </div>
+
+  <div *ngIf="!viewJson" class="flex-wrap child-margin-xxs" [@fadeInOutUp]="1">
+    <div *ngFor="let player of playerArray; let playerArrayIndex = index" class="bg-grey flex1"
+      [@fadeInOutUp]="1"
+    >
+      <div class="pad-xxs bg-dark text-center">
+        Player {{ player.playerIndex + 1 }}
+      </div>
+      
+      <div class="flex-center">
+        <platform-control-map
+          [platform]        = "platform"
+          [playerIndex]     = "0"
+          [controllerSize]  = "filters.controllerSize"
+          [labelType]       = "filters.labelType"
+          [pressedObject]   = "lastPresses.pressedObject"
+          [buttonsObject]   = "lastButtons.pressedObject"
+          [remap]           = "player.remap"
+        ></platform-control-map>
+      </div>
+      
+      <table *ngIf="!player.view" cellPadding="1" cellSpacing="1" border="0" class="width-full"
+        [@fadeInOutUp]="1"
+      >
+        <tr>
+          <th class="bg-grey-2x text-center">&nbsp;</th>
+          <th class="bg-grey-2x text-center">button</th>
+          <th class="bg-grey-2x text-center">key</th>
+          <th class="bg-grey-2x text-center">num</th>
+        </tr>
+  
+        <tr *ngFor="let keyvalue of player.keys | keyvalue : buttonSort"
+          [@fadeInOutUp]="1"
+          [ngClass]="lastPresses.pressedObject[$any(keyvalue.value.num)] ? 'bg-calm' : 'bg-grey-2x'"
+          (mouseover)="press(keyvalue.value)"
+          (mouseout)="unpress(keyvalue.value)"
+          [class.bg-orange] = "keyvalue.value.duplicate"
+        >
+          <td class="cursor-pointer">
+            <button type="button" class="text-xs pad-xxs"
+              (click)="editRow = editRow === keyvalue.value ? undefined : keyvalue.value"
+              [class.bg-dark] = "keyvalue.value.changed"
+            >{{ keyvalue.value.changed ? 'edited' : 'edit' }}</button>
+                
+            <a *ngIf="editRow === keyvalue.value"
+              (click)="remove(player.keys, keyvalue.key)"
+            >&nbsp;🗑</a>
+          </td>
+          <ng-container *ngIf="editRow !== keyvalue.value">
+            <td class="pad-xxs">
+              {{ keyvalue.value.button }}
+              <!--axis-->
+              <ng-container *ngIf="keyvalue.value.button.includes('StickY')">
+                <span *ngIf="!keyvalue.value.parameters.length">up</span>
+                <span *ngIf="keyvalue.value.parameters && keyvalue.value.parameters[0]===-1">down</span>
+              </ng-container>
+              <ng-container *ngIf="keyvalue.value.button.includes('StickX')">
+                <span *ngIf="!keyvalue.value.parameters.length">right</span>
+                <span *ngIf="keyvalue.value.parameters && keyvalue.value.parameters[0]===-1">left</span>
+              </ng-container>
+              <span *ngFor="let parameter of keyvalue.value.parameters">&nbsp;{{parameter}}</span>
+            </td>
+            <td class="pad-xxs">
+              <!-- on remap listen -->
+              <div class="text-center" *ngIf="keyvalue.value === nextKeyListening; else buttonValue">
+                <div class="text-smx nowrap">press any key</div>
+                <div class="text-xxs opacity-80">was {{ keyvalue.key }}</div>
+              </div>
+              <!-- keyname -->
+              <ng-template #buttonValue>{{ keyvalue.key }}</ng-template>
+            </td>
+          </ng-container>
+          
+          <ng-container *ngIf="editRow === keyvalue.value">
+            <td class="bg-grey-2x pad-xxs">
+              <div class="flex-wrap">
+                <select [(ngModel)]="keyvalue.value.button" [title]="keyvalue.value.button"
+                  class="flex1" (ngModelChange)="keyvalue.value.changed = true;getDuplicates()"
+                >
+                  <option value=""></option>
+                  <option *ngFor="let item of gamepad | keyvalue" [value]="item.key"
+                  >{{item.key}}</option>
+                </select>
+                
+                <!--axis-->
+                <ng-container *ngIf="gamepad[keyvalue.value.button]">
+                  <ng-container *ngFor="let parameter of keyvalue.value.parameters; let index = index">
+                    <input type="number" [(ngModel)]="keyvalue.value.parameters[index]" [title]="'parameter' + index" />
+                  </ng-container>
+                  <ng-container *ngIf="keyvalue.value.parameters?.length !== 1">
+                    <button type="button" class="text-xs"
+                      (click)="(keyvalue.value.parameters = keyvalue.value.parameters || []).push(-1)"
+                      title="typically only used to signify ⬅️ LEFT and ⬇️ DOWN"
+                    >+param</button>
+                  </ng-container>
+                </ng-container>
+              </div>
+
+              <ng-container *ngIf="gamepad[keyvalue.value.button]">
+                <div *ngIf="keyvalue.value.button.includes('StickY')" class="text-xs text-center">
+                  <span class="pad-xs">
+                    <input type="checkbox" [checked]="!keyvalue.value.parameters[0] || keyvalue.value.parameters[0] === 1"
+                      (click)="keyvalue.value.parameters.length = 0"
+                    />&nbsp;up
+                  </span>
+                  <span class="pad-xs">
+                    <input type="checkbox" [checked]="keyvalue.value.parameters[0] === -1"
+                      (click)="keyvalue.value.parameters[0] === -1 ? keyvalue.value.parameters.length=0 : keyvalue.value.parameters[0] = -1"
+                    />&nbsp;down
+                  </span>
+                </div>
+                <div *ngIf="keyvalue.value.button.includes('StickX')" class="text-xs text-center">
+                  <span class="pad-xs">
+                    <input type="checkbox" [checked]="keyvalue.value.parameters[0] === -1"
+                      (click)="keyvalue.value.parameters[0] === -1 ? keyvalue.value.parameters.length=0 : keyvalue.value.parameters[0] = -1"
+                    />&nbsp;left
+                  </span>
+                  <span class="pad-xs">
+                    <input type="checkbox" [checked]="!keyvalue.value.parameters[0] || keyvalue.value.parameters[0] === 1"
+                      (click)="keyvalue.value.parameters.length = 0"
+                    />&nbsp;right
+                  </span>
+                </div>
+              </ng-container>
+            </td>
+
+            <td class="bg-grey-2x pad-xxs">
+              <select [(ngModel)]="keyvalue.key" (change)="changeKey(keyvalue)">
+                <option value=""></option>
+                <option *ngFor="let item of windowsKeys" [value]="item.code">{{ item.code }}</option>
+              </select>
+              <button type="button" class="pad-xxs"
+                nextKey
+                (nextKeyListeningChange)="nextKeyListening = $event ? keyvalue.value : undefined"
+                (nextKeyCodeChange)="changePlayerButtonKey(player.keys, keyvalue.key, $event)"
+                [class.bg-energized]="nextKeyListening === keyvalue.value"
+              >map</button>
+              <span *ngIf="nextKeyListening === keyvalue.value" class="pad opacity-half">press a key</span>
+            </td>
+          </ng-container>
+          
+          <td>{{ keyvalue.value.num }}</td>
+        </tr>
+      </table>
+
+      <div *ngIf="player.view === 'json'" [@fadeInOutUp]="1">
+        <textarea rows="12" wrap="off" class="width-full"
+        >{{player.json | json}}</textarea>
+      </div>
+
+      <div class="flex-wrap">
+        <button type="button" class="flex1 bg-calm text-center pad-xxs"
+          (click)="player.view = player.view === 'json' ? undefined : 'json'"
+        >🔬 player json</button>
+        
+        <a type="button" class="flex1 bg-balanced text-center pad-xxs"
+          (click)="addPlayerButton(player)"
+        >⊕ add button</a>
+        
+        <a type="button" class="flex1 bg-assertive text-center pad-xxs"
+          (click)="playerArray.splice(playerArrayIndex, 1)"
+        >⊖ remove player</a>
+      </div>
+    </div>
+  </div>
+  
+  <div *ngIf="viewJson" [@fadeInOutUp]="1">
+    <textarea class="width-full" rows="12" wrap="off"
+    >{{ json | json }}</textarea>
+  </div>
+
+  <div *ngIf="duplicates.length" [@fadeInOutUp]="1" class="bg-orange text-orange margin-xs pad-xs">
+    ⚠️ Duplicate button configurations found
+  </div>
+
+  <div class="flex-wrap gap-xs">
+    <button type="button" class="flex1 width-full bg-balanced text-center pad-xxs"
+      (click)="addPlayer()"
+    >⊕ add player</button>
+    
+    <button type="button" class="flex1 bg-calm" (click)="viewJson = !viewJson"
+    >🔬view file json</button>
+    
+    <a *ngIf="mapDir" routerLink="../../↩" type="button" class="flex1"
+      [queryParams]="{path:mapDir.path, file:fileName}"
+    >↩️ goto backups</a>
+
+    <button type="button" class="flex1" (click)="save()"
+    >💾 SAVE</button>
+  </div>
+</div>

@@ -1,0 +1,61 @@
+<div class="inline-block pos-rel">
+  <ng-container *ngFor="let control of controls; let index = index">
+    <ng-container *ngTemplateOutlet="button; context: {
+      $implicit: control,
+      index:index,
+      remap: remapped[index],
+      label: labelType === 'keyboard' ? remapped[index] && remapped[index].keyName : (
+        labelType ? control.label : ''
+      )
+    }"></ng-container>
+  </ng-container>
+
+  <ng-template #button let-control
+    let-label="label"
+    let-index="index"
+    let-remap="remap"
+  >
+    <a 
+      draggable="true" class="pos-abs flex-center flex-valign-center border"
+      [ngClass]="lastDrag?.control === control || controlListen === control ? 'border-energized border-4' : 'border'"
+      [class.radius-half]="!control.shape || control.shape==='circle'"
+      (click)="controlClick.emit(toggleLastDrag(control,$event))"
+      (dragstart)="setLastDrag(control, $event)"
+      [style.top.%]="control.y"
+      [style.left.%]="control.x"
+      [style.width.%] = "control.width || 4"
+      [style.height.%] = "control.height || 4"
+      [title] = "control.label+' - keyCode:' + (remap?.keyCode)+' - gamepadCode:' + (remap?.gamepadCode)"
+      style="text-shadow:1px 1px 1px #000;text-decoration: none;"
+      [style.font-size.%]="(52 + controllerSize) - (label || '').length * 3"
+      [class.opacity-80]="remap && !pressedObject[$any(remap.keyCode)] && !buttonsObject[$any(control.gamepadCode)]"
+      [style.background-color]="remap && remap.keyCode && pressedObject[$any(remap.keyCode)] || buttonsObject[$any(control.gamepadCode)] ? 'rgba(0, 255, 255, 1)' : (control.color ? 'rgba(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ', 1)' : 'rgba(255,255,255,1)')"
+  
+      startByEvent="contextmenu"
+      [(nextKey)]="control.keyName"
+      (nextKeyListeningChange)="controlListenChange.emit(controlListen=$event ? control : undefined)"
+  
+      [(nextButton)]="control.gamepadButton"
+      (nextButtonChange)="control.gamepadCode=$event"
+      [(nextAxis)]="control.gamepadButton"
+      (nextButtonListeningChange)="controlListenChange.emit(controlListen=$event ? control : undefined)"
+    >
+      <ng-container *ngIf="controlListen === control; else labelOutput">press key</ng-container>
+      <ng-template #labelOutput>
+        <ng-container *ngIf="label; else noLabel">
+          {{ label }}
+        </ng-container>
+        <ng-template #noLabel>
+          <span class="text-xxs opacity-80 color-orange">
+            {{ labelType ? 'not defined' : '' }}
+          </span>
+        </ng-template>
+      </ng-template>
+    </a>
+  </ng-template>
+  <img [src]="platform.url" alt="" border="0"
+    [style.height.rem]="controllerSize"
+    (drop)="dropLastDrag($event)"
+    (dragover)="$event.preventDefault();$event.stopPropagation()"
+  />
+</div>

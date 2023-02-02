@@ -1,0 +1,193 @@
+<h2>{{ platformMap.label }}</h2>
+
+<div style="min-width:50vw">
+  <div *ngIf="!view || view==='players'" [@fadeInOutUp]="1">
+    <div class="flex-wrap gap-xxs">
+      <ng-container *ngFor="let controls of platformMap.players;let index=index">
+        <div class="flex1 flex">
+          <button (change)="toggleLockPlayerMapByIndex(index)" class="radius-right-0 border-right-0"
+            [class.active] = "playersMap[index]"
+          >
+            <input type="checkbox"
+              [checked]="lockPlayerMaps.includes(index)"
+            />
+          </button>
+          <button type="button" class="radius-left-0 flex1 border-left-0"
+            [class.active] = "playersMap[index]"
+            (contextmenu)="toggleLockPlayerMapByIndex(index);$event.preventDefault()"
+            title="right click to lock in view"
+            (click)="togglePlayerMapByIndex(index, true)"
+          >Player {{index + 1}}</button>
+        </div>
+      </ng-container>
+      
+      <button type="button" class="flex1 bg-white text-black"
+        (click)="showAllPlayersOf(platformMap)"
+      >👀 Show All</button>
+      
+      <input type="file" id="select-platform-file" (change)="fileSelect($event)"
+        style="display:none;"
+      />
+      <button type="button" class="flex1 bg-dark text-dark"
+        (click)="clickSelectFile()"
+      >🗃 Load File</button>
+    </div>
+    
+    <platform-filters #filters="platformFilters"></platform-filters>
+    
+    <ng-container *ngIf="players.length">
+      <div class="pad-xs">
+        <platform-visual-filters [filters]="filters"
+          class="flex-right flex-wrap gap-smx"
+        >
+          <div *ngIf="lastButtons.gamepads.length">
+            <div>Watch Gamepad(s)</div>
+            <select [ngModel]="filters.extra['targetGamepad']"
+              (ngModelChange)="lastButtons.setGameIndex( filters.extra['targetGamepad']=$event )"
+            >
+              <option value="">SELECT GAMEPAD</option>
+              <option *ngFor="let gamepad of lastButtons.gamepads"
+                [value]="gamepad.index"
+              >{{ gamepad.id }}</option>
+              <option value="-1">ALL</option>
+            </select>
+          </div>
+    
+          <div *ngIf="lastButtons.gamepads.length">
+            <div>Keyboard lock</div>
+            <input placeholder="focus here then key pushes are protected" (keydown)="$event.preventDefault()" />
+          </div>
+        </platform-visual-filters>
+      </div>
+      <div class="flex-wrap gap-xs pos-rel overflow-hidden">
+        <div *ngFor="let player of players" class="flex1 bg-black pad-xxs"
+          [@fadeInOutUp]="1"
+          (@fadeInOutUp.start)="player.inFx=true"
+          (@fadeInOutUp.done)="player.inFx=false"
+          [ngClass]="player.inFx && players.length===1 ? 'pos-abs width-full' : null"
+        >
+          <platform-player-control
+            [player]="player"
+            [filters]="filters"
+            [platformMap]="platformMap"
+            [playersMap]="playersMap"
+            [(lastDrag)]="lastDrag"
+            [(controlListen)] = "controlListen"
+            (afterCopyToPlayer)="togglePlayerMap( $event )"
+          ></platform-player-control>
+  
+          <div class="flex-apart text-xs gap-xs child-pad-xs">
+            <a type="button" class="nowrap flex1" [class.active]="remapping.active"
+              (click)="remapPlayerAll( platformMap.players[player.index] )"
+            >🔄 remap controls</a>
+  
+            <a type="button" class="nowrap flex1 bg-positive"
+              (click)="addButtonToPlayer(player.index, platformMap.players)"
+            >⊕ add button</a>
+  
+            <a type="button" class="nowrap flex1 bg-assertive"
+              (click)="platformMap.players.splice(player.index, 1)"
+            >🗑 remove player</a>
+  
+            <a type="button" class="nowrap flex1 bg-calm" (click)="player.viewPlayerMap = !player.viewPlayerMap"
+              [class.active]="player.viewPlayerMap"
+            >👩‍💻 view json</a>
+  
+            <a type="button" class="nowrap flex1 bg-calm" (click)="player.showMap = !player.showMap"
+              [class.active]="player.showMap"
+            >🗺 view map</a>
+          </div>
+        
+          <div *ngIf="remapping.playerIndex === player.index" class="bg-energized pad"
+            [@fadeInOutUp]="1"
+          >
+            <h3>⏺ button remapping in progress...</h3>
+            Press <b>{{remapping.player[remapping.index].label}}</b> button
+            <p *ngIf="remapping.player[remapping.index].keyName">Currently it's key {{ remapping.player[remapping.index].keyName }}</p>
+            <p *ngIf="remapping.player[remapping.index].gamepadButton">
+              Currently it's {{ (remapping.player[remapping.index].gamepadButton | typeof) === 'string' ? 'axis': 'button' }} {{remapping.player[remapping.index].gamepadButton}}
+            </p>
+            <p>step {{remapping.index+1}} of {{remapping.player.length}}</p>
+            <button type="button" (click)="remapping.end()">🛑 end</button>
+            <button type="button" (click)="remapping.next()">⏭ next</button>
+            <div [nextButton]
+              (nextAxisChange)="remapping.player[remapping.index].gamepadButton=$event;remapping.next()"
+              [nextButtonListening]="remapping.index + 1"
+              (nextButtonChange)="remapping.player[remapping.index].gamepadButton=$event;remapping.next()"
+            ></div>
+          </div>
+            
+          <div *ngIf="player.viewPlayerMap" [@fadeInOutUp]="1">
+            <textarea cols="60" rows="12" wrap="off" class="min-height-400 width-full"
+            >{{ platformMap.players[player.index] | json}}</textarea>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>
+
+
+<div *ngIf="view === 'json'" [@fadeInOutUp]="1">
+  <br />
+  <h3>⚙️ Configuration</h3>
+  <textarea cols="60" rows="12" wrap="off" class="width-full"
+  >{{ platformMap | json }}</textarea>
+  <div class="flex-wrap">
+    <ng-container *ngTemplateOutlet="closeButton"></ng-container>
+  </div>
+</div>
+
+<div *ngIf="view === 'edit' && editPlatform" [@fadeInOutUp]="1">
+  <br />
+  <h3>✏️ Edit platform details</h3>
+  <div class="bg-dark">
+    <div class="gap-xs flex-wrap">
+      <div class="flex1">
+        <label for="label">label</label>
+        <input id="label" type="text" maxLength="125" class="width-full" [(ngModel)]="editPlatform.label"
+          placeholder="platform titling"
+        />
+      </div>
+      <div class="flex1">
+        <label for="url">image url</label>
+        <input id="url" type="text" maxLength="125" class="width-full" [(ngModel)]="editPlatform.url"
+          placeholder="absolute or relative url"
+        />
+      </div>
+    </div>
+    <div class="flex-wrap">
+      <ng-container *ngTemplateOutlet="closeButton"></ng-container>
+    </div>  
+  </div>
+</div>
+
+<br />
+<h3>Platform options</h3>
+<ng-container *ngTemplateOutlet="platformButtons;context:{platform:platformMap}"></ng-container>
+
+<ng-template #platformButtons let-platform="platform">
+  <div class="flex-wrap gap-xxs">
+    <button type="button" class="flex1 bg-balanced"
+      (click)="createPlayerOnControl( platform.players )"
+    >➕ add player</button>
+    <button type="button" class="flex1 bg-calm"
+      (click)="clonePlatform(platform)"
+    >📋 clone platform</button>
+    <button type="button" class="flex1 bg-white text-dark"
+      (click)="view = view === 'json' ? undefined : 'json'"
+      [class.active]="view === 'json'"
+    >⚙️ view config</button>
+    <button type="button" class="flex1 bg-calm"
+      (click)="toggleEditPlatform(platform)"
+      [class.active]="editPlatform === platform"
+    >✏️ edit details</button>
+    <button type="button" class="flex1 bg-balanced active-bg-energized"
+      (click)="saveChanges()"
+    >💾 save changes</button>  
+  </div>
+</ng-template>
+
+<ng-template #closeButton>
+  <button type="button" class="bg-dark flex1" (click)="view=undefined">🅧 close</button>
+</ng-template>

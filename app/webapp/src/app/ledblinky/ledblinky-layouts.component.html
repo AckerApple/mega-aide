@@ -1,0 +1,45 @@
+<!-- tools -->
+<div class="flex-wrap gap">
+  <div>
+    <div>🔬 zoom {{zoom || session.ledBlinky.zoom}}</div>
+    <div class="flex">
+      <a (click)="zoom = session.ledBlinky.zoom = session.ledBlinky.zoom - .5">⊖</a>
+      <input type="range" id="zoom" min="1" max="5" [(ngModel)]="zoom || session.ledBlinky.zoom" step=".5" />
+      <a (click)="zoom = session.ledBlinky.zoom = session.ledBlinky.zoom + .5">⊕</a>
+    </div>
+  </div>
+  <div>
+    <div>🖌 layout</div>
+    <select [(ngModel)]="layoutName" (ngModelChange)="loadLayoutByName(layoutName)">
+      <option [value]="name" *ngFor="let name of layoutNames">{{name}}</option>
+    </select>
+  </div>
+  <div>
+    <div>&nbsp;</div>
+    <button type="button" (click)="previewSelectedLayoutFile()">🔎 view file</button>
+  </div>
+</div>
+
+<ng-container *ngTemplateOutlet="lightStage;context:{zoom: zoom || session.ledBlinky.zoom}"></ng-container>
+
+<ng-template #lightStage let-zoom="zoom">
+  <!-- light stage-->
+  <div class="border pos-rel bg-black" style="max-width: 95vw;max-height: 95vh;"
+    [style.width.px]="(bounds.horizontal.max || session.ledBlinky.displaySize?.width || 1024) * zoom"
+    [style.height.px]="(bounds.vertical.max || session.ledBlinky.displaySize?.height || 768) * zoom"
+  >
+    <!-- light loop -->
+    <div *ngFor="let light of lights" class="pos-abs flex-stacked flex-center"
+      [style.left.px] = "(light.x - bounds.horizontal.min) * zoom"
+      [style.top.px] = "(light.y - bounds.vertical.min) * zoom"
+    >
+      <div class="radius-half"
+        [style.width.px] = "light.diameter * zoom"
+        [style.height.px] = "light.diameter * zoom"
+        [style.background-color] = "light.cssColor"
+      ></div>
+      <div [style.font-size.px]="(lightConfig?.settings?.ledLabelFontSize || 12) * zoom"
+      >{{light.name}}</div>
+    </div>
+  </div>
+</ng-template>

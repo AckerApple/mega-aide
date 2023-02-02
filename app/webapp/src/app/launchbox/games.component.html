@@ -1,0 +1,161 @@
+<ng-container *ngIf="session.launchBox.directory; else selectLaunchBox">
+  <div *ngIf="!selected" [@fadeInOutUp]="1">
+    <div class="flex-wrap gap">
+      <div class="flex1">
+        <div>🔎 Search games</div>
+        <div>
+          <input [(ngModel)]="searchText" (keyup)="trySearchGames(searchText)"
+            class="width-full" placeholder="Search games. 3 characters required"
+            [focusOn]="1"
+          />
+        </div>
+      </div>
+      <div>
+        <div>Platform filter</div>
+        <select [(ngModel)]="platformName" (ngModelChange)="performSearch(searchText)">
+          <option value="">CHOOSE A PLATFORM</option>
+          <option *ngFor="let platform of platformNames" [value]="platform"
+            [selected]="platform.toLowerCase() === platformName?.toLowerCase()"
+          >{{ platform }}</option>
+        </select>           
+      </div>
+    </div>
+    
+    <loading-icon [show]="searching" label="🔦 Searching..."></loading-icon>
+    
+    <div *ngIf="searchGames.length">
+      <div class="overflow max-height-600">
+        <table cellPadding="4" cellSpacing="0" border="0"
+          class="table-lines table-striped-dark width-full"
+        >
+          <tHead>
+            <tr>
+              <th (click)="sortSearchPlatform()" class="cursor-pointer">Platform</th>
+              <th (click)="sortSearchGame()" class="cursor-pointer">Title</th>
+            </tr>
+          </tHead>
+          <tBody>
+            <tr *ngFor="let gameInsight of searchGames" class="cursor-pointer bg-hover-positive"
+              (click)="showGame(gameInsight)"
+            >
+              <td class="pad-right-xs">{{gameInsight.platform.name}}</td>
+              <td>
+                {{gameInsight.game.details.favorite ? '⭐️ ' : ''}}
+                {{gameInsight.game.details.title}}
+              </td>
+            </tr>
+          </tBody>
+        </table>
+      </div>
+      <div class="text-xs opacity-80 text-center">{{searchGames.length}} results</div>
+    </div>
+  </div>
+  
+  <div *ngIf="selected" [@fadeInUp]="1">
+    <a class="pull-right" (click)="selected=undefined">🅧</a>
+    <div>
+      {{selected.game.platform.name}}
+    </div>
+    <h2>
+      <a (click)="toggleFavorite(selected.game)">{{selected.game.game.details.favorite ? '⭐️ ' : '✩ '}}</a>
+      {{selected.game.game.details.title}}
+    </h2>
+    <br />
+    <div *ngIf="selected.gameView === 'xml'">
+      <textarea class="width-full" rows="24" wrap="off">{{ selected.xmlString }}</textarea>
+      <div class="flex-wrap">
+        <button type="button" class="bg-dark flex1"
+          (click)="selected.gameView = undefined"
+        >🅧 CLOSE</button>
+      </div>
+    </div>
+    <div *ngIf="!selected.gameView">
+      <h3>{{selected.additionalApps.length}} Additional Apps</h3>
+      <table cellPadding="4" cellSpacing="0" border="0" class="width-full table-striped-dark table-lines">
+        <tHead>
+          <tr>
+            <th>Name</th>
+            <th>Details</th>
+            <th></th>
+          </tr>
+        </tHead>
+        <tBody>
+          <tr *ngFor="let app of selected.additionalApps">
+            <td>
+              <span *ngIf="app.type==='xinput'">🕹</span>
+              <span *ngIf="app.type==='xinput-kill'">❌ 🕹</span>
+              {{app.name}}
+            </td>
+            <td class="child-margin">
+              <div>
+                <div class="text-xxs bold">path</div>
+                <span class="bg-grey pad-xxs" [(contentModel)]="app.applicationPath"
+                  (change)="applyAppApplicationPath(app)"
+                ></span>
+              </div>
+              <div>
+                <div class="text-xxs bold">commandLine</div>
+                <div class="bg-grey pad-xxs text-small" [(contentModel)]="app.commandLine"
+                  (change)="applyAppCommandLine(app)"
+                ></div>
+              </div>
+              <div *ngIf="app.type==='xinput'">
+                <div class="text-xxs bold">mapping</div>
+                <xinput-app-map-select #xinputAppMapSelect
+                  class="flex" [model]="app"
+                  (change)="saveSelectedGame()"
+                ></xinput-app-map-select>
+                <a *ngIf="session.launchBox.xarcadeDir" class="text-white text-xxs"
+                  [routerLink]="'../../🕹/xarcade-xinput/mapping/' + xinputAppMapSelect.mapping"
+                >xinput tools</a>
+              </div>
+            </td>
+            <td class="pad-xxs">
+              <a (click)="removeAppFromApps(app, selected.additionalApps);saveSelectedGame()"
+                title="click to remove"
+              >🗑</a>
+            </td>
+          </tr>
+        </tBody>
+      </table>
+      <div class="flex-wrap margin-v gap">
+        <button *ngIf="!selected.hasXinput" type="button" class="bg-balanced flex1"
+          (click)="addXinputIntoSelected()"
+          >+ADD XINPUT</button>
+
+        <button *ngIf="selected.hasXinput" type="button" class="bg-assertive flex1"
+          (click)="removeXinputFromSelected()"
+        >+REMOVE XINPUT</button>
+
+        <button type="button" class="bg-calm flex1"
+          (click)="viewSelectedGameXml()"
+        >VIEW XML</button>
+
+        <button type="button" class="bg-dark flex1"
+          (click)="selected = undefined"
+        >🅧 CLOSE</button>
+      </div>
+    </div>
+    <div class="opacity-60 text-xs flex-wrap gap">
+      <div>
+        platform xml path: <a routerLink="../backups" class="no-a-style"
+          [queryParams]="{path:selected.game.platform.file.directory.path, file:selected.game.platform.file.name}"
+        ><u>{{selected.game.platform.file.directory.path}}/{{selected.game.platform.file.name}}</u></a>
+      </div>
+      <a class="no-a-style" [routerLink]="'../../' + ledBlinkRouteMap.ledblinkyControls.path + '/' + selected.game.platform.name"
+        [queryParams]="{search:selected.game.game.details.title}"
+      ><u>🚦LED Blinky</u></a>
+    </div>
+  </div>
+  
+  
+  <div *ngIf="toSaveFiles.length">
+    <button type="button" class="bg-balanced width-full"
+      (click)="saveFiles()"
+    >Save {{toSaveFiles.length}} Files</button>
+  </div>
+</ng-container>
+
+<ng-template #selectLaunchBox>
+  <select-launchbox></select-launchbox>
+</ng-template>

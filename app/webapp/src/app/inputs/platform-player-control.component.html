@@ -1,0 +1,311 @@
+<div class="flex-center flex-1 gap-xxs">
+  <!-- game controller image -->
+  <div class="flex-1 flex-center">
+    <div class="text-center">
+      <h4 class="text-center">Player {{ player.index + 1 }}</h4>
+      <platform-control-map
+        [platform]        = "platformMap"
+        [playerIndex]     = "player.index"
+        [pressedObject]   = "lastPresses.pressedObject"
+        [buttonsObject]   = "lastButtons.pressedObject"
+        [controllerSize]  = "filters.controllerSize"
+        [labelType]       = "filters.labelType"
+        [(lastDrag)]      = "player.lastDrag || lastDrag"
+        (lastDragChange)  = "lastDragChange.emit(player.lastDrag=$event)"
+        [(controlListen)] = "controlListen"
+      ></platform-control-map>
+    </div>
+  </div>
+
+  <!-- controller buttons table -->
+  <div class="text-xs" *ngIf="player.lastDrag" [@fadeInOutUp]="1">
+    <ng-container *ngTemplateOutlet="controlForm;context:{
+      player: player,
+      control: player.lastDrag.control
+    }"></ng-container>
+  </div>
+
+  <div class="text-xs" *ngIf="player.showMap" [@fadeInOutUp]="1">
+    <div class="pos-rel">
+      <a class="pos-abs right-0 top-0"
+        (click)="player.showMap=false"
+      >🅧</a>
+    </div>
+    <div class="text-center"><strong>mapping table</strong></div>
+    <table cellPadding="2" cellSpacing="2" border="0" class="width-full bg-dark">
+      <thead>
+        <th>{{ copyToPlayerMode ? 'copy' : '' }}</th>
+        <th>name</th>
+        <th>key</th>
+        <th title="keyCode">num</th>
+        <th>button</th>
+      </thead>
+      <tbody class="bg-black">
+        <ng-container *ngFor="let control of platformMap.players[player.index]; let index=index">
+          <ng-container *ngTemplateOutlet="mappingRow;context:{$implicit:control, index: index}"></ng-container>
+        </ng-container>
+      </tbody>
+    </table>
+    
+    <button class="width-full" (click)="toggleCopyMode()"
+      [class.bg-energized]="copyToPlayerMode"
+    >➡️👤 copy to player </button>
+    <div *ngIf="copyToPlayerMode" [@fadeInOutUp]="1">
+      <select (change)="copyPlayerToPlayerByEvent(platformMap.players[player.index], $event)" class="width-full">
+        <option class="opacity-70">➡️👤 copy to player </option>
+        <ng-container *ngFor="let control of platformMap.players;let index=index">
+          <option *ngIf="index !== player.index" [value]="index"
+          >player {{index+1}}</option>
+        </ng-container>
+        <option value="-1">➕ create another player</option>
+        <!-- overwrite -->
+        <optgroup label="overwrite player" *ngIf="platformMap.players.length > 1">
+          <ng-container *ngFor="let control of platformMap.players;let index=index">
+            <option *ngIf="index !== player.index" [value]="'write:' + index"
+            >player {{index+1}}</option>
+          </ng-container>  
+        </optgroup>
+        <!-- update geometry -->
+        <optgroup label="update player geometry" *ngIf="platformMap.players.length > 1" title="matches buttons by label">
+          <ng-container *ngFor="let control of platformMap.players;let index=index">
+            <option *ngIf="index !== player.index" [value]="'geometry:' + index"
+            >player {{index+1}}</option>
+          </ng-container>  
+        </optgroup>
+      </select>
+    </div>
+  </div>
+</div>
+
+<ng-template #controlForm let-player="player" let-control="control">
+  <div>
+    <div class="pos-rel">
+      <a class="pos-abs right-0 top-0"
+        (click)="player.lastDrag=undefined"
+      >🅧</a>
+    </div>
+    <div class="flex-stacked max-width-500">
+      <div class="flex-wrap gap-xxs">
+        <div class="flex1 flex-stacked">
+          <div>label</div>
+          <input type="text" [(ngModel)]="control.label" class="flex-1" />
+        </div>
+        
+        <div class="flex1 flex-stacked">
+          <div>emoji</div>
+          <input type="text" [(ngModel)]="control.emoji" class="flex-1" />
+        </div>
+        
+        <div class="flex1 flex-stacked">
+          <div class="flex gap-columns-xxs">
+            <span>
+              <input type="radio" [(ngModel)]="control.type" value="button" id="buttonRadio" [checked]="!control.type"
+                (click)="control.gamepadAxis=undefined"
+              />
+              <label for="buttonRadio" class="cursor-pointer">
+                Button
+              </label>
+            </span>
+            <span>
+              <input type="radio" [(ngModel)]="control.type" value="axis" id="axisRadio"
+                (click)="control.gamepadButton=undefined;control.gamepadDirection=undefined"
+              />
+              <label for="axisRadio" class="cursor-pointer">
+                Axis
+              </label>
+            </span>
+            <span class="flex-1 flex-right">
+              <span class="text-xxs opacity-half">code:{{control.gamepadCode}}</span>
+            </span>
+          </div>
+          <ng-container *ngIf="control.type === 'axis'; else buttonAssign">
+            <select [(ngModel)]="control.gamepadAxis" (change)="setControlCode(control)">
+              <option value="LeftStickX">LeftStickX</option>
+              <option value="LeftStickY">LeftStickY</option>
+              <option value="RightStickX">RightStickX</option>
+              <option value="RightStickY">RightStickY</option>
+            </select>
+            <select [(ngModel)]="control.gamepadDirection" (change)="setControlCode(control)">
+              <option *ngIf="['LeftStickY','RightStickY'].includes(control.gamepadAxis)"
+                value="1"
+              >Up</option>
+              <option *ngIf="['LeftStickY','RightStickY'].includes(control.gamepadAxis)"
+                value="-1"
+              >Down</option>
+              <option *ngIf="['LeftStickX','RightStickX'].includes(control.gamepadAxis)"
+                value="-1"
+              >Left</option>
+              <option *ngIf="['LeftStickX','RightStickX'].includes(control.gamepadAxis)"
+                value="1"
+              >Right</option>
+            </select>
+          </ng-container>
+          <ng-template #buttonAssign>
+            <div class="width-full flex-wrap">
+              <input type="number" [(ngModel)]="control.gamepadButton" class="flex1"
+                (change)="control.type='button';control.gamepadCode=control.gamepadButton"
+              />
+              <button type="button"
+                [class.bg-energized]="btnListen === control"
+                [(nextButton)]="control.gamepadButton"
+                [nextButtonListening]="btnListen === control"
+                (nextButtonListeningChange)="controlListen = btnListen = $event ? control : undefined"
+              >{{ btnListen === control ? 'press button' : '🗺 map' }}</button>
+            </div>
+          </ng-template>
+        </div>
+  
+        <div class="flex1 flex-stacked">
+          <div class="flex-apart">
+            ⌨️ keyboard input
+            <div>{{ control.keyCode }}</div>
+          </div>
+          <div class="flex-wrap">
+            <div class="flex-1 flex">
+              <select [(ngModel)]="control.keyName" class="flex1"
+                [class.radius-right-0]="control.keyCode"
+              >
+                <option value=""></option>
+                <option *ngFor="let item of (controlMap | keyvalue: unsorted)"
+                  [value]="item.key"
+                >{{item.value[0]}} - {{item.key}}</option>
+              </select>
+
+              <button *ngIf="control.keyCode" [@fadeInOutUp]="1"
+                type="button" class="flex-valign-center bg-assertive radius-left-0"
+                (click)="control.keyCode=undefined;control.keyName=undefined"
+              >x</button>
+
+            </div>
+            <button type="button" class="flex-1"
+              [class.bg-energized]="keyListen === control"
+              [(nextKey)]="control.keyName"
+              [(nextKeyCode)]="control.keyCode"
+              [nextKeyListening]="keyListen === control"
+              (nextKeyListeningChange)="controlListen = keyListen = $event ? control : undefined"
+            >{{ keyListen ? 'press key' : '🗺 map'}}</button>
+          </div>
+        </div>
+      </div>
+  
+      <div class="width-full">
+        <h4>geometry</h4>
+        <hr class="margin-0" />
+      </div>
+  
+      <div class="flex-wrap gap-xxs">
+        <div class="flex-stacked flex1">
+          <div>shape</div>
+          <select class="flex-1" [(ngModel)]="control.shape">
+            <option value="circle">circle</option>
+            <option value="square">square</option>
+          </select>       
+        </div>
+        <div class="flex-stacked flex1">
+          <div>color</div>
+          <input type="color" class="flex-1 width-full"
+            [(ngModel)]="control.color"
+            [style.background-color]="control.color && 'rgba(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ', 1)'"
+            (input)="setControlColorByPlayerIndex($event, player.index)"
+            (change)="setControlColorByPlayerIndex($event, player.index)"
+          />
+        </div>
+      </div>
+      
+      <div class="flex-wrap gap-xxs">
+        <div class="flex-1">
+          <div>width - {{control.width}}</div>
+          <input type="range" min="0" max="100" step="0.1" class="width-full"
+            [(ngModel)]="control.width"
+          />
+        </div>
+        <div class="flex-1">
+          <div>height - {{control.height}}</div>
+          <input type="range" min="0" max="100" step="0.1" class="width-full"
+            [(ngModel)]="control.height"
+          />
+        </div>
+      </div>
+  
+      <div class="flex-wrap gap-xxs">
+        <div class="flex-1">
+          <div>x - {{control.x | number : '0.000'}}</div>
+          <input type="range" min="0" max="100" step="0.001" class="width-full"
+            [(ngModel)]="control.x"
+          />
+        </div>
+        <div class="flex-1">
+          <div>y - {{control.y | number : '0.000'}}</div>
+          <input type="range" min="0" max="100" step="0.001" class="width-full"
+            [(ngModel)]="control.y"
+          />
+        </div>
+      </div>
+  
+      <div class="flex-1 flex-wrap gap-1">  
+        <button class="flex1"
+          (click)="duplicateButtonByPlayerIndex(control, player.index)"
+        >👯‍♀️ clone</button>
+  
+        <button type="button" class="bg-assertive flex1"
+          (click)="removeButtonFromMapPlayerByIndex(control, player.index)"
+        >🗑 remove</button>
+  
+        <button type="button" class="bg-black text-white flex1"
+          (click)="player.lastDrag=undefined"
+        >🅧 close</button>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #mappingRow let-control let-index="index">
+  <tr
+    [ngClass] = "controlListen === control ? 'bg-energized' : ''"
+    class="cursor-pointer hover-bg-energized"
+    [class.bg-calm]="control === player.lastDrag?.control"
+    [class.bg-positive]="control === dragRowControl"
+    
+    draggable="true"
+    (dragstart)="dragRowStart(player.index, control)"
+    (dragover)="$event.preventDefault();dragRowOver(control)"
+    (dragend)="dragRowEnd(player.index)"
+    (drop)="dropRow(control, player.index)"
+
+    (mouseover)="lastPresses.pressedObject[$any(control.keyCode)] = {code: control.keyCode, key: control.keyName}"
+    (mouseout)="lastPresses.pressedObject[$any(control.keyCode)] = undefined"          
+  >
+    <td class="flex-center flex-valign-center gap-xxs">
+      <input *ngIf="copyToPlayerMode" type="checkbox" [(ngModel)]="copyControls[index].checked" />
+      <div class="inline-block width-20 height-20"
+        (click)="toggleControlByPlayerIndex(control, player.index)"
+        [style.background-color]="control.keyCode && lastPresses.pressedObject[$any(control.keyCode)] ? 'rgba(0, 255, 255, 1)' : (control.color ? 'rgb(' +control.color[0]+ ', ' +control.color[1]+ ', ' +control.color[2]+ ')' : 'rgb(255,255,255)')"
+      ></div>
+    </td>
+    <td (click)="toggleControlByPlayerIndex(control, player.index)"
+    >{{ control.emoji }} {{ control.label }}</td>
+    <td (click)="toggleControlByPlayerIndex(control, player.index)"
+    >{{ control.keyName }}</td>
+    <td (click)="toggleControlByPlayerIndex(control, player.index)"
+    >{{ control.keyCode }}</td>
+    <td nowrap (click)="toggleControlByPlayerIndex(control, player.index)">
+      <ng-container [ngSwitch]="control.gamepadAxis">
+        <ng-container *ngSwitchCase="'LeftStickY'">
+          {{ control.gamepadDirection == 1 && '⏫' || control.gamepadDirection == -1 && '⏬' || '' }} Y
+        </ng-container>
+        <ng-container *ngSwitchCase="'RightStickY'">
+          {{ control.gamepadDirection == 1 && '⏫' || control.gamepadDirection == -1 && '⏬' || '' }} Y
+        </ng-container>
+
+        <ng-container *ngSwitchCase="'LeftStickX'">
+          {{ control.gamepadDirection == 1 && '⏩' || control.gamepadDirection == -1 && '⏪' || '' }} X
+        </ng-container>
+        <ng-container *ngSwitchCase="'RightStickX'">
+          {{ control.gamepadDirection == 1 && '⏩' || control.gamepadDirection == -1 && '⏪' || '' }} X
+        </ng-container>
+      </ng-container>
+      {{ control.gamepadButton }}
+      <ng-container *ngIf="control.gamepadAxis">&nbsp;axis</ng-container>
+    </td>
+  </tr>
+</ng-template>

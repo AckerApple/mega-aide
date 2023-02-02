@@ -1,0 +1,35 @@
+<div class="flex-wrap gap flex-stacked">
+  <div class="bg-dark pad">
+    <strong>💾 Device File System Testing</strong>
+    <div>
+      <filesystem-tester
+        ($error)="session.error('error testing filesystem', $event)"
+        (linkClick)="session.openAnchor($event)"
+      ></filesystem-tester>
+      <div class="pad">
+        👉 If your device does is not fully supported, you may want to download the operating system version of this app <a href="https://github.com/AckerApple/mega-aide/tree/main/app/dist/myapp" (click)="session.openAnchor($event)" class="text-calm">here</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="bg-dark pad">
+    <strong>💻 Device Report</strong>
+    <div>
+      <textarea readonly class="width-full min-height-400" wrap="off">{{ session.debugData | json }}</textarea>
+    </div>
+  </div>
+
+  <div class="bg-dark pad">
+    <strong>🧩 LocalStorage Cache</strong>
+    <div>
+      <textarea readonly class="width-full min-height-400" wrap="off">{{ session.config | json }}</textarea>
+    </div>
+  </div>
+</div>
+
+<br />
+
+<a class="nowrap text-info" target="_blank"
+  [attr.href]="session.reportIssueLink"
+  (click)="session.openAnchor($event)"
+>🐞 report issue with this app</a>

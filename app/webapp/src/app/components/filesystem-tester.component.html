@@ -1,0 +1,27 @@
+<div class="text-right">
+  <robust-select-directory label="Empty Folder"
+    [(directoryManager)]="testDir"
+    (directoryManagerChange)="testDirectory($event)"
+    (error)="$error.emit($event)"
+  ></robust-select-directory>
+</div>
+
+<div *ngIf="testDir">
+  <div *ngFor="let test of tests" class="flex gap">
+    <span>{{ test.pass === undefined ? '◻️' : (test.pass ? '✅' : '❌') }}</span>&nbsp;<span>{{test.label}}</span>
+    <div *ngIf="test.error">
+      {{test.error | json}}
+    </div>
+  </div>
+
+  <div *ngIf="passes !== undefined" class="pad">
+    {{ passes ? '✅✅ Passes all tests' : '❌❌ Does not pass all tests. You will not be able to use this all of this apps features.' }}
+  </div>
+</div>
+<br /><br />
+<div class="text-xs opacity-80">
+  This app uses the following FileSystem functionality:
+  <div class="flex-wrap gap">
+    <a *ngFor="let link of links" class="text-calm" [href]="link.url" target="_blank" (click)="linkClick.emit($event)">{{ link.label }}</a>
+  </div>
+</div>

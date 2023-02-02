@@ -1,0 +1,34 @@
+{
+  "name": "mega-aide",
+  "version": "0.0.54",
+  "description": "Things learned and things to remember for my Megacade",
+  "scripts": {
+    "start": "npm run start:webapp",
+    "start:webapp": "cd app && npm run start:webapp",
+    "clear:webapp": "cd app && npm run clear:webapp",
+    "clear:cache": "npm run clear:webapp",
+    "save": "npm run patch:versions && git add . && git commit -m \"update\" && git push",
+    "build": "npm run build:app && npm run build:gh-pages",
+    "build:app": "cd app && npm run build",
+    "build:gh-pages": "cp -R ./app/webapp/dist/webapp/. ../gh-pages && npm run gh-pages:adjust && npm run dist:404",
+    "dist:404": "cp ../gh-pages/index.html ../gh-pages/404.html",
+    "deploy": "npm run build && npm run save && npm run deploy:gh-pages",
+    "gh-pages:adjust": "node gh-pages-adjust",
+    "deploy:gh-pages": "npm run build:gh-pages && cd ../gh-pages && git add . && git commit -m \"update\" && git push",
+    "patch:versions": "npm run patch:version && npm run patch:webapp:version",
+    "patch:version": "npm --no-git-tag-version version patch",
+    "patch:webapp:version": "cd app/webapp && npm run patch:version"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AckerApple/mega-aide.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AckerApple/mega-aide/issues"
+  },
+  "homepage": "https://github.com/AckerApple/mega-aide#readme",
+  "private": true
+}

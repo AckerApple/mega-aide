@@ -1,0 +1,12 @@
+<div class="text-right">
+  <robust-select-directory label="🚦 LEDBlinky" [reloadPath]="session.config.ledBlinky.path"
+    [(directoryManager)]="session.ledBlinky.directory"
+    (directoryManagerChange)="session.save()"
+    (error)="session.error('could not load LEDBlinky path', $event)"
+    [pickerId]="session.ledBlinky.pickerId"
+  ></robust-select-directory>
+</div>
+
+<div *ngIf="session.ledBlinky.directory" [@fadeInOutUp]="1">
+  <ledblinky-layouts edit="1"></ledblinky-layouts>
+</div>  

@@ -1,0 +1,78 @@
+<loading-icon class="pull-right" [show]="loading"></loading-icon>
+<ng-container *ngIf="sourceFile; else selectFinderItem">
+  <h3>⏳ {{ sourceFile.name }}</h3>
+  <p>Select a file to backup <b>from</b>:</p>
+
+  <finder-files
+    [parent]="parent"
+    [columns]="[[],backupFiles]" (itemClick)="confirmRestore($event)"
+    (back)="sourceFile = undefined"
+  >
+    <finder-column type="name"></finder-column>
+    <finder-column name="lastModified" type="date" label="last changed"></finder-column>
+    <finder-column name="size" type="size" label="size"></finder-column>
+    <finder-column [template]="backupFinderOptions"></finder-column>
+  </finder-files>
+  
+  <ng-template #backupFinderOptions let-item="item">
+    <ng-container *ngTemplateOutlet="finderOptions;context:{item:item, parent:item.backupFolder}"></ng-container>
+  </ng-template>  
+
+  <div *ngIf="!backupFiles.length" class="margin-xs pad-xs bg-warning text-warning">
+    Currently, no backup files found for the file {{fileName}}
+    <div class="text-xs opacity-80">{{ path }}</div>
+  </div>
+</ng-container>
+
+
+<ng-template #finderOptions let-item="item" let-parent="parent">
+  <a *ngIf="item.kind !== 'DIRECTORY'" (click)="showPreviewFile(item, parent)"
+  >🔍</a>
+</ng-template>
+
+<ng-template #selectFinderItem>
+  <h3>Find file</h3>
+  <p>Select a folder to find a file with a backup copy. <strong>Only files</strong> with backups will be shown</p>
+  <finder-files [columns]="columns" (itemClick)="loadItem($event, $any(parent))"
+    [parent]="$any(parent)"
+    (back)="back()"
+    wrapClass="max-height-900 overflow"
+  >
+    <finder-column type="name"></finder-column>
+    <finder-column name="lastModified" type="date"></finder-column>
+    <finder-column name="size" type="size"></finder-column>
+    <finder-column [template]="finderOptions"></finder-column>
+  </finder-files>
+  <div class="text-xxs opacity-80 pad">
+    <ng-container *ngIf="backupsFound.length; else noneTemplate">
+      ⭐️ backup folder(s) found
+    </ng-container>
+    <ng-template #noneTemplate>
+      🔦 No backup folders here with name {{ session.config.backupFolderNames.join(', ') }}
+    </ng-template>
+  </div>
+</ng-template>
+<div *ngIf="parent" class="text-xxs opacity-80 pad">
+  path: {{parent.path}}
+</div>
+
+<ack-modal *ngIf="toRestore" valign="center" (close)="toRestore=undefined">
+  <div class="bg-white pad radius-10 text-black">
+    Confirm restore from backup
+    <h3 class="pad flex-wrap">
+      <div>
+        {{ sourceFile?.name }}
+        <div class="text-xxs opacity-60">{{ sourceFile?.directory?.path }}</div>
+      </div>
+      &nbsp;⬅️&nbsp;
+      <div>
+        {{ toRestore.stats.name }}
+        <div class="text-xxs opacity-60">{{ toRestore.backupFolder.path }}</div>
+      </div>
+    </h3>
+    <div class="flex">
+      <button type="button" class="flex1 bg-balanced" (click)="restore()">↩️ restore</button>
+      <button type="button" class="flex1 bg-dark" (click)="toRestore=undefined">❌ cancel</button>
+    </div>
+  </div>
+</ack-modal>

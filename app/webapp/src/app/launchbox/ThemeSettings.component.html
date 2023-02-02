@@ -1,0 +1,85 @@
+<ng-container *ngIf="session.launchBox.directory; else selectLaunchBox">
+    <ng-container *ngIf="bigBox.fileSettings.length">
+    <h3>Theme settings</h3>
+    <hr class="border-1 border-white" />
+    
+    <table cellPadding="0" cellSpacing="0" border="0">
+      <tr>
+        <th>Theme name:</th>
+        <td>{{ bigBox.themeName }}</td>
+      </tr>
+      <tr>
+        <th>⭐️ Platform list view:</th>
+        <td>{{ bigBox.platformListView }}</td>
+      </tr>
+      <tr>
+        <th>🕹 Game list view:</th>
+        <td>{{ bigBox.gameListView }}</td>
+      </tr>
+    </table>
+    <br />
+    <h3>☸️ Theme wheels</h3>
+    <p>Below you can edit the idle/resting opacity of your theme wheels. If you have an opacity <b>too low</b> users can become confused as to where they are and think they are just watching a video clip instead of knowing they can navigate the menu wheel. If you have an opacity <b>too high</b> it can take away from someone wanting to see the most of a preview video.</p>
+    <div class="flex-wrap child-margin-xs">
+      <div *ngFor="let fileConfig of bigBox.fileSettings" class="flex1 bg-grey radius-5">
+        <div class="bg-dark pad-xs flex-apart">
+          <span>📄 {{ fileConfig.file.name }}</span>
+          <span *ngIf="fileConfig.file.name.includes($any(bigBox.platformListView))"
+            title="default platform list view"
+          >⭐️</span>
+          <span *ngIf="('Vertical' + fileConfig.file.name).includes($any(bigBox.gameListView))"
+            title="default game list view"
+          >🕹</span>
+        </div>
+        
+        <div class="flex-wrap child-margin-xs pad-xs">
+          <div *ngFor="let setting of fileConfig.settings" class="flex flex1">
+            <div class="pad-right flex-1">
+              <div class="nowrap">
+                <strong>{{ setting.label }} </strong>
+                <sup class="inline-block" style="width:3em" class="opacity-70 text-xs">
+                  {{ setting.value + '.00' | slice : 0 : 3 }}
+                </sup>
+              </div>
+              <div>
+                <input type="range" min="0" max="1" step="0.01" [(ngModel)]="setting.value"
+                  class="width-full"
+                  (change)="configHasChanges = true"
+                />
+              </div>
+            </div>
+            <img *ngIf="setting.type === 'pointer:opacity'" src="assets/BigBoxWheelPointer.png" alt=""
+              style="height:4rem"
+              [style.opacity]="setting.value" border="0"
+            />
+            <img *ngIf="setting.type === 'wheel:opacity'" src="assets/BigBoxGameWheel.png" alt=""
+              style="height:4rem"
+              [style.opacity]="setting.value" border="0"
+            />
+          </div>
+        </div>
+        <div class="flex-wrap">
+          <button type="button" class="bg-balanced flex1"
+            (click)="saveFile(fileConfig)"
+          >save</button>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+  <button type="button" class="flex1"
+    (click)="bigBox.viewBigBoxSettings = !bigBox.viewBigBoxSettings"
+    [class.bg-energized] = "bigBox.viewBigBoxSettings"
+  >⚙️ view BigBox settings</button>
+
+  <div *ngIf="bigBox.viewBigBoxSettings">
+    <strong>bigBox.config</strong>
+    <div>
+      <textarea readonly class="width-full min-height-400" wrap="off">{{ bigBox.config }}</textarea>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #selectLaunchBox>
+  <select-launchbox></select-launchbox>
+</ng-template>

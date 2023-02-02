@@ -1,0 +1,47 @@
+{
+  "name": "Mega-aide",
+  "version": "0.1.55",
+  "scripts": {
+    "ng": "ng",
+    "clear": "rm -rf .angular/cache",
+    "start": "ng serve --host 0.0.0.0 --disable-host-check",
+    "watch": "npm run start",
+    "build": "ng build && npm run build:copy",
+    "build:copy": "rm -rf ../resources/webapp && cp -r ./dist/webapp ../resources/webapp",
+    "build:watch": "ng build --watch --configuration development",
+    "test": "ng test",
+    "patch:version": "npm --no-git-tag-version version patch"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^14.2.0",
+    "@angular/common": "^14.2.0",
+    "@angular/compiler": "^14.2.0",
+    "@angular/core": "^14.2.0",
+    "@angular/forms": "^14.2.0",
+    "@angular/platform-browser": "^14.2.0",
+    "@angular/platform-browser-dynamic": "^14.2.0",
+    "@angular/router": "^14.2.0",
+    "ack-angular-fx": "^5.0.2",
+    "rxjs": "~7.5.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.11.4"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^14.2.3",
+    "@angular/cli": "~14.2.3",
+    "@angular/compiler-cli": "^14.2.0",
+    "@types/jasmine": "~4.0.0",
+    "@types/wicg-file-system-access": "^2020.9.5",
+    "ack-angular": "^4.1.7",
+    "ack-angular-components": "github:ackerapple/ack-angular-components#main",
+    "ack-css-boot": "^3.0.11",
+    "jasmine-core": "~4.3.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.1.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.0.0",
+    "typescript": "~4.7.2"
+  }
+}
