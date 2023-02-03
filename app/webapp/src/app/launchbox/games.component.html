@@ -145,9 +145,7 @@
     </div>
     <div class="opacity-60 text-xs flex-wrap gap">
       <div>
-        platform xml path: <a routerLink="../backups" class="no-a-style"
-          [queryParams]="{path:selected.game.platform.file.directory.path, file:selected.game.platform.file.name}"
-        ><u>{{selected.game.platform.file.directory.path}}/{{selected.game.platform.file.name}}</u></a>
+        platform xml path: {{selected.game.platform.file.directory.path}}/{{selected.game.platform.file.name}}
       </div>
       <a class="no-a-style" [routerLink]="'../../' + ledBlinkRouteMap.ledblinkyControls.path + '/' + selected.game.platform.name"
         [queryParams]="{search:selected.game.game.details.title}"

@@ -130,12 +130,21 @@ export interface ControlGroupDetails {
 }
 
 export interface PlayerControlDetails {
-  name: string
-  voice: string
+  name: string // example: "CONTROL_TRACKBALL"
+  voice: string // example: "Trackball"
   color: string
-  inputCodes: string
-  [index: string]: string | null
+  
+  inputCodes?: string
+  allowConfigPlayerNum?: string | null // "0" | "1" | "2" ... "8"
+  
+  [index: string]: string | null | undefined
 }
+
+/*interface Control {
+  element: Element
+  details: ControlDetails
+  inputCodes: string[]
+}*/
 
 export interface PlayerControl {
   details: PlayerControlDetails
@@ -213,20 +222,6 @@ export function getElementsByTagName(elm: Element | Document, tagName: string): 
   return new Array( ...elm.getElementsByTagName(tagName) as any )
 }
 
-interface ControlDetails {
-  name: string // example: "CONTROL_TRACKBALL"
-  voice: string // example: "Trackball"
-  inputCodes?: string // example: "TRACKBALL"
-  allowConfigPlayerNum: string // example: "0"
-  [index: string]: string | null | undefined
-}
-
-interface Control {
-  element: Element
-  details: ControlDetails
-  inputCodes: string[]
-}
-
 interface ControlDefaultDetails {
   groupName: string
   [index: string]: string | null
@@ -235,7 +230,7 @@ interface ControlDefaultDetails {
 export interface ControlDefault {
   element: Element
   details: ControlDefaultDetails,
-  controls: Control[]
+  controls: PlayerControl[] // Control[]
 }
 
 export interface LedBlinkyControls {
@@ -390,14 +385,25 @@ export function getEmulatorsByControl(
   return mappedEmulators
 }
 
-export function getControlDefaultsByControlXml(xml: Document): ControlDefault[] {
+export function getControlDefaultsByControlXml(
+  xml: Document,
+  colorRgbConfig?: IniNameValuePairs
+): ControlDefault[] {
   return getElementsByTagName(xml,'controlDefaults').map(controlDefault => {
-    const controls: Control[] = getElementsByTagName(controlDefault, 'control').map(element => {
-      const details = elmAttributesToObject(element) as ControlDetails
+    const controls: PlayerControl[] = getElementsByTagName(controlDefault, 'control').map(element => {
+      const details = elmAttributesToObject(element) as PlayerControlDetails
       const inputCodes = details.inputCodes?.replace(/(^\||\|$)/g,'').split('|') || []
-      const control: Control = {
-        element, details, inputCodes
+      const control: PlayerControl = {
+        element, details, inputCodes,
+        cssColor: ''
       }
+
+      if ( details.color ) {
+        const isNumbered = details.color.includes(',')
+        const cssColor = isNumbered ? ledNumberedColorToCss(details.color) : ledColorNameToCss(details.color, colorRgbConfig)
+        control.cssColor = cssColor
+      }
+
       return control
     })
     

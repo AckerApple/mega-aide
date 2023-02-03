@@ -69,7 +69,7 @@ export class LEDBlinkyControlsComponent {
   
   async readDir() {
     const ledBlinky = this.session.ledBlinky
-    await ledBlinky.loadControls()
+    await ledBlinky.getControls()
     this.unknownGames = await ledBlinky.getUnknownGames()
     this.emulators = ledBlinky.controls?.emulators
 

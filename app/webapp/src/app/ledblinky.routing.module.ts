@@ -9,7 +9,7 @@ export const ledblinky: Route = {
   title: 'LEDBlinky',
   data: {
     emoji: '🚦',
-    description: '🚧 Currently a work in progress. Future plan is to read LEDBlinky configs to understand individual arcade configurations to assist you better.',
+    description: 'Helpful LEDBlinky tools',
   },
   component: LEDBlinkyComponent,
 }

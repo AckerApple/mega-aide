@@ -1,7 +1,7 @@
 import { EventEmitter } from "@angular/core"
 import { DirectoryManager } from "ack-angular-components/directory-managers/DirectoryManagers"
 import { SessionProvider } from "../session.provider"
-import { elmAttributesToObject, Emulator, getControlDefaultsByControlXml, getElementsByTagName, getEmulatorsByControl, getFileNameByPath, getLightConfigByLayoutFile, IniNameValuePairs, iniToObject, InputMap, InputsMap, LedBlinkyControls, LightsConfig, NewControlGroupings, NewEmulator, Port, PortDetails, UniqueInputCode, UniqueInputLabel } from "./LedBlinky.utils"
+import { elmAttributesToObject, Emulator, getControlDefaultsByControlXml, getElementsByTagName, getEmulatorsByControl, getFileNameByPath, getLightConfigByLayoutFile, IniNameValuePairs, iniToObject, InputMap, InputsMap, LedBlinkyControls, LightsConfig, NewControlGroupings, NewEmulator, NewPlayer, Player, PlayerControl, Port, PortDetails, UniqueInputCode, UniqueInputLabel } from "./LedBlinky.utils"
 
 enum LEDBlinkyFiles {
   NewInputCodes = 'NewInputCodes.ini',
@@ -195,12 +195,109 @@ export class LedBlinky {
       return // a log warning was already fired
     }
 
-    const controlDefaults = getControlDefaultsByControlXml(xml)
+    const colorRgbConfig = await this.getColorRgbConfig()
+    const controlDefaults = getControlDefaultsByControlXml(xml, colorRgbConfig)
     const colors = await this.getColorRgbConfig()
+    const emulators = getEmulatorsByControl(xml, inputsMap, controlDefaults, colors)
+
+    const mame = controlDefaults.find(x => x.details.groupName === 'MAME')
+
+    if ( mame ) {
+      const uniqueNames: {
+        [player: string]: {
+          [name: string]: string[]
+        }
+      } = {}
+      
+      mame.controls.forEach(x => {
+        const name = x.details.name
+        if ( !x.inputCodes || name.charAt(0) === '_' ) {
+          return
+        }
+
+        const playerIndex = x.details.allowConfigPlayerNum
+
+        if ( !playerIndex ) {
+          return
+        }
+
+        const uniquePlayer = uniqueNames[playerIndex] = uniqueNames[playerIndex] || {}
+        const keyCodes = uniquePlayer[name] = uniquePlayer[name] || []
+        const newCodes = x.inputCodes.filter((x: string) => !keyCodes.includes(x))
+        keyCodes.push( ...newCodes )
+      }) // getUniqueControlNames(mame.controls)
+
+      const all: {
+        [playerIndex: string]: {
+          name: string
+          inputCode: string
+        }[]
+      } = {}
+
+      Object.entries(uniqueNames).forEach(([playerIndex, controls]) => {
+        all[playerIndex] = []
+        Object.entries(controls).forEach(([name, inputCodes]) => {
+          const isNameMatch = name.slice(0,2) === 'P' + playerIndex || name.charAt(name.length-1) === playerIndex
+
+          let found: UniqueInputCode | undefined = inputsMap.inputCodes.find(x => {
+            const isPlayerMatch = x.labels.find(label =>
+              label.slice(0,2) === 'P' + playerIndex ||
+              label === 'JOYSTICK' + playerIndex
+            )
+
+            // const codeMatch = x.inputCode && inputCodes.find(code => code === x.inputCode)
+
+            if ( isPlayerMatch && isNameMatch ) {
+              return x
+            }
+            
+            const isCommon = playerIndex === '0' // && !isPlayerMatch
+            if ( isCommon ) {
+              return x
+            }
+
+            return
+          })
+
+          if ( !found ) {
+            return
+          }
+
+          const match = inputsMap.inputCodes.find(code => code.inputCode && inputCodes.includes(code.inputCode))
+          let inputCode = ''
+          if ( match ) {
+            found = match
+            inputCode = found.inputCode
+          }
+
+          all[playerIndex].push({ name, inputCode: inputCode })
+        })
+      })
+      console.log('mame 2', all)
+    }
+    
+    // TODO, wish we knew where this names came from instead of pulling them from records
+    /*const uniqueButtonNames: UniqueButtonNames = {}
+    emulators.forEach(emu => {
+      const uniques = getEmulatorUniqueButtonNames(emu)
+      Object.entries(uniques).forEach(([key, value]) => {
+        uniqueButtonNames[key] = uniqueButtonNames[key] || []
+        value.forEach(v => {
+          if ( uniqueButtonNames[key].includes(v) ) {
+            return
+          }
+          uniqueButtonNames[key].push(v)
+        })
+      })
+    })
+
+    Object.values(uniqueButtonNames).forEach(buttons => buttons.sort((a,b)=>String(a||'').toLowerCase()>String(b||'').toLowerCase()?1:-1))
+    console.log('uniqueButtonNames', uniqueButtonNames)
+    */
 
     this.controls = {
       inputsMap, xml,
-      emulators: getEmulatorsByControl(xml, inputsMap, controlDefaults, colors),
+      emulators,
       controlDefaults
     }
 
@@ -318,4 +415,68 @@ export class LedBlinky {
 
 interface ConfigWiz {
   [name: string]: IniNameValuePairs;
+}
+
+function getEmulatorUniqueButtonNames(emu: Emulator) {
+  const uniqueButtonNames: UniqueButtonNames = {}
+  
+  emu.controlGroups.forEach(
+    group => group.controlGroups.forEach(
+      control => control.players.forEach(
+        (player: Player | NewPlayer) => {
+          const uniqueControls = getUniquePlayerControlNames(player)
+          
+          Object.entries(uniqueControls).forEach(([key, value]) => {
+            uniqueControls[key] = uniqueControls[key] || []
+            value.forEach(v => {
+              if ( uniqueControls[key].includes(v) ) {
+                return
+              }
+              uniqueControls[key].push(v)
+            })
+          })
+        })
+    )
+  )
+
+  return uniqueButtonNames
+}
+
+function getUniquePlayerControlNames(
+  player: Player | NewPlayer
+) {
+  return getUniqueControlNames(player.controls, player.details.number)
+}
+
+function getUniqueControlNames(
+  controls: PlayerControl[],
+  playerIndex?: string | null
+) {
+  const uniqueButtonNames: UniqueButtonNames = {}
+
+  controls.forEach(
+    (pCon: PlayerControl) => {
+      const name = pCon.details.name
+      if ( name.charAt(0) === '_' ) {
+        return
+      }
+      
+      const computedIndex = playerIndex || pCon.details.allowConfigPlayerNum
+      if ( !computedIndex ) {
+        return
+      }
+
+      uniqueButtonNames[computedIndex] = uniqueButtonNames[computedIndex] || []
+      if ( uniqueButtonNames[computedIndex].includes(name) ) {
+        return
+      }
+      uniqueButtonNames[computedIndex].push(name)
+    }
+  )
+
+  return uniqueButtonNames
+}
+
+interface UniqueButtonNames {
+  [playerIndex: string]: string[]
 }

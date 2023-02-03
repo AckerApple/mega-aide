@@ -6,7 +6,7 @@ import { routeMap as launchBoxRouteMap } from "../launchbox/launchbox.routing.mo
 import { routeMap } from "../ledblinky.routing.module";
 import { SessionProvider } from "../session.provider";
 import { findEmulatorByName } from "./ledblinky-controls.component"
-import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, NewControlGroup, NewEmulator, NewPlayer, Player, PlayerControl, PlayerControlDetails, PlayerDetails } from "./LedBlinky.utils";
+import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, LedBlinkyControls, NewControlGroup, NewEmulator, NewPlayer, Player, PlayerControl, PlayerControlDetails, PlayerDetails } from "./LedBlinky.utils";
 
 @Component({
   animations,
@@ -41,13 +41,14 @@ import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, NewControlGroup, 
     this.subs.unsubscribe()
   }
 
-  async getEmulators(): Promise<(NewEmulator | Emulator)[] | undefined> {
+  async getEmulatorsByControls(
+    controls: LedBlinkyControls | undefined
+  ): Promise<(NewEmulator | Emulator)[] | undefined> {
     const ledBlinky = this.session.ledBlinky
     const unknownMode = this.activatedRoute.snapshot.queryParams['unknownMode']
     this.unknownMode = unknownMode ? JSON.parse(unknownMode) : false
-    
     // always load known emulators, may need to match with an unknown
-    const knownEmulators = (await ledBlinky.loadControls())?.emulators
+    const knownEmulators = controls?.emulators
     let emulators: (NewEmulator | Emulator)[] | undefined = knownEmulators
 
     if ( this.unknownMode ) {
@@ -95,7 +96,7 @@ import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, NewControlGroup, 
         throw 'no emulator name defined' // todo: relocate to pick emulator
       }
 
-      const emulators = await this.getEmulators()
+      const emulators = await this.getEmulatorsByControls(controls)
       if ( !emulators ) {
         this.session.error('code should never get here. LEDBlinky emulators not loaded')
         return
