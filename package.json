@@ -1,6 +1,6 @@
 {
   "name": "mega-aide",
-  "version": "0.0.55",
+  "version": "0.0.56",
   "description": "Things learned and things to remember for my Megacade",
   "scripts": {
     "start": "npm run start:webapp",

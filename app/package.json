@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "Things learned and things to remember for my Megacade",
   "scripts": {
-    "build": "npm run build:webapp && npm run build:neutralino",
+    "neu:update": "neu update",
+    "build": "npm run build:webapp && npm run neu:update && npm run build:neutralino",
     "build:neutralino": "neu build --release && npm run dist:rename:mac && npm run dist:move",
     "build:webapp": "cd webapp && npm run build && cd ../ && npm run build:resources",
     "build:webapp:watch": "cd webapp && npm run build:watch",
