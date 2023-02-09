@@ -1,0 +1,57 @@
+<div class="flex-right flex-wrap gap">
+  <!--class="flex1 flex"-->
+  <robust-select-directory label="🚦 LEDBlinky"
+    [reloadPath]="session.config.ledBlinky.path"
+    [directoryManager]="$any(session.ledBlinky.directory$ | async)"
+    (directoryManagerChange)="session.save();session.ledBlinky.directoryChange.next($event)"
+    (error)="session.error('could not load LEDBlinky path', $event)"
+    [pickerId]="session.ledBlinky.pickerId"
+  ></robust-select-directory>
+
+  <!--
+  <robust-select-directory label="👾 MAME" class="flex1 flex"
+    [reloadPath]="session.config.mame.path"
+    [(directoryManager)]="session.mame.directory"
+    (directoryManagerChange)="session.save();"
+    (error)="session.error('could not load mame path', $event)"
+    [pickerId]="session.mame.pickerId"
+  ></robust-select-directory>
+  -->
+
+  <robust-select-directory
+    *ngIf="showSelectLaunchBox" [@fadeInOutUp]="1"
+    class="flex"
+    label="🧰 LaunchBox" pickerId="LaunchBox"
+    [reloadPath]="session.config.launchBox.path"
+    [directoryManager]="$any(session.launchBox.directory$ | async)"
+    (directoryManagerChange)="session.launchBox.directoryChange.next($event)"
+    (error)="session.error('could not load LaunchBox path', $event)"
+  ></robust-select-directory>
+</div>
+
+<div *ngIf="!(session.ledBlinky.directory$ | async)" [@fadeInOutUp]="1">
+  <br />
+  <div class="text-center opacity-80">
+    PRO TIP: If you have 🧰 LaunchBox,&nbsp;
+    <a class="underline"
+      (click)="showSelectLaunchBox = !showSelectLaunchBox"
+    >select that folder</a> instead
+  </div>
+</div>
+
+<div *ngIf="!(session.ledBlinky.directory$ | async)" [@fadeInOutUp]="1">
+  <details class="pad">
+    <summary>📁 read more about this app and what it does with folder access</summary>
+    <div class="bg-dark pad">
+      <p>
+        Once you select your LEDBlinky folder, files will be read to offer helpful support.
+      </p>      
+      Such support features include:
+      <ul>
+        <li>Game controls searching</li>
+        <li>Game controls visual assistance maps</li>
+        <li>and more...</li>
+      </ul>
+    </div>
+  </details>
+</div>

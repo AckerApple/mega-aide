@@ -49,6 +49,8 @@ import { ScanBackupsComponent } from './launchbox/ScanBackups.component'
 
 import { DragSelectorDirective } from './ledblinky/drag-selector.directive'
 import { DragSelectorTargetDirective } from './ledblinky/drag-selector-target.directive'
+import { InputMapsComponent } from './ledblinky/input-maps.component'
+import { SelectLedblinkyDirectoryComponent } from './ledblinky/select-ledblinky-directory.component'
 
 export const declarations = [
   AppComponent,
@@ -89,12 +91,14 @@ export const declarations = [
   XinputBackupsComponent,
   SelectXarcadeXInputPathComponent,
 
+  SelectLedblinkyDirectoryComponent,
   LEDBlinkyComponent,
   LayoutsComponent,
   LEDBlinkyControlsComponent,
   LedblinkyLayoutsComponent,
   RomControlsComponent,
-
+  InputMapsComponent,
+  
   PlatformVisualFiltersComponent,
   PlatformFiltersDirective,
   MenuStackListComponent,

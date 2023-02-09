@@ -1,7 +1,7 @@
 import { DirectoryManager, DmFileReader } from "ack-angular-components/directory-managers/DirectoryManagers"
 import { BehaviorSubject, combineLatest, EMPTY, firstValueFrom, from, mergeMap, Observable, of, shareReplay, switchMap } from "rxjs"
 import { SessionProvider } from "../session.provider"
-import { ControlDefault, elmAttributesToObject, Emulator, getControlDefaultsByControlXml, getElementsByTagName, getEmulatorsByControl, getLastLayoutFileByLightsConfig, getLightConfigByLayoutFile, IniNameValuePairs, iniToObject, InputMap, InputsMap, LedBlinkyControls, NewControlGroupings, NewEmulator, Port, PortDetails, UniqueInputCode, UniqueInputLabel } from "./LedBlinky.utils"
+import { InputsMap, ControlDefault, elmAttributesToObject, Emulator, getControlDefaultsByControlXml, getElementsByTagName, getEmulatorsByControl, getLastLayoutFileByLightsConfig, getLightConfigByLayoutFile, IniNameValuePairs, iniToObject, LedBlinkyControls, NewControlGroupings, NewEmulator, Port, PortDetails, UniqueInputCode, UniqueInputLabel, LedController, LedControllerDetails } from "./LedBlinky.utils"
 
 enum LEDBlinkyFiles {
   UnknownGames = 'UnknownGames.dat',
@@ -164,7 +164,7 @@ export class LedBlinky {
 
   controlsFile$ = this.getFileLoader(LEDBlinkyFiles.LEDBlinkyControls)
   inputsMapFile$ = this.getFileLoader(LEDBlinkyFiles.LEDBlinkyInputMap)
-  inputsMap$: Observable<InputsMap | undefined> = this.inputsMapFile$.pipe(
+  inputsMap$: Observable<InputsMap> = this.inputsMapFile$.pipe(
     mergeMap(file => from(this.getInputsMapByDir(file))),
     shareReplay(1)
   )
@@ -243,39 +243,18 @@ export class LedBlinky {
     const inputCodes: UniqueInputCode[] = []
 
     const xml = await inputsMapFile.readAsXml()
-    const inputs: InputMap[] = getElementsByTagName(xml, 'ledController').map(element => {
-      const ports: Port[] = getElementsByTagName(element, 'port').map(element => {
-        const details = elmAttributesToObject(element) as PortDetails
-        
-        let labelIndex = labels.findIndex(x => x.label === details.label)
-        if ( labelIndex < 0 ) {
-          labels.push({ label: details.label, inputCodes: [] })
-          labelIndex = labels.length - 1
-        }
-        
-        if ( !labels[labelIndex].inputCodes.includes(details.inputCodes) ) {
-          labels[labelIndex].inputCodes.push(details.inputCodes)
-        }
-        
-        let codeIndex = inputCodes.findIndex(x => x.inputCode === details.inputCodes)
-        if ( codeIndex < 0 ) {
-          inputCodes.push({ inputCode: details.inputCodes, labels: [] })
-          codeIndex = inputCodes.length - 1
-        }
-        
-        if ( !inputCodes[codeIndex].labels.includes(details.label) ) {
-          inputCodes[codeIndex].labels.push(details.label)
-        }
-
-        return {
-          element, details,
-        }
-      })
-      return { element, ports }
+    const ledControllers = getElementsByTagName(xml, 'ledController').map(element => {
+      const ports: Port[] = getElementsByTagName(element, 'port').map(mapPortElm)
+      ports.forEach(port => registerPorts(port, labels, inputCodes))
+      const details = elmAttributesToObject(element) as LedControllerDetails
+      const control: LedController = {
+        element, ports, details
+      }
+      return control
     })
 
     const result: InputsMap = {
-      labels, inputCodes, inputs
+      labels, inputCodes, ledControllers
     }
   
     return result  
@@ -400,4 +379,38 @@ function getAvailControlsMap(
   })
 
   return all
+}
+
+function mapPortElm(element: Element) {
+  const details = elmAttributesToObject(element) as PortDetails
+  
+  return {
+    element, details,
+  }
+}
+
+function registerPorts(
+  port: Port,
+  labels: UniqueInputLabel[],
+  inputCodes: UniqueInputCode[],
+) {
+  let labelIndex = labels.findIndex(x => x.label === port.details.label)
+  if ( labelIndex < 0 ) {
+    labels.push({ label: port.details.label, inputCodes: [] })
+    labelIndex = labels.length - 1
+  }
+  
+  if ( !labels[labelIndex].inputCodes.includes(port.details.inputCodes) ) {
+    labels[labelIndex].inputCodes.push(port.details.inputCodes)
+  }
+  
+  let codeIndex = inputCodes.findIndex(x => x.inputCode === port.details.inputCodes)
+  if ( codeIndex < 0 ) {
+    inputCodes.push({ inputCode: port.details.inputCodes, labels: [] })
+    codeIndex = inputCodes.length - 1
+  }
+  
+  if ( !inputCodes[codeIndex].labels.includes(port.details.label) ) {
+    inputCodes[codeIndex].labels.push(port.details.label)
+  }
 }

@@ -19,10 +19,6 @@ export class LEDBlinkyControlsComponent {
   inputMaps?: InputsMap
   mamePortMaps?: MamePortMap[] // used to color mame games
   routes = routeMap
-  
-  showSelectLaunchBox?: boolean
-  // closeMameWarn?: boolean
-  // subs = new Subscription()
 
   // unknownGames?: NewEmulator[]
   unknownGames$ = this.session.ledBlinky.unknownGames$.pipe(

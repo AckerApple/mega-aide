@@ -1,0 +1,67 @@
+<select-ledblinky-directory></select-ledblinky-directory>
+
+<br />
+
+<div class="flex-wrap gap">
+  <a *ngFor="let inputMap of (session.ledBlinky.inputsMap$ | async)?.ledControllers"
+    class="flex-wrap gap bg-dark pad hover-bg-energized flex1"
+    (click)="selectedController = selectedController === inputMap ? undefined : inputMap"
+    [class.bg-energized]="selectedController === inputMap"
+  >
+    <div>
+      <strong>name</strong>
+      <div>
+        {{inputMap.details.name}}
+      </div>
+    </div>
+    
+    <div>
+      <strong>ports</strong>
+      <div>
+        {{inputMap.ports.length}}
+      </div>
+    </div>
+    
+    <div>
+      <strong>id</strong>
+      <div>
+        {{inputMap.details.id}}
+      </div>
+    </div>
+    
+    <div>
+      <strong>type</strong>
+      <div>
+        {{inputMap.details.type}}
+      </div>
+    </div>
+  </a>
+</div>
+
+<div *ngIf="selectedController" [@fadeInOutUp]="1">
+  <br />
+  <h3>Ports</h3>
+  <table cellPadding="5" cellSpacing="0" border="0"
+    class="table-lines width-full bg-dark"
+  >
+    <thead>
+      <tr class="bg-grey">
+        <td>number</td>
+        <td>label</td>
+        <td>type</td>
+        <td>inputCodes</td>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let port of selectedController.ports">
+        <td>{{ port.details.number }}</td>
+        <td>{{ port.details.label }}</td>
+        <td>{{ port.details.type }}</td>
+        <td>{{ port.details.inputCodes }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<!--
+  {{ session.ledBlinky.inputsMap$ | json }}
+-->

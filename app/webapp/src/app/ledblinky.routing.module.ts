@@ -1,6 +1,7 @@
 import { Route } from '@angular/router'
 import { LEDBlinkyComponent } from './ledblinky/ledblinky.component'
 import { LEDBlinkyControlsComponent } from './ledblinky/ledblinky-controls.component'
+import { InputMapsComponent } from './ledblinky/input-maps.component'
 import { RomControlsComponent } from './ledblinky/rom-controls.component'
 import { LayoutsComponent } from './ledblinky/layouts.component'
 
@@ -24,9 +25,19 @@ export const layouts: Route = {
   title: 'Layouts',
   data: {
     emoji: '🗺',
-    description: 'Manage layout files that are on your machine',
+    description: 'Layout files that resemble real world physical layouts of buttons',
   },
   component: LayoutsComponent,
+}
+
+export const inputMaps: Route = {
+  path: '🚦/⚙️',
+  title: 'Input Maps',
+  data: {
+    emoji: '⚙️',
+    description: 'Input mappings that all other LEDBlinky tools refer to for understanding your machines button inputs',
+  },
+  component: InputMapsComponent,
 }
 
 export const ledblinkyControls: Route = {
@@ -55,7 +66,9 @@ export const rom: Route = {
 }
 
 export const routeMap = {
-  ledblinky, ledblinky2, ledblinkyControls, rom, layouts
+  ledblinky, ledblinky2,
+  inputMaps,
+  ledblinkyControls, rom, layouts
 }
 
 export const routes: Route[] = Object.values(routeMap)

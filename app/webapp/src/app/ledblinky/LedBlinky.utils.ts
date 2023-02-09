@@ -270,12 +270,14 @@ export interface UniqueInputCode {
 export interface InputsMap {
   labels: UniqueInputLabel[] // SPINNER, JOYSTICK1, P1B1
   inputCodes: UniqueInputCode[]
-  inputs: InputMap[]
+  ledControllers: LedController[]
 }
 
 export interface PortDetails {
   label: string
   inputCodes: string
+  number: string
+  type: string
   [index: string]: string | null
 }
 
@@ -284,7 +286,15 @@ export interface Port {
   details: PortDetails
 }
 
-export interface InputMap {
+export interface LedControllerDetails {
+  name: string
+  id: string
+  type: string
+  [index: string] : string | null
+}
+
+export interface LedController {
+  details: LedControllerDetails
   element: Element
   ports: Port[]
 }
