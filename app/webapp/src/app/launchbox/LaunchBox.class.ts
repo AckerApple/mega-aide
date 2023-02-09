@@ -2,12 +2,17 @@ import { EventEmitter } from "@angular/core"
 import { DirectoryManager, DmFileReader } from "ack-angular-components/directory-managers/DirectoryManagers"
 import { findElementText, getGameElementId, getGameElementTitle, isPathKillXinput, isPathXinput } from "./DetectIssues.component"
 import { AdditionalApp, AdditionalAppType, GameDetails, GameInsight, PlatformInsights, SessionProvider } from "../session.provider"
-import { Subscription } from "rxjs"
+import { BehaviorSubject, EMPTY, Observable, of, shareReplay, Subscription, switchMap } from "rxjs"
 import { getElementsByTagName } from "../ledblinky/LedBlinky.utils"
 
 /* when done with this class you must .destroy() it */
 export class LaunchBox {
-  directory?: DirectoryManager
+  directoryChange = new BehaviorSubject<DirectoryManager | undefined>( undefined )
+  directory$ = this.directoryChange.pipe(
+    switchMap(c => c ? of(c) : EMPTY),
+    shareReplay(1),
+  )
+
 
   // xarcade loaded from launchbox tools dir
   xarcadeDir?: DirectoryManager
@@ -15,33 +20,25 @@ export class LaunchBox {
   // ledBlinky loaded from launchbox tools dir
   ledBlinkyDir?: DirectoryManager
 
-  directoryChange = new EventEmitter<DirectoryManager>()
   directoriesChange = new EventEmitter<DirectoryManager>() // when xinput, mame, or ledblinky has changed
   subs = new Subscription()
 
   constructor(public session: SessionProvider) {
-    this.directoryChange.subscribe(() => 
-      // some tools will rely on "session.xarcade" being loaded first
-      this.session.launchBox.onDirectory()
+    this.subs.add(
+      this.directory$.subscribe(async directory => {
+        await Promise.all([
+          this.tryAddMame(directory),
+          this.tryAddXinputByTools(directory),
+          this.tryAddLedBlinkyByTools(directory),
+        ])
+    
+        this.directoriesChange.emit()
+      })
     )
   }
 
   destroy() {
     this.subs.unsubscribe()
-  }
-
-  async onDirectory() {
-    if ( !this.directory ) {
-      return
-    }
-
-    await Promise.all([
-      this.tryAddMame(this.directory),
-      this.tryAddXinputByTools(this.directory),
-      this.tryAddLedBlinkyByTools(this.directory),
-    ])
-
-    this.directoriesChange.emit()
   }
 
   async tryAddXinputByTools(directoryManager: DirectoryManager) {
@@ -69,7 +66,7 @@ export class LaunchBox {
       return
     }
 
-    this.session.ledBlinky.directory = dir
+    this.session.ledBlinky.directoryChange.next( dir )
     // notate that the link was found via LaunchBox for back and forth jumping
     this.session.launchBox.ledBlinkyDir = dir
   }
@@ -106,8 +103,13 @@ export class LaunchBox {
   async getPlatformFiles(): Promise<{name: string, file: DmFileReader}[]> {
     const platformNames = await this.getPlatformNames()
     const results: {name: string, file: DmFileReader}[] = []
+    const directory = this.session.launchBox.directoryChange.getValue()
+    if ( !directory ) {
+      return results
+    }
+
     for (const name of platformNames) {
-      const file = await this.session.launchBox.directory?.findFileByPath(`Data/Platforms/${name}.xml`) as DmFileReader
+      const file = await directory.findFileByPath(`Data/Platforms/${name}.xml`) as DmFileReader
 
       if ( !file ) {
         continue
@@ -144,6 +146,11 @@ export class LaunchBox {
       stopped = true
     }
 
+    const directory = this.session.launchBox.directoryChange.getValue()
+    if ( !directory ) {
+      return []
+    }
+
     const results = []
     for (const element of namedElements) {
       if ( stopped ) {
@@ -151,7 +158,7 @@ export class LaunchBox {
       }
 
       const name = element.textContent
-      const file = await this.session.launchBox.directory?.findFileByPath(`Data/Platforms/${name}.xml`) as DmFileReader
+      const file = await directory.findFileByPath(`Data/Platforms/${name}.xml`) as DmFileReader
 
       if ( !file ) {
         continue
@@ -188,7 +195,13 @@ export class LaunchBox {
 
   async loadData(fileName: string): Promise<DmFileReader | undefined> {
     const filePath = 'Data/' + fileName
-    const platformFile = await this.directory?.findFileByPath(filePath)
+    const directory = this.directoryChange.getValue()
+    
+    if ( !directory ) {
+      return
+    }
+
+    const platformFile = await directory.findFileByPath(filePath)
     
     if ( !platformFile ) {
       this.session.error(`Launchbox Data file not found ${filePath}`)

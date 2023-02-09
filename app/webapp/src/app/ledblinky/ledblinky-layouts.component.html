@@ -1,45 +1,162 @@
+<ng-container *ngTemplateOutlet="stage;context: {
+  zoom: session.ledBlinky.zoom$ | async,
+  lights: lights$ | async
+}"></ng-container>
+
+<ng-template #stage let-zoom="zoom" let-lights="lights">
+  <ng-container *ngTemplateOutlet="toolsStage;context:{zoom: zoom, lights:lights}"></ng-container>
+  <ng-container *ngTemplateOutlet="lightStage;context:{zoom: zoom}"></ng-container>
+</ng-template>
+
 <!-- tools -->
-<div class="flex-wrap gap">
-  <div>
-    <div>🔬 zoom {{zoom || session.ledBlinky.zoom}}</div>
-    <div class="flex">
-      <a (click)="zoom = session.ledBlinky.zoom = session.ledBlinky.zoom - .5">⊖</a>
-      <input type="range" id="zoom" min="1" max="5" [(ngModel)]="zoom || session.ledBlinky.zoom" step=".5" />
-      <a (click)="zoom = session.ledBlinky.zoom = session.ledBlinky.zoom + .5">⊕</a>
+<ng-template #toolsStage let-zoomVar="zoom" let-lights="lights">
+  <div class="flex-wrap gap">
+    <div>
+      <div>🔬 zoom {{zoomVar}}</div>
+      <div class="flex">
+        <a (click)="session.ledBlinky.zoom$.next(zoomVar - .5)">⊖</a>
+        <input type="range" id="zoom" min="1" max="5"
+          [ngModel]="session.ledBlinky.zoom$ | async" step=".5"
+          (ngModelChange) = "session.ledBlinky.zoom$.next($event)"
+        />
+        <a (click)="session.ledBlinky.zoom$.next(zoomVar + .5)">⊕</a>
+      </div>
+    </div>
+
+    <div>
+      <div>🖌 layout</div>
+      <select [ngModel]="layoutName$ | async" (ngModelChange)="layoutName$$.next($event)">
+        <option [value]="name" *ngFor="let name of layoutNames">{{name}}</option>
+      </select>
+    </div>
+
+    <div>
+      <div>&nbsp;</div>
+      <button type="button" (click)="previewSelectedLayoutFile()">🔎 view file</button>
+    </div>
+
+    <div *ngIf="edit">
+      <div>add button</div>
+      <select (change)="addLight(lights, $any($event.target).value)">
+        <option>-- CHOOSE A BUTTON --</option>
+        <option *ngFor="let missing of missingLights$ | async"
+          [value]="missing.details.name"
+        >{{ missing.details.name}}</option>
+      </select>
     </div>
   </div>
-  <div>
-    <div>🖌 layout</div>
-    <select [(ngModel)]="layoutName" (ngModelChange)="loadLayoutByName(layoutName)">
-      <option [value]="name" *ngFor="let name of layoutNames">{{name}}</option>
-    </select>
-  </div>
-  <div>
-    <div>&nbsp;</div>
-    <button type="button" (click)="previewSelectedLayoutFile()">🔎 view file</button>
-  </div>
-</div>
+</ng-template>
 
-<ng-container *ngTemplateOutlet="lightStage;context:{zoom: zoom || session.ledBlinky.zoom}"></ng-container>
-
-<ng-template #lightStage let-zoom="zoom">
+<ng-template #lightStage let-zoomVar="zoom">
   <!-- light stage-->
-  <div class="border pos-rel bg-black" style="max-width: 95vw;max-height: 95vh;"
-    [style.width.px]="(bounds.horizontal.max || session.ledBlinky.displaySize?.width || 1024) * zoom"
-    [style.height.px]="(bounds.vertical.max || session.ledBlinky.displaySize?.height || 768) * zoom"
+  <div>
+
+  </div>
+  <div class="border pos-rel bg-black" style="max-width: 100vw;max-height: 95vh;"
+    [style.width.%] = "widthFull && 100"
+    [style.width.px]="!widthFull && (bounds.horizontal.max || session.ledBlinky.displaySize?.width || 1024) * zoomVar"
+    [style.height.px]="(bounds.vertical.max || session.ledBlinky.displaySize?.height || 768) * zoomVar"
+    
+    (drop)="onDropLight($event)"
+    (dragover)="stopDrag($event)"
+    
+    [drag-selector]="selectedLights"
   >
-    <!-- light loop -->
-    <div *ngFor="let light of lights" class="pos-abs flex-stacked flex-center"
-      [style.left.px] = "(light.x - bounds.horizontal.min) * zoom"
-      [style.top.px] = "(light.y - bounds.vertical.min) * zoom"
-    >
-      <div class="radius-half"
-        [style.width.px] = "light.diameter * zoom"
-        [style.height.px] = "light.diameter * zoom"
-        [style.background-color] = "light.cssColor"
+    <!-- show single light details -->
+    <div *ngIf="(showLightDetails$ | async) as lightDetails" class="flex-center">
+      <div class="pos-abs width-full height-full flex-center flex-valign-center bg-dark opacity-half"
+        (click)="showLightDetails$.next()"
+        style="z-index:2"
       ></div>
-      <div [style.font-size.px]="(lightConfig?.settings?.ledLabelFontSize || 12) * zoom"
-      >{{light.name}}</div>
+      <div class="pos-abs pad" style="z-index:3">
+        <ng-container *ngTemplateOutlet="singleLightDetails;context:{$implicit:lightDetails, zoom: zoomVar}"></ng-container>
+      </div>
+    </div>
+
+    <!-- light loop -->
+    <div *ngFor="let light of lights$ | async"
+      class="pos-abs flex-stacked flex-center cursor-pointer"
+      [style.left.px] = "(light.details.x - bounds.horizontal.min) * zoomVar"
+      [style.top.px] = "(light.details.y - bounds.vertical.min) * zoomVar"
+      (dragstart)="setLightDrag($event, light)"
+      (drag)="updateLightDrag($event, light)"
+      [draggable]="edit"
+      (click)="showLightDetails$.next(light)"
+
+      #dragSelectorTarget="dragSelectorTarget"
+      [drag-selector-target]="light"
+    >
+      <ng-container *ngTemplateOutlet="lightTemplate;context:{$implicit:light, zoom:zoomVar, dragSelectorTarget:dragSelectorTarget}"></ng-container>
     </div>
   </div>
+</ng-template>
+
+<ng-template #singleLightDetails let-lightDetails let-zoom="zoom">
+  <div>
+    <div class="text-black pad pos-rel border-4"
+      style="background-color:rgba(255,255,255,.9);border-color:rgba(255,255,255,.8);"
+    >
+      <a class="pos-abs top-0 right-0 pad-xxs text-2x"
+        (click)="showLightDetails$.next(undefined)"
+      >🅧</a>
+      
+      <div class="flex-center flex-stacked">
+        <ng-container *ngTemplateOutlet="lightTemplate;context:{$implicit:lightDetails, zoom: zoom}"></ng-container>
+      </div>
+      <!--
+        <h3 class="margin-bottom">{{ lightDetails.name }}</h3>
+      -->
+      <select [(ngModel)]="lightDetails.name">
+        <option>-- CHOOSE A BUTTON --</option>
+        <option *ngFor="let label of (session.ledBlinky.inputsMap$ | async)?.labels"
+          [value]="label.label"
+        >{{ label.label }}</option>
+      </select>
+
+      <div class="flex-wrap gap">
+        <div class="flex1">
+          <div>x</div>
+          <input type="range" class="width-full"
+            [(ngModel)]="lightDetails.x"
+            min="0" [max]="(session.ledBlinky.displaySize?.width || 1024) - (lightDetails.diameter || 0)"
+            step="1"
+          />
+        </div>
+        
+        <div class="flex1">
+          <div>y</div>
+          <input type="range" class="width-full"
+            [(ngModel)]="lightDetails.y"
+            min="0" [max]="(session.ledBlinky.displaySize?.height || 768) -  (lightDetails.diameter || 0)"
+            step="1"
+          />
+        </div>
+        
+        <div class="flex1">
+          <div>diameter</div>
+          <input type="range" class="width-full"
+            [(ngModel)]="lightDetails.diameter" min="3" [max]="150"
+          />
+        </div>
+        
+        <div class="flex1">
+          <div>colorDec</div>
+          <input type="number" class="width-full"
+            [(ngModel)]="lightDetails.colorDec"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #lightTemplate let-light let-zoom="zoom" let-dragSelectorTarget="dragSelectorTarget">
+  <div class="radius-half"
+    [style.width.px] = "light.details.diameter * zoom"
+    [style.height.px] = "light.details.diameter * zoom"
+    [style.background-color] = "light.cssColor"
+    [ngClass] = "dragSelectorTarget?.selected ? 'border-2 border-white' : ''"
+  ></div>
+  <div [style.font-size.px]="($any(lightConfig?.settings?.LEDLabelFontSize | number) || 12) * zoom"
+  >{{light.details.name}}</div>
 </ng-template>

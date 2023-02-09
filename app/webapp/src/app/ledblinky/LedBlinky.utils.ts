@@ -1,5 +1,9 @@
 import { DmFileReader } from "ack-angular-components/directory-managers/DirectoryManagers"
+import { AvailControlsMap } from "./LedBlinky.class"
 
+/** 
+ * Example: "P3START=189,117,65280,17" is "name=x,y,colorDec,diameter"
+ */
 export async function getLightConfigByLayoutFile(
   file: DmFileReader
 ): Promise<LightsConfig> {
@@ -11,20 +15,23 @@ export async function getLightConfigByLayoutFile(
   const lights = Object.entries(layout).reduce((all, now) => {
     const details = now[1].replace(/(^,|,$)/g,'').split(',')
     const decodedColor = intToHex(Number(details[2]))
-    const result: LightDetails = {
+    const lightDetails: LightDetails = {
       name: now[0],
       x: Number(details[0]),
       y: Number(details[1]),
       colorDec: Number(details[2]),
+      diameter: Number(details[3]),
+    }
+    const result: Light = {
       colorHex: decodedColor,
       cssColor: decodedColor,
-      diameter: Number(details[3]),
+      details: lightDetails,
     }
     all.push(result)
     return all
-  }, [] as LightDetails[])
+  }, [] as Light[])
 
-  settings.ledLabelFontSize = Number(settings['LEDLabelFontSize'])
+  // settings.ledLabelFontSize = Number(settings['LEDLabelFontSize'])
 
   return { settings, lights, file }
 }
@@ -69,14 +76,21 @@ export interface LightDetails {
   x: number
   y: number
   colorDec: number
+  diameter: number
+}
+
+export interface Light {
+  details: LightDetails
+  // computed
   colorHex: string
   cssColor: string
-  diameter: number
+  startDragX?: number
+  startDragY?: number
 }
 
 interface LightsLayoutConfig {
   LEDLabelFontSize: string
-  ledLabelFontSize: number
+  // ledLabelFontSize: number
   
   CPBackColor: string // "12632256"
   DefaultOnBehavior: string
@@ -89,7 +103,7 @@ interface LightsLayoutConfig {
 
 export interface LightsConfig {
   settings: LightsLayoutConfig // was "layout"
-  lights: LightDetails[]
+  lights: Light[]
   file: DmFileReader
 }
 
@@ -172,6 +186,8 @@ export interface NewPlayer {
   details: PlayerDetails
   element?: Element
   controls: PlayerControl[]
+
+  show?: boolean
 }
 
 export interface Player extends NewPlayer {
@@ -238,6 +254,7 @@ export interface LedBlinkyControls {
   xml: Document
   controlDefaults: ControlDefault[]
   emulators: Emulator[]
+  availMap?: AvailControlsMap
 }
 
 export interface UniqueInputLabel {
@@ -251,7 +268,7 @@ export interface UniqueInputCode {
 }
 
 export interface InputsMap {
-  labels: UniqueInputLabel[]
+  labels: UniqueInputLabel[] // SPINNER, JOYSTICK1, P1B1
   inputCodes: UniqueInputCode[]
   inputs: InputMap[]
 }
@@ -464,4 +481,11 @@ function mapPlayerElement(
     details: elmAttributesToObject(element) as PlayerDetails,
     controls
   }
+}
+
+export function getLastLayoutFileByLightsConfig(
+  configObject: IniNameValuePairs
+) {
+  const name = configObject['LastLayoutFile']
+  return getFileNameByPath(name)
 }

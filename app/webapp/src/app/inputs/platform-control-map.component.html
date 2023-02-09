@@ -15,8 +15,8 @@
     let-index="index"
     let-remap="remap"
   >
-    <a 
-      draggable="true" class="pos-abs flex-center flex-valign-center border"
+    <a class="pos-abs flex-center flex-valign-center border"
+      draggable="true"
       [ngClass]="lastDrag?.control === control || controlListen === control ? 'border-energized border-4' : 'border'"
       [class.radius-half]="!control.shape || control.shape==='circle'"
       (click)="controlClick.emit(toggleLastDrag(control,$event))"

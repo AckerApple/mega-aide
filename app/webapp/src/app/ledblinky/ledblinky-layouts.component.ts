@@ -1,6 +1,8 @@
-import { Component, Input, SimpleChanges } from "@angular/core";
-import { SessionProvider } from "../session.provider";
-import { ControlGroup, Emulator, getFileNameByPath, LedBlinkyControls, LightDetails, LightsConfig, NewControlGroup, NewEmulator } from './LedBlinky.utils'
+import { Component, EventEmitter, Input, Output } from "@angular/core"
+import { DirectoryManager } from "ack-angular-components/directory-managers/DirectoryManagers"
+import { BehaviorSubject, combineLatest, firstValueFrom, from, map, mergeMap, of, shareReplay } from "rxjs"
+import { SessionProvider } from "../session.provider"
+import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePairs, InputsMap, LedBlinkyControls, Light, LightDetails, LightsConfig, NewControlGroup, NewEmulator } from './LedBlinky.utils'
 
 @Component({
   selector: 'ledblinky-layouts',
@@ -9,13 +11,72 @@ import { ControlGroup, Emulator, getFileNameByPath, LedBlinkyControls, LightDeta
   @Input() edit?: boolean | string
   @Input() emulator?: Emulator | NewEmulator // used for coloring non mame games
   @Input() playersControls?: NewControlGroup | ControlGroup // used for coloring non mame games
-  @Input() controls?: LedBlinkyControls // used to color mame games
-  @Input() zoom?: number
+  @Input() controls?: LedBlinkyControls | null // used to color mame games
+  @Input() widthFull: boolean | string = false
 
-  layoutName?: string
+  @Output() changed = new EventEmitter<LightsConfig>()
+
+  // set user changed layoutNames here
+  layoutName$$ = new BehaviorSubject<string | undefined>(undefined)
+  showLightDetails$ = new BehaviorSubject<Light | undefined | void>(undefined)
+  selectedLights: Light[] = []
+  
+  // lookup default or emit layoutName$$ value
+  layoutName$ = combineLatest([
+    this.session.ledBlinky.directory$,
+    this.layoutName$$,
+    this.session.ledBlinky.animEditorObject$,
+  ]).pipe(
+    mergeMap(([dir, layoutName, animEditorObject]) => {
+      if ( layoutName || !dir ) {
+        return of( layoutName )
+      }
+      
+      if ( layoutName ) {
+        return of(layoutName) // no default needed
+      }
+  
+      if ( !animEditorObject ) {
+        return of()
+      }
+      
+      const name = getLastLayoutFileByLightsConfig(animEditorObject)
+      return of(name)
+    }),
+    shareReplay(1)
+  )
+
   layoutNames: string[] = []
   lightConfig?: LightsConfig
-  lights?: LightDetails[] // made of lightConfig + playersControls + mamePortMaps
+  
+  lights$ = combineLatest([
+    this.session.ledBlinky.directory$,
+    this.layoutName$,
+    this.session.ledBlinky.animEditorObject$,
+  ]).pipe(
+    mergeMap(([dir, layoutName, animEditorObject]) => {
+      if ( !dir || !layoutName || !animEditorObject ) {
+        return []
+      }
+
+      const promise = this.getLightsLayout(dir, animEditorObject, layoutName)
+      return from( promise )
+    }),
+    shareReplay(1)
+  )
+  
+  missingLights$ = combineLatest([
+    this.lights$,
+    this.session.ledBlinky.inputsMap$
+  ]).pipe(
+    map(([lights, inputsMap]) => {
+      if ( !lights || !inputsMap ) {
+        return
+      }
+      const missing = getMissingLights(lights, inputsMap)
+      return missing
+    })
+  )
 
   bounds: {
     vertical: {min: number, max: number}
@@ -25,45 +86,41 @@ import { ControlGroup, Emulator, getFileNameByPath, LedBlinkyControls, LightDeta
     horizontal: {min: 0, max: 0},
   }
 
+  lastLightDrag?: LightDrag
+  
   constructor(public session: SessionProvider) {}
 
-  async ngOnInit(){
-    this.reload()
-  }
-
-  ngOnChanges( changes: SimpleChanges ){
-    if ( changes['layoutName'] ) {
-      this.reload()
-    }
-  }
-
-  async reload(){
+  async getLightsLayout(
+    directory: DirectoryManager,
+    animEditorObject: IniNameValuePairs,
+    layoutName?: string,
+  ): Promise<Light[] | undefined> {
     const ledBlinky = this.session.ledBlinky
-    const directory = ledBlinky.directory
-    
-    if ( !directory ) {
-      return
+    // load available layout files
+    const files = await directory.listFiles()
+    this.layoutNames = files.filter((v) => v.includes('.lay'))
+    if ( layoutName ) {
+      const lightConfig = this.lightConfig = await ledBlinky.getLightLayoutByName(directory, layoutName)
+      if ( !lightConfig ) {
+        return
+      }
+      return this.getLightConfig( lightConfig )
     }
-    
-    const lightConfig = this.lightConfig = await ledBlinky.loadFxEditorByDir()
+
+    const dir$ = await this.session.ledBlinky.getFxEditorByDir(
+      directory, animEditorObject
+    )
+    const lightConfig = this.lightConfig = dir$
     if ( !lightConfig ) {
       return
     }
 
-    // load available layout files
-    const files = await directory.listFiles()
-    this.layoutNames = files.filter((v) => v.includes('.lay'))
-    const fileName = lightConfig?.file.name
-    if ( fileName ) {
-      this.layoutName = getFileNameByPath( fileName )
-    }
-
-    this.readLightConfig(lightConfig)
+    return this.getLightConfig( lightConfig )
   }
 
-  readLightConfig(lightConfig: LightsConfig) {
+  getLightConfig(lightConfig: LightsConfig) {
     // loop all lights and remap the colors
-    this.lights = lightConfig.lights.map(light => {
+    const lights = lightConfig.lights.map(light => {
       let clone = {...light}
 
       if ( this.playersControls ) {
@@ -73,10 +130,11 @@ import { ControlGroup, Emulator, getFileNameByPath, LedBlinkyControls, LightDeta
       return clone
     })
 
-    this.applyBounds()
+    this.applyBounds(lights)
+    return lights
   }
 
-  applyBounds() {
+  applyBounds(lights: Light[]) {
     if ( this.edit ) {
       return this.bounds = {
         horizontal: {
@@ -87,28 +145,25 @@ import { ControlGroup, Emulator, getFileNameByPath, LedBlinkyControls, LightDeta
         },
       }
     }
-
-    if ( !this.lights ) {
-      return
-    }
-
-    return this.bounds = this.lights.reduce((all, now) => {
+    
+    this.bounds = lights.reduce((all, now) => {
+      const details = now.details
       const pad = 15
-      if ( now.x < all.horizontal.min || all.horizontal.min === 0 ) {
-        all.horizontal.min = now.x - pad
+      if ( details.x < all.horizontal.min || all.horizontal.min === 0 ) {
+        all.horizontal.min = details.x - pad
       }
 
-      if ( now.x > all.horizontal.max ) {
-        const rightPad = now.name.length * pad
-        all.horizontal.max = now.x + rightPad + pad
+      if ( details.x > all.horizontal.max ) {
+        const rightPad = details.name.length * pad
+        all.horizontal.max = details.x + rightPad + pad
       }
 
-      if ( now.y < all.vertical.min || all.vertical.min === 0 ) {
-        all.vertical.min = now.y - pad
+      if ( details.y < all.vertical.min || all.vertical.min === 0 ) {
+        all.vertical.min = details.y
       }
 
-      if ( now.y > all.vertical.max ) {
-        all.vertical.max = now.y + (pad * 2)
+      if ( details.y > all.vertical.max ) {
+        all.vertical.max = details.y + (pad * 2)
       }
 
       return all
@@ -116,6 +171,8 @@ import { ControlGroup, Emulator, getFileNameByPath, LedBlinkyControls, LightDeta
       vertical: { min: 0, max: 0 },
       horizontal: { min: 0, max: 0 },
     })
+
+    return this.bounds
   }
 
   async previewSelectedLayoutFile() {
@@ -129,17 +186,120 @@ import { ControlGroup, Emulator, getFileNameByPath, LedBlinkyControls, LightDeta
     }
   }
 
-  async loadLayoutByName(layoutName: string | undefined) {
-    this.lightConfig = await this.session.ledBlinky.loadLightLayoutByName(layoutName)
-    if ( this.lightConfig ) {
-      this.readLightConfig( this.lightConfig )
+  setLightDrag(
+    $event: MouseEvent,
+    light: Light,
+  ) {
+    this.lastLightDrag={
+      light,
+      // best
+      // startOffsetY: $event.offsetY,
+      // startOffsetX: $event.offsetX,
+
+      startOffsetY: ($event.target as any).offsetTop,
+      startOffsetX: ($event.target as any).offsetLeft,
+
+      startY: $event.pageY,
+      startX: $event.pageX
     }
+
+    if ( !this.selectedLights.find(x => x === light) ) {
+      this.selectedLights.push(light)
+    }
+
+    this.selectedLights.forEach(light => {
+      light.startDragX = light.details.x
+      light.startDragY = light.details.y
+    })
+  }
+
+  updateLightByDrag(
+    $event: MouseEvent,
+    lastLightDrag: LightDrag
+  ) {
+    const { startOffsetX, startOffsetY, startX, startY } = lastLightDrag
+    const zoom = (this.session.ledBlinky.zoom$.getValue() || 1)
+
+    const xDiff = $event.pageX - startX
+    const yDiff = $event.pageY - startY
+
+    const offsetX = (startOffsetX + xDiff) / zoom
+    const offsetY = (startOffsetY + yDiff) / zoom
+    
+    // lastLightDrag.light.details.x = offsetX
+    // lastLightDrag.light.details.y = offsetY
+
+    this.selectedLights.forEach(light => {
+      light.details.x = (light as any).startDragX + xDiff / zoom
+      light.details.y = (light as any).startDragY + yDiff / zoom
+    })
+  }
+
+  updateLightDrag(
+    $event: MouseEvent,
+    _light: Light,
+  ) {
+    if ( !this.lastLightDrag ) {
+      return
+    }
+
+    this.updateLightByDrag($event, this.lastLightDrag)
+  }
+
+  onDropLight($event: MouseEvent) {
+    if ( !this.lastLightDrag ) {
+      return
+    }
+
+    this.updateLightByDrag($event, this.lastLightDrag)
+    delete this.lastLightDrag
+    this.updated()
+  }
+
+  async updated() {
+    const lights = await firstValueFrom( this.lights$ )
+    const lightConfig = this.lightConfig
+    if ( !lightConfig || !lights ) {
+      return
+    }
+
+    lights.forEach((light, index) => {
+      if ( !lightConfig.lights[index] ) {
+        return lightConfig.lights[index] = light
+      }
+      
+      return Object.assign(lightConfig.lights[index], light)
+    })
+    this.changed.emit(this.lightConfig)
+  }
+
+  addLight(lights: Light[], lightName?: string) {
+    if ( !lightName ) {
+      return
+    }
+    
+    lights.push({
+      colorHex: '',
+      cssColor: '#fff',
+      details: {
+        name: lightName,
+        x: 0,
+        y: 0,
+        colorDec: 0,
+        diameter: 20,
+      }
+    })
+  }
+
+  stopDrag($event: MouseEvent) {
+    $event.preventDefault()
+    $event.stopPropagation()
   }
 }
 
 function remapPlayerControlsToLight(
   playersControls: NewControlGroup | ControlGroup,
-  light: LightDetails
+  light: Light,
 ) {  
   const players = playersControls.players
   if ( !players ) {
@@ -151,11 +311,40 @@ function remapPlayerControlsToLight(
   players.forEach(player => {
     const controls = player.controls
     controls.forEach(control => {
-      if ( control.layoutLabel === light.name ) {
+      if ( control.layoutLabel === light.details.name ) {
         light.cssColor = control.cssColor // change the color by passed in controller
       }
     })
   })
 
   return light
+}
+
+function getMissingLights(
+  lights: Light[],
+  inputsMap: InputsMap
+): Light[] {
+  // return lights.filter(light => !inputsMap.labels.find(name => name.label === light.name))
+  const missing = inputsMap.labels.filter(
+    label => !lights.find(light => light.details.name === label.label)
+  )
+  return missing.map(miss => ({
+    colorHex: '',
+    cssColor: '',
+    details: {
+      name: miss.label,
+      x: 0,
+      y: 0,
+      colorDec: 0,
+      diameter: 10,
+    }
+  }))
+}
+
+interface LightDrag {
+  light: Light
+  startOffsetY: number
+  startOffsetX: number
+  startX: number
+  startY: number
 }

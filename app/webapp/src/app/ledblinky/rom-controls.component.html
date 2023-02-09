@@ -1,33 +1,51 @@
-<div *ngIf="!session.ledBlinky.directory; else main" class="text-right"><!--flex-wrap gap-->
-  <!--class="flex1 flex"-->
-  <robust-select-directory label="🚦 LEDBlinky"
-    [reloadPath]="session.config.ledBlinky.path"
-    [directoryManager]="session.ledBlinky.directory"
-    (directoryManagerChange)="session.save();session.ledBlinky.setDir($event)"
-    (error)="session.error('could not load LEDBlinky path', $event)"
-    [pickerId]="session.ledBlinky.pickerId"
-  ></robust-select-directory>
-</div>
+<ng-container *ngIf="session.ledBlinky.directory$ | async; else selectDirectory">
+  <ng-container *ngTemplateOutlet="main"></ng-container>
+</ng-container>
+
+<ng-template #selectDirectory>
+  <div class="text-right">
+    <robust-select-directory label="🚦 LEDBlinky"
+      [reloadPath]="session.config.ledBlinky.path"
+      (directoryManagerChange)="session.ledBlinky.directoryChange.next($event);session.save();"
+      (error)="session.error('could not load LEDBlinky path', $event)"
+      [pickerId]="session.ledBlinky.pickerId"
+    ></robust-select-directory>
+  </div>
+</ng-template>
 
 <ng-template #main>
   <div class="margin pad bg-warning text-warning">
     🚧 This section is a work in progress and many features are currently experimental. Reviewing is ok but saving information is not recommended at this time
   </div>
 
-  <ng-container *ngIf="romControl">
-    <h4>{{ session.ledBlinky.emulator?.details?.emuname }}</h4>
-    <h2>{{ romControl.details.voice || romControl.details.groupName }}</h2>
-    <div class="flex-wrap gap flex1">
-      <div class="flex-wrap gap" [@childStag]="romControl.players">
-        <div *ngFor="let player of romControl.players" class="flex1 bg-dark flex-stacked" [@fadeInOutUp]="1">
+  <ng-container *ngIf="(romControl$ | async) as romControl">
+    <ng-container *ngIf="(emulator$ | async) as emulator">
+      <ng-container *ngTemplateOutlet="romTemplate;context:{romControl:romControl, emulator:emulator}"></ng-container>
+    </ng-container>
+  </ng-container>
+</ng-template>
+
+<ng-template #romTemplate let-romControl="romControl" let-emulator="emulator">
+  <h4>{{ emulator.details.emuname }}</h4>
+  <h2>{{ romControl.details.voice || romControl.details.groupName }}</h2>
+  <div class="flex-wrap gap-xs">
+    <div *ngFor="let player of romControl.players; let playerIndex = index" class="flex1 bg-dark flex-stacked" [@fadeInOutUp]="1">
+      <button type="button" (click)="player.show = !player.show"
+        [class.bg-energized]="player.show"
+      >
+        <ng-container *ngTemplateOutlet="playerLabel;context: player"></ng-container>
+      </button>
+    </div>
+  </div>
+  <div class="flex-wrap gap flex1">
+    <div class="flex-wrap gap flex1" [@childStag]="romControl.players">
+      <ng-container *ngFor="let player of romControl.players; let playerIndex = index">
+        <div *ngIf="player.show" class="flex2 bg-dark flex-stacked"
+          [@fadeInOutUp]="1"
+        >
           <div class="flex2">
             <div class="bg-grey pad">
-              <ng-container *ngIf="player.details.number === '0';else playerLabel">
-                Common
-              </ng-container>
-              <ng-template #playerLabel>
-                Player {{ player.details.number }} 🕹 Controls
-              </ng-template>
+              <ng-container *ngTemplateOutlet="playerLabel;context: player"></ng-container>
             </div>
             <table cellPadding="8" cellSpacing="0" border="0" class="table-lines width-full">
               <tbody>
@@ -70,20 +88,22 @@
                     >{{ control.edited ? 'edited' : 'edit' }}</button>
                   </td>
                   <td>
-                    <div>
+                    <div *ngIf="!control.edit">
                       {{ control.details.name }}
                     </div>
                     <div *ngIf="control.edit">
                       <!--todo need on changes-->
-                      <!--
-                        <select [(ngModel)]="control.details.name"
-                          (ngModelChange)="control.edited = true"
-                        >
-                          <option *ngFor="let code of inputsMap?.inputCodes"
-                            [value]="code.label"
-                          >{{code.labels}}</option>
-                        </select>                         
-                      -->
+                      <select [(ngModel)]="control.details.name"
+                        (ngModelChange)="control.edited = true"
+                      >
+                        <ng-container *ngIf="(session.ledBlinky.controls$ | async) as controls">
+                          <ng-container *ngIf="controls.availMap && controls.availMap[ playerIndex ]">
+                            <option *ngFor="let code of controls.availMap[ playerIndex ]"
+                              [value]="code.name"
+                            >{{code.name}}</option>
+                          </ng-container>
+                        </ng-container>
+                      </select>                         
                     </div>
                   </td>
                   <td>
@@ -107,8 +127,13 @@
                     </a>
                     <div *ngIf="control.edit">
                       <!--todo need on changes-->
+                      <input type="color" [(ngModel)]="control.details.color"
+                        (ngModelChange)="control.edited = true;"
+                        (change)="control.cssColor=$any($event.target).value"
+                      />
                       <select [(ngModel)]="control.details.color"
-                        (ngModelChange)="control.edited = true"
+                        (ngModelChange)="control.edited = true;"
+                        (change)="control.cssColor=$any($event.target).value"
                       >
                         <option *ngFor="let color of session.ledBlinky.colors | keyvalue"
                           [value]="color.key"
@@ -123,15 +148,14 @@
                     <div *ngIf="control.edit">
                       <!--todo need on changes-->
                       <div *ngFor="let controlCode of control.inputCodes; let codeIndex = index">
-                        {{controlCode}}
                         <select (change)="control.edited = true">
                           <option></option>
-                          <option *ngFor="let inputCode of inputsMap?.inputCodes"
+                          <option *ngFor="let inputCode of (inputsMap$ | async)?.inputCodes"
                             [value]="inputCode.inputCode"
                             [selected]="controlCode === inputCode.inputCode"
                           >{{inputCode.inputCode}}</option>
                           <optgroup label="New Input Codes">
-                            <option *ngFor="let inputCode of newInputCodes | keyvalue"
+                            <option *ngFor="let inputCode of session.ledBlinky.newInputCodes$ | async | keyvalue"
                               [value]="inputCode.key"
                               [selected]="controlCode === inputCode.key"
                             >{{inputCode.key}}</option>
@@ -153,84 +177,97 @@
             <button type="button" class="flex1 bg-calm radius-top-0"
               (click)="addPlayerControl(player)"
             >⨁ add control</button>
+            <button type="button" class="flex1 bg-assertive radius-top-0"
+              (click)="removePlayerControl(player, romControl)"
+            >remove player</button>
           </div>
         </div>
-      </div>
-    </div>
-    
-    <div class="margin-v-xs">
-      <ledblinky-layouts class="flex3 overflow"
-        [emulator]        = "session.ledBlinky.emulator"
-        [controls]        = "session.ledBlinky.controls"
-        [playersControls] = "romControl"
-      ></ledblinky-layouts>
-    </div>
-
-    <!-- bottom buttons -->
-    <div class="flex-wrap gap">
-      <a type="button" class="flex1 bg-calm"
-        [routerLink]="'../../../../' + routeMap.layouts.path"
-      >🗺 edit layouts</a>
-
-      <ng-container *ngIf="session.ledBlinky.emulator">
-        <a type="button" class="flex1 bg-calm"
-          [routerLink]="'../../../../' + launchBoxRouteMap.games.path"
-          [queryParams]="{platform: session.ledBlinky.emulator.details.emuname, rom: romControl.details.groupName}"
-        >🧰 LaunchBox Game</a>
-
-        <button type="button" [class.bg-energized]="session.ledBlinky.emulator.viewJson" class="flex1"
-          (click)="session.ledBlinky.emulator.viewJson = !session.ledBlinky.emulator.viewJson"
-        >view emulator json</button>
-  
-        <button type="button" [class.bg-energized]="session.ledBlinky.emulator.viewXml" class="flex1"
-          (click)="session.ledBlinky.emulator.viewXml = !session.ledBlinky.emulator.viewXml"
-        >view emulator xml</button>
       </ng-container>
+    </div>
+  </div>
+  
+  <div class="margin-v-xs">
+    <ledblinky-layouts class="flex3 overflow"
+      widthFull         = "true"
+      [emulator]        = "emulator"
+      [controls]        = "this.session.ledBlinky.controls$ | async"
+      [playersControls] = "romControl"
+    ></ledblinky-layouts>
+  </div>
 
-      <button type="button" [class.bg-energized]="viewJson" class="flex1"
-        (click)="viewJson = !viewJson"
-      >view json</button>
-      
-      <button type="button" [class.bg-energized]="viewXml" class="flex1"
-        (click)="viewXml = !viewXml"
-      >view xml</button>
+  <!-- bottom buttons -->
+  <div class="flex-wrap gap-xs">
+    <a type="button" class="flex1 bg-calm"
+      [routerLink]="'../../../../' + routeMap.layouts.path"
+    >🗺 edit layouts</a>
 
-      <button type="button" class="flex1 bg-calm"
-        (click)="addPlayer()"
-      >👤 add player</button>
+    <ng-container *ngIf="emulator">
+      <a type="button" class="flex1 bg-calm"
+        [routerLink]="'../../../../' + launchBoxRouteMap.games.path"
+        [queryParams]="{platform: emulator.details.emuname, rom: romControl.details.groupName}"
+      >🧰 LaunchBox Game</a>
+
+      <button type="button" [class.bg-energized]="emulator.viewJson" class="flex1"
+        (click)="emulator.viewJson = !emulator.viewJson"
+      >view emulator json</button>
+
+      <button type="button" [class.bg-energized]="emulator.viewXml" class="flex1"
+        (click)="emulator.viewXml = !emulator.viewXml"
+      >view emulator xml</button>
+    </ng-container>
+
+    <button type="button" [class.bg-energized]="viewJson" class="flex1"
+      (click)="viewJson = !viewJson"
+    >view json</button>
+    
+    <button type="button" [class.bg-energized]="viewXml" class="flex1"
+      (click)="viewXml = !viewXml"
+    >view xml</button>
+
+    <button type="button" class="flex1 bg-calm"
+      (click)="addPlayer(romControl)"
+    >👤 add player</button>
+  </div>
+  
+  <div class="flex-wrap gap">
+    <div *ngIf="emulator?.viewJson" class="flex4"
+      [@fadeInOutUp]="1"
+    >
+      <strong>emulator.details</strong>
+      <textarea class="width-full" rows="12" wrap="off">{{emulator?.details | json}}</textarea>
     </div>
     
-    <div class="flex-wrap gap">
-      <div *ngIf="session.ledBlinky.emulator?.viewJson" class="flex4"
-        [@fadeInOutUp]="1"
-      >
-        <strong>emulator.details</strong>
-        <textarea class="width-full" rows="12" wrap="off">{{session.ledBlinky.emulator?.details | json}}</textarea>
-      </div>
-      
-      <div *ngIf="session.ledBlinky.emulator?.viewXml" class="flex4"
-        [@fadeInOutUp]="1"
-      >
-        <strong>emulator.element</strong>
-        <textarea class="width-full" rows="12" wrap="off"
-        >{{session.ledBlinky.emulator?.element?.outerHTML}}</textarea>
-      </div>
-      
-      <div *ngIf="viewJson" [@fadeInOutUp]="1" class="flex4">
-        <strong>romControl.details</strong>
-        <textarea class="width-full" rows="12" wrap="off">{{romControl.details | json}}</textarea>
-      </div>
-      
-      <div *ngIf="viewJson" [@fadeInOutUp]="1" class="flex4">
-        <strong>romControl.players</strong>
-        <textarea class="width-full" rows="12" wrap="off">{{romControl.players | json}}</textarea>
-      </div>
-      
-      <div *ngIf="viewXml && romControl.element" class="flex4" [@fadeInOutUp]="1">
-        <strong>romControl.element</strong>
-        <textarea class="width-full" rows="12" wrap="off"
-        >{{romControl.element.outerHTML}}</textarea>
-      </div>
+    <div *ngIf="emulator?.viewXml" class="flex4"
+      [@fadeInOutUp]="1"
+    >
+      <strong>emulator.element</strong>
+      <textarea class="width-full" rows="12" wrap="off"
+      >{{emulator?.element?.outerHTML}}</textarea>
     </div>
+    
+    <div *ngIf="viewJson" [@fadeInOutUp]="1" class="flex4">
+      <strong>romControl.details</strong>
+      <textarea class="width-full" rows="12" wrap="off">{{romControl.details | json}}</textarea>
+    </div>
+    
+    <div *ngIf="viewJson" [@fadeInOutUp]="1" class="flex4">
+      <strong>romControl.players</strong>
+      <textarea class="width-full" rows="12" wrap="off">{{romControl.players | json}}</textarea>
+    </div>
+    
+    <div *ngIf="viewXml && romControl.element" class="flex4" [@fadeInOutUp]="1">
+      <strong>romControl.element</strong>
+      <textarea class="width-full" rows="12" wrap="off"
+      >{{romControl.element.outerHTML}}</textarea>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #playerLabel let-details="details">
+  <ng-container *ngIf="details.number === '0';else playerLabel">
+    Common
   </ng-container>
+  <ng-template #playerLabel>
+    Player {{ details.number }} 🕹 Controls
+  </ng-template>
 </ng-template>

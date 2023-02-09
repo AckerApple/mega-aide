@@ -1,4 +1,4 @@
-<ng-container *ngIf="session.launchBox.directory; else selectLaunchBox">
+<ng-container *ngIf="session.launchBox.directory$ | async; else selectLaunchBox">
   <div *ngIf="!selected" [@fadeInOutUp]="1">
     <div class="flex-wrap gap">
       <div class="flex1">
@@ -87,26 +87,26 @@
               {{app.name}}
             </td>
             <td class="child-margin">
-              <div>
+              <div class="flex-stacked gap-xxs">
                 <div class="text-xxs bold">path</div>
                 <span class="bg-grey pad-xxs" [(contentModel)]="app.applicationPath"
                   (change)="applyAppApplicationPath(app)"
                 ></span>
               </div>
-              <div>
+              <div class="flex-stacked gap-xxs">
                 <div class="text-xxs bold">commandLine</div>
                 <div class="bg-grey pad-xxs text-small" [(contentModel)]="app.commandLine"
                   (change)="applyAppCommandLine(app)"
                 ></div>
               </div>
-              <div *ngIf="app.type==='xinput'">
+              <div *ngIf="app.type==='xinput'" class="flex-stacked gap-xxs">
                 <div class="text-xxs bold">mapping</div>
                 <xinput-app-map-select #xinputAppMapSelect
                   class="flex" [model]="app"
                   (change)="saveSelectedGame()"
                 ></xinput-app-map-select>
                 <a *ngIf="session.launchBox.xarcadeDir" class="text-white text-xxs"
-                  [routerLink]="'../../🕹/xarcade-xinput/mapping/' + xinputAppMapSelect.mapping"
+                  [routerLink]="'../../🕹/xarcade-xinput/mapping/' + (xinputAppMapSelect.mapping ? xinputAppMapSelect.mapping +'.json' : '')"
                 >xinput tools</a>
               </div>
             </td>

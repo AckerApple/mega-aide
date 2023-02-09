@@ -114,6 +114,12 @@ export class SessionProvider {
     // this.tips.displayForTime(message, 5000)
   }
 
+  info(message: string) {
+    message = 'ℹ ' + message
+    console.info(message)
+    this.tips.displayForTime(message, 5000)
+  }
+
   save() {
     saveStorage(this.config)
   }

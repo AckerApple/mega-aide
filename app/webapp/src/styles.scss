@@ -2,12 +2,17 @@
 select, textarea, button, input, [type=button] {
   padding:.5vw;
   font-size:.9em;
-  @extend .border-radius-10
+  /** write each out below to allow for overrides */
+  border-top-left-radius: .5em;
+  border-top-right-radius: .5em;
+  border-bottom-left-radius: .5em;
+  border-bottom-right-radius: .5em;
 }
 
 [type=button].bg-orange { @extend .bg-orange }
 [type=button].bg-stable { @extend .bg-stable }
 [type=button].bg-assertive { @extend .bg-assertive }
+[type=button].bg-energized { @extend .bg-energized }
 [type=button].bg-positive { @extend .bg-positive }
 [type=button].bg-balanced { @extend .bg-balanced }
 [type=button].bg-calm { @extend .bg-calm }

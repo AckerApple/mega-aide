@@ -26,16 +26,19 @@ import { SessionProvider, WriteFile } from '../session.provider'
           if ( this.saveWithBackupFolder ) {
             ++this.saving
   
-            await createBackupOfFile(
+            const backup = await createBackupOfFile(
               item.file,
               this.session.config.backupFolderNames
             )
+
+            this.session.info(`Saved file backup ${backup.directory.path}/${backup.name}`)
             
             --this.saving
           }
           
           ++this.saving
           const promise = await item.file.write(item.string)
+          this.session.info(`Saved file ${item.file.directory.path}/${item.file.name}`)
           --this.saving
           
           return promise  
@@ -60,7 +63,7 @@ import { SessionProvider, WriteFile } from '../session.provider'
 export async function createBackupOfFile(
   file: DmFileReader,
   backupFolderNames: string[]
-) {
+): Promise<DmFileReader> {
   const backupFolderName  = backupFolderNames[0]
   let backupFolder = await file.directory.findDirectory(backupFolderName)
   if ( !backupFolder ) {
@@ -76,4 +79,5 @@ export async function createBackupOfFile(
   const backupFile = await backupFolder.file(newFileName, { create: true })
   const toWrite = await file.readAsText()
   await backupFile.write(toWrite)
+  return backupFile
 }

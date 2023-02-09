@@ -1,4 +1,4 @@
-<ng-container *ngIf="session.launchBox.directory; else selectLaunchBox">
+<ng-container *ngIf="session.launchBox.directory$ | async; else selectLaunchBox">
     <ng-container *ngIf="bigBox.fileSettings.length">
     <h3>Theme settings</h3>
     <hr class="border-1 border-white" />

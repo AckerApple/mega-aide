@@ -1,4 +1,4 @@
-<div *ngIf="session.launchBox.directory"
+<div *ngIf="session.launchBox.directory$ | async"
   [@fadeInOutUp]="1"
 >
   <div class="flex-wrap gap">
@@ -55,6 +55,6 @@
   </div>
 </div>
 
-<div *ngIf="!session.launchBox.directory" [@fadeInOutUp]="1">
+<div *ngIf="!(session.launchBox.directory$ | async)" [@fadeInOutUp]="1">
   <select-launchbox></select-launchbox>
 </div>

@@ -18,7 +18,13 @@ export class ThemeSettingsComponent {
     public session: SessionProvider,
   ) {
     this.subs.add(
-      this.session.launchBox.directoryChange.subscribe(dir => this.readDir(dir))
+      this.session.launchBox.directoryChange.subscribe(dir => {
+        if ( !dir ) {
+          return
+        }
+        
+        this.readDir(dir)
+      })
     )
   }
 
@@ -27,9 +33,11 @@ export class ThemeSettingsComponent {
   }
 
   ngOnInit(){
-    if ( this.session.launchBox.directory ) {
-      this.readDir(this.session.launchBox.directory)
+    const directory = this.session.launchBox.directoryChange.getValue()
+    if ( !directory ) {
+      return
     }
+    this.readDir(directory)
   }
 
   async readDir( directoryManager: DirectoryManager ) {

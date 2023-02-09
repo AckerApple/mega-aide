@@ -2,8 +2,8 @@
   <!--class="flex1 flex"-->
   <robust-select-directory label="🚦 LEDBlinky"
     [reloadPath]="session.config.ledBlinky.path"
-    [directoryManager]="session.ledBlinky.directory"
-    (directoryManagerChange)="session.save();session.ledBlinky.setDir($event)"
+    [directoryManager]="$any(session.ledBlinky.directory$ | async)"
+    (directoryManagerChange)="session.save();session.ledBlinky.directoryChange.next($event)"
     (error)="session.error('could not load LEDBlinky path', $event)"
     [pickerId]="session.ledBlinky.pickerId"
   ></robust-select-directory>
@@ -23,13 +23,13 @@
     class="flex"
     label="🧰 LaunchBox" pickerId="LaunchBox"
     [reloadPath]="session.config.launchBox.path"
-    [(directoryManager)]="session.launchBox.directory"
-    (directoryManagerChange)="session.launchBox.onDirectory()"
+    [directoryManager]="$any(session.launchBox.directory$ | async)"
+    (directoryManagerChange)="session.launchBox.directoryChange.next($event)"
     (error)="session.error('could not load LaunchBox path', $event)"
   ></robust-select-directory>
 </div>
 
-<div *ngIf="!session.ledBlinky.directory" [@fadeInOutUp]="1">
+<div *ngIf="!(session.ledBlinky.directory$ | async)" [@fadeInOutUp]="1">
   <div class="text-center opacity-80">
     PRO TIP: If you have 🧰 LaunchBox,&nbsp;
     <a class="underline"
@@ -40,7 +40,7 @@
 
 <br />
 
-<div *ngIf="!session.ledBlinky.directory" [@fadeInOutUp]="1">
+<div *ngIf="!(session.ledBlinky.directory$ | async)" [@fadeInOutUp]="1">
   <details class="pad">
     <summary>📁 read more about this app and what it does with folder access</summary>
     <div class="bg-dark pad">
@@ -57,23 +57,25 @@
   </details>
 </div>
 
-<div *ngIf="session.ledBlinky.directory" [@fadeInOutUp]="1">
+<div *ngIf="session.ledBlinky.directory$ | async" [@fadeInOutUp]="1">
   <div class="flex-wrap gap">
     <div class="flex-valign-center pos-rel flex1">
       <span class="pad-xs">🔎</span>
-      <input type="text" [(ngModel)]="search" class="width-full"
+      <input type="text"
+        [ngModel]="search$ | async"
+        (ngModelChange)="newSearch($event)"
+        class="width-full"
         placeholder="Search emulators and roms"
-        (ngModelChange)="newSearch()"
         [focusOn]="1"
       />
-      <div *ngIf="search" [@fadeInOutUp]="1" class="pos-abs right-0 pad-right-xxs">
-        <a (click)="search='';newSearch()" class="text-black text-2x">🅧</a>
+      <div *ngIf="search$ | async" [@fadeInOutUp]="1" class="pos-abs right-0 pad-right-xxs">
+        <a (click)="newSearch('')" class="text-black text-2x">🅧</a>
       </div>
     </div>
 
     <div>
-      <button type="submit" (click)="toggleUnknownMode()">
-        {{ unknownMode ? '☑️' : '◻️' }}&nbsp;
+      <button type="submit" (click)="this.unknownMode$.next( !this.unknownMode$.getValue() )">
+        {{ (unknownMode$ | async) ? '☑️' : '◻️' }}&nbsp;
         🤨 Unknown Games Mode
       </button>
     </div>
@@ -83,19 +85,21 @@
   
   <div class="flex-wrap gap">
     <!-- select emulator -->
-    <div class="pad-xs" [class.bg-dark]="session.ledBlinky.emulator">
+    <div class="pad-xs" [class.bg-dark]="session.ledBlinky.emulator$ | async">
       <div>
-        <strong>{{ session.ledBlinky.emulator ? 'Emulator' : 'Emulators' }}</strong>
+        <strong>{{ (session.ledBlinky.emulator$ | async) ? 'Emulator' : 'Emulators' }}</strong>
       </div>
       <div class="flex-wrap gap pad-top flex1">
-        <div *ngIf="session.ledBlinky.emulator" class="flex-wrap flex-1">
-          <ng-container *ngTemplateOutlet="emulatorButton;context:{$implicit:session.ledBlinky.emulator, selected: 1}"></ng-container>
+        <!-- show selected emulator -->
+        <div *ngIf="(session.ledBlinky.emulator$ | async) as emulator" class="flex-wrap flex-1">
+          <ng-container *ngTemplateOutlet="emulatorButton;context:{$implicit:emulator, selected: 1}"></ng-container>
         </div>
     
-        <div *ngIf="!session.ledBlinky.emulator" class="gap child-pad-xs pad-top overflow flex-wrap flex1"
+        <!-- show list of emulators -->
+        <div *ngIf="!(session.ledBlinky.emulator$ | async)" class="gap child-pad-xs pad-top overflow flex-wrap flex1"
           [style.max-height.vh]="80"
         >
-          <ng-container *ngFor="let emu of filteredEmulators">
+          <ng-container *ngFor="let emu of (filteredEmulators$ | async)">
             <ng-container *ngTemplateOutlet="emulatorButton;context:{$implicit:emu}"></ng-container>
           </ng-container>
         </div>
@@ -104,17 +108,19 @@
     </div>
     
     <!-- select controlGroup -->
-    <div *ngIf="session.ledBlinky.emulator" [@fadeInOutUp]="1"
+    <div *ngIf="(roms$ | async) as emulator" [@fadeInOutUp]="1"
       class="bg-dark pad-xs flex1"
     >
       <div>
         <strong>ROMs</strong>
-        <sup><small>&nbsp;{{ session.ledBlinky.emulator.controlGroups.length }}</small></sup>
+        <sup><small>&nbsp;{{ emulator.controlGroups.length }}</small></sup>
       </div>
       <div class="flex1 flex-wrap pad-top">
-        <div class="flex-1 flex-wrap gap child-pad-xs">
-          <ng-container *ngFor="let item of session.ledBlinky.emulator?.controlGroups">
-            <ng-container *ngTemplateOutlet="romLink;context:{rom:item, emu: session.ledBlinky.emulator}"></ng-container>
+        <div class="flex-1 flex-wrap gap child-pad-xs"
+          [@childStag50]="emulator.controlGroups"
+        >
+          <ng-container *ngFor="let item of emulator.controlGroups">
+            <ng-container *ngTemplateOutlet="romLink;context:{rom:item, emu: emulator}"></ng-container>
           </ng-container>
         </div>
       </div>
@@ -125,17 +131,17 @@
 <ng-template #romLink let-rom="rom" let-emu="emu">
   <a class="no-a-style border hover-bg-calm flex1 bg-black" [@fadeInOutUp]="1"
     [routerLink]="emu.details.emuname + '/' + rom.groupName"
-    [queryParams]="{unknownMode:unknownMode}"
+    [queryParams]="{unknownMode: unknownMode$ | async}"
   >{{ rom.voice || rom.groupName }}</a>
 </ng-template>
 
 <ng-template #emulatorButton let-emu let-selected="selected">
   <a 
     class="border hover-bg-calm pos-rel flex2 pad-xs pad-right no-a-style"
-    [routerLink]="emu.details.emuname"
-    (click)="session.ledBlinky.emulator = session.ledBlinky.emulator === emu ? undefined : emu"
+    [routerLink]="selected ? './' : emu.details.emuname"
     [class.flex1]="selected"
     [ngClass]="selected ? 'bg-energized' : 'bg-black'"
+    (click)="session.ledBlinky.emulator$.next( selected ? undefined : emu )"
   >
     {{ emu.details.emuname }}
     <sup *ngIf="emu.controlGroups.length > 1" class="opacity-80 pad-xxs pos-abs top-0 right-0"

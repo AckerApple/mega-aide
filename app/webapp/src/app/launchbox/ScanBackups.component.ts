@@ -62,7 +62,7 @@ export class ScanBackupsComponent {
   }
 
   async load() {
-    const directory = this.session.launchBox.directory
+    const directory = this.session.launchBox.directoryChange.getValue()
     if ( !directory ) {
       return
     }
@@ -114,7 +114,7 @@ export class ScanBackupsComponent {
   async createBackupOfScan(scan: Scan) {
     ++this.session.loading
     
-    const launchDir = this.session.launchBox.directory
+    const launchDir = this.session.launchBox.directoryChange.getValue()
     if ( !launchDir ) {
       --this.session.loading
       return

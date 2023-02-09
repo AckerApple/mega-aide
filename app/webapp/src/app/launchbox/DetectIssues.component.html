@@ -1,4 +1,4 @@
-<div *ngIf="session.launchBox.directory"
+<div *ngIf="session.launchBox.directory$ | async"
   [@fadeInOutUp]="1"
 >
   <!--XArcade XInput mappings-->
@@ -208,6 +208,6 @@
   </select>
 </ng-template>
 
-<div *ngIf="!session.launchBox.directory" [@fadeInOutUp]="1">
+<div *ngIf="!(session.launchBox.directory$ | async)" [@fadeInOutUp]="1">
   <select-launchbox (change)="loadXInputMappings()"></select-launchbox>
 </div>

@@ -23,7 +23,8 @@ export class SelectLaunchBoxComponent {
   ]
 
   constructor(public session: SessionProvider) {
-    if ( session.launchBox.directory ) {
+    const directory = session.launchBox.directoryChange.getValue()
+    if ( directory ) {
       this.onDirectory()
     }
     
@@ -43,9 +44,8 @@ export class SelectLaunchBoxComponent {
     const launchbox = this.session.launchBox
     
     // emit to listeners
-    launchbox.directory = directoryManager
-    launchbox.directoryChange.emit(directoryManager)
-    await launchbox.onDirectory()
+    launchbox.directoryChange.next(directoryManager)
+    // await launchbox.onDirectory()
     
     this.change.emit(directoryManager)
     this.session.save()
@@ -54,7 +54,8 @@ export class SelectLaunchBoxComponent {
   }
   
   onDirectory() {
-    const addBlinky = this.session.ledBlinky.directory && !this.menu.includes(ledblinky)
+    const directory = this.session.ledBlinky.directoryChange.getValue()
+    const addBlinky = directory && !this.menu.includes(ledblinky)
     // add as launchbox menu item
     if ( addBlinky ) {
       this.menu.push(ledblinky)

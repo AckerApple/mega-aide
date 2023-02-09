@@ -67,10 +67,11 @@ export class PlatformControlMapComponent {
   }
 
   dropLastDrag($event: DragEvent) {
-    const lastDrag = this.lastDrag    
+    const lastDrag = this.lastDrag
     const startOffsetX = lastDrag?.startOffsetX || 0
     const startOffsetY = lastDrag?.startOffsetY || 0
     
+    // new position is based off screen so we need to calculate using where we came from
     const offsetX = $event.offsetX - startOffsetX
     const offsetY = $event.offsetY - startOffsetY
     

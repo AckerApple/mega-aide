@@ -1,5 +1,5 @@
-<ng-container *ngIf="session.launchBox.directory; else selectLaunchBox">
-  <directory-backups [directory]="session.launchBox.directory"
+<ng-container *ngIf="(session.launchBox.directory$ | async) as directory; else selectLaunchBox">
+  <directory-backups [directory]="directory"
     [path]="path"
     [fileName]="fileName"
   ></directory-backups>

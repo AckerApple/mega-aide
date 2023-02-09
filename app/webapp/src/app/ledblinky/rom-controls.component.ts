@@ -1,9 +1,9 @@
 import { Component } from "@angular/core";
 import { ActivatedRoute, Router } from "@angular/router";
 import { animations } from "ack-angular-fx";
-import { Subscription } from "rxjs";
+import { from, lastValueFrom, map, merge, mergeMap, Observable, shareReplay, Subscription } from "rxjs";
 import { routeMap as launchBoxRouteMap } from "../launchbox/launchbox.routing.module"
-import { routeMap } from "../ledblinky.routing.module";
+import { rom, routeMap } from "../ledblinky.routing.module";
 import { SessionProvider } from "../session.provider";
 import { findEmulatorByName } from "./ledblinky-controls.component"
 import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, LedBlinkyControls, NewControlGroup, NewEmulator, NewPlayer, Player, PlayerControl, PlayerControlDetails, PlayerDetails } from "./LedBlinky.utils";
@@ -15,34 +15,81 @@ import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, LedBlinkyControls
   unknownMode?: boolean
   routeMap = routeMap
   launchBoxRouteMap = launchBoxRouteMap
-  romControl?: NewControlGroup | ControlGroup// was controlGroups
-
+  
   viewXml?: boolean
   viewJson?: boolean
+  
+  // inputsMap?: InputsMap
+  inputsMap$ = this.session.ledBlinky.inputsMap$.pipe(
+    shareReplay(1),
+  )  
 
-  subs = new Subscription()
+  emulator$: Observable<NewEmulator | undefined> = this.session.ledBlinky.controls$.pipe(
+    mergeMap((controls) => {
+      if ( !controls ) {
+        return from( Promise.resolve(undefined) )
+      }
+      
+      return from(this.getEmulator(controls))
+    })
+  )
+      
+  // romControl?: NewControlGroup | ControlGroup// was controlGroups
+  romControl$ = this.emulator$.pipe(
+    map(emulator => {
+      if ( !emulator ) {
+        return
+      }
+      
+      const romName = this.activatedRoute.snapshot.paramMap.get('romName')
+      let romControl: NewControlGroup | undefined
+      
+      emulator.controlGroups.find(roms => {
+        return roms.controlGroups.find(rom => {
+          if ( rom.details.groupName !== romName ) {
+            return false
+          }
+    
+          return romControl = rom
+        })
+      })
+
+      
+      if ( this.unknownMode && romControl ) {
+        // can we fill in the element?
+        paramRomElm(romControl)
+      }
+      
+      return romControl
+    })
+  )
 
   constructor(
     public session: SessionProvider,
     public activatedRoute: ActivatedRoute,
-  ) {
-    this.subs.add(
-      this.session.ledBlinky.directoryChange.subscribe(() => this.load())
-    )
-  }
+  ) {}
 
-  ngOnInit(){
-    if ( this.session.ledBlinky.directory ) {
-      this.load()
+  async getEmulator(controls: LedBlinkyControls) {
+    const ledBlinky = this.session.ledBlinky    
+    const emuName = this.activatedRoute.snapshot.paramMap.get('emuName')
+    if ( !emuName ) {
+      throw 'no emulator name defined' // todo: relocate to pick emulator
     }
-  }
 
-  ngOnDestroy(){
-    this.subs.unsubscribe()
+    const emulators = await this.getEmulatorsByControls(controls)
+    if ( !emulators ) {
+      this.session.error('code should never get here. LEDBlinky emulators not loaded')
+      return
+    }
+
+    const emu = findEmulatorByName(emulators, emuName)
+    ledBlinky.emulator$.next( emu )
+    return emu
   }
 
   async getEmulatorsByControls(
-    controls: LedBlinkyControls | undefined
+    controls: LedBlinkyControls | undefined,
+    unknownGames?: NewEmulator[]
   ): Promise<(NewEmulator | Emulator)[] | undefined> {
     const ledBlinky = this.session.ledBlinky
     const unknownMode = this.activatedRoute.snapshot.queryParams['unknownMode']
@@ -52,10 +99,9 @@ import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, LedBlinkyControls
     let emulators: (NewEmulator | Emulator)[] | undefined = knownEmulators
 
     if ( this.unknownMode ) {
-      const unknowns = await ledBlinky.getUnknownGames()
-      if ( unknowns ) {
+      if ( unknownGames ) {
         if ( knownEmulators ) {
-          unknowns.forEach(unknown => {
+          unknownGames.forEach(unknown => {
             const known = knownEmulators.find(known => known.details.emuname === unknown.details.emuname)
             if ( !known ) {
               return
@@ -67,88 +113,31 @@ import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, LedBlinkyControls
             }
           })
         }
-        emulators = unknowns
+        emulators = unknownGames
       }
     }
 
     return emulators
   }
 
-  inputsMap?: InputsMap
-  newInputCodes?: IniNameValuePairs
-  async load() {
-    const ledBlinky = this.session.ledBlinky
-    let emulator = ledBlinky.emulator
-    const controls = await ledBlinky.getControls()
-
-    this.newInputCodes = await ledBlinky.loadNewInputCodes()
-    this.inputsMap = await ledBlinky.getInputMap()
-    console.log('this.inputsMap', this.inputsMap)
+  removePlayerControl(
+    player: NewPlayer,
+    romControl: NewControlGroup,
+  ) {
+    const index = romControl.players.findIndex(x => x === player)
     
-    if ( !controls ) {
-      this.session.error('code should never get here. LEDBlinky Controls not loaded')
-      return
-    }
-    
-    const emuName = this.activatedRoute.snapshot.paramMap.get('emuName')
-    if ( !emulator ) {
-      if ( !emuName ) {
-        throw 'no emulator name defined' // todo: relocate to pick emulator
-      }
-
-      const emulators = await this.getEmulatorsByControls(controls)
-      if ( !emulators ) {
-        this.session.error('code should never get here. LEDBlinky emulators not loaded')
-        return
-      }
-  
-      ledBlinky.emulator = emulator = findEmulatorByName(emulators, emuName)
+    if ( index <= 0 ) {
+      return this.session.warn('cannot delete player')
     }
 
-    if ( !emulator ) {
-      throw 'no emulator defined'
-    }
-
-    const romName = this.activatedRoute.snapshot.paramMap.get('romName')
-
-    if ( !romName ) {
-      throw 'no romname defined' // todo relocate to pick rom
-    }
-
-    emulator.controlGroups.find(roms => {
-      return roms.controlGroups.find(rom => {
-        if ( rom.details.groupName !== romName ) {
-          return false
-        }
-
-        return this.romControl = rom
-      })
-    })
-
-    if ( !this.romControl ) {
-      if ( this.unknownMode ) {
-        this.session.warn(`Could not find unknown ${emuName || emulator.details.emuname} ${romName}`)
-      } else {
-        this.session.warn(`Could not find ${emuName || emulator.details.emuname} ${romName}`)
-      }
-      return
-    }
-
-    if ( this.unknownMode ) {
-      // can we fill in the element?
-      paramRomElm(this.romControl)
-    }
+    romControl.players.splice(index, 1)
   }
 
-  addPlayer() {
-    if ( !this.romControl ) {
-      return
-    }
-
+  async addPlayer(romControl: NewControlGroup) {
     const controls: PlayerControl[] = []
     const element: Element = document.createElement('player')
     const details: PlayerDetails = {
-      number: this.romControl.players.length.toString()
+      number: romControl.players.length.toString()
     }
     
     setElmAttributes(element, details)
@@ -158,8 +147,8 @@ import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, LedBlinkyControls
     }
 
     // add player element to rom element
-    this.romControl.players.push(player)
-    const romElement = paramRomElm(this.romControl)
+    romControl.players.push(player)
+    const romElement = paramRomElm(romControl)
     romElement.appendChild(element)
   }
 

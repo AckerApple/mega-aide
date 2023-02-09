@@ -2,15 +2,15 @@
   <robust-select-directory label="🧰 LaunchBox"
     pickerId="LaunchBox"
     [reloadPath]="session.config.launchBox.path"
-    [directoryManager]="session.launchBox.directory"
-    (directoryManagerChange)="setDirectory($event)"
+    [directoryManager]="$any(session.launchBox.directory$ | async)"
+    (directoryManagerChange)="setDirectory($event);"
     (error)="session.error('could not load LaunchBox path', $event)"
   ></robust-select-directory>
 </div>
 
 <br />
 
-<div *ngIf="!session.launchBox.directory" [@fadeInOutUp]="1">
+<div *ngIf="!(session.launchBox.directory$ | async)" [@fadeInOutUp]="1">
   <br />
   <div class="text-center pad">
     ⬆️ Select LaunchBox folder above to unlock features
@@ -35,7 +35,7 @@
   </details>
 </div>
 
-<div *ngIf="session.launchBox.directory" [@fadeInOutUp]="1">
+<div *ngIf="session.launchBox.directory$ | async" [@fadeInOutUp]="1">
   <div>
     <div class="text-center text-xs opacity-half">choose a tool below</div>
 

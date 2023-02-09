@@ -68,9 +68,11 @@ export class GamesComponent {
       this.searchText = searchText
     }
 
-    if ( this.session.launchBox.directory ) {
-      this.load()
+    const directory = this.session.launchBox.directoryChange.getValue()
+    if ( !directory ) {
+      return
     }
+    this.load()
   }
 
   ngOnInit(){
@@ -85,7 +87,8 @@ export class GamesComponent {
 
 
   async load() {
-    if ( !this.session.launchBox.directory ) {
+    const directory = this.session.launchBox.directoryChange.getValue()
+    if ( !directory ) {
       return
     }
 
@@ -167,8 +170,8 @@ export class GamesComponent {
         try {
           const results = await this.runSearch(search, {romNameMode, myDelay})
           res( results )
-        } catch (err) {
-          console.error(err);
+        } catch (err: any) {
+          this.session.error(err.message, err);
           rej(err)
         }
       }, 500)
@@ -187,7 +190,7 @@ export class GamesComponent {
     }
 
     favElm.textContent = game.details.favorite ? 'true' : 'false'
-    this.toSaveFiles.push(gamePlatform)
+    this.addGameToSave(gamePlatform)
   }
 
   async runSearch(
@@ -305,7 +308,7 @@ export class GamesComponent {
   addGameToSave(game: GamePlatform) {
     if ( !this.toSaveFiles.find(x => game === x) ) {
       this.toSaveFiles.push(game)
-    }
+    }    
   }
 
   addXinputIntoSelected() {
@@ -322,10 +325,7 @@ export class GamesComponent {
     
     selected.additionalApps.push(xinputApp)
     selected.hasXinput = true
-    if ( !this.toSaveFiles.find(x => selected.game === x) ) {
-      this.toSaveFiles.push(selected.game)
-    }
-
+    this.addGameToSave(selected.game)
     this.addXinputKillIntoSelected()
   }
 
@@ -337,9 +337,7 @@ export class GamesComponent {
     
     this.session.launchBox.removeXinputFromApps(selected.additionalApps)
     selected.hasXinput = false
-    if ( !this.toSaveFiles.find(x => selected.game === x) ) {
-      this.toSaveFiles.push(selected.game)
-    }
+    this.addGameToSave(selected.game)
   }
 
   newKillXinputApp(gameId: string): AdditionalApp {

@@ -47,9 +47,15 @@ import { RomControlsComponent } from './ledblinky/rom-controls.component'
 import { LayoutsComponent } from './ledblinky/layouts.component'
 import { ScanBackupsComponent } from './launchbox/ScanBackups.component'
 
+import { DragSelectorDirective } from './ledblinky/drag-selector.directive'
+import { DragSelectorTargetDirective } from './ledblinky/drag-selector-target.directive'
+
 export const declarations = [
   AppComponent,
   ChangelogComponent,
+
+  DragSelectorDirective,
+  DragSelectorTargetDirective,
   
   FileSystemComponent,
   NextKeyDirective,

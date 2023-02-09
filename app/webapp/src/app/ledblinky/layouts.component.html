@@ -1,12 +1,19 @@
 <div class="text-right">
   <robust-select-directory label="🚦 LEDBlinky" [reloadPath]="session.config.ledBlinky.path"
-    [(directoryManager)]="session.ledBlinky.directory"
-    (directoryManagerChange)="session.save()"
+    [directoryManager]="$any(session.ledBlinky.directory$ | async)"
+    (directoryManagerChange)="session.ledBlinky.directoryChange.next($event)"
     (error)="session.error('could not load LEDBlinky path', $event)"
     [pickerId]="session.ledBlinky.pickerId"
   ></robust-select-directory>
 </div>
 
-<div *ngIf="session.ledBlinky.directory" [@fadeInOutUp]="1">
-  <ledblinky-layouts edit="1"></ledblinky-layouts>
+<div *ngIf="session.ledBlinky.directory$ | async" [@fadeInOutUp]="1">
+  <div class="flex-center">
+    <ledblinky-layouts edit="1" (changed)="configChanged($event)"></ledblinky-layouts>
+  </div>
+
+  <div *ngIf="unsavedLayouts.length" [@fadeInOutUp]="1">
+    <button type="button" (click)="save()" class="bg-balanced width-full"
+    >💾 SAVE {{unsavedLayouts.length}} FILES</button>  
+  </div>
 </div>  
