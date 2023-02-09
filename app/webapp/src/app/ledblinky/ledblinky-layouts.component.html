@@ -106,7 +106,7 @@
       <!--
         <h3 class="margin-bottom">{{ lightDetails.name }}</h3>
       -->
-      <select [(ngModel)]="lightDetails.name">
+      <select [(ngModel)]="lightDetails.details.name">
         <option>-- CHOOSE A BUTTON --</option>
         <option *ngFor="let label of (session.ledBlinky.inputsMap$ | async)?.labels"
           [value]="label.label"
@@ -117,8 +117,8 @@
         <div class="flex1">
           <div>x</div>
           <input type="range" class="width-full"
-            [(ngModel)]="lightDetails.x"
-            min="0" [max]="(session.ledBlinky.displaySize?.width || 1024) - (lightDetails.diameter || 0)"
+            [(ngModel)]="lightDetails.details.x"
+            min="0" [max]="(session.ledBlinky.displaySize?.width || 1024) - (lightDetails.details.diameter || 0)"
             step="1"
           />
         </div>
@@ -126,8 +126,8 @@
         <div class="flex1">
           <div>y</div>
           <input type="range" class="width-full"
-            [(ngModel)]="lightDetails.y"
-            min="0" [max]="(session.ledBlinky.displaySize?.height || 768) -  (lightDetails.diameter || 0)"
+            [(ngModel)]="lightDetails.details.y"
+            min="0" [max]="(session.ledBlinky.displaySize?.height || 768) -  (lightDetails.details.diameter || 0)"
             step="1"
           />
         </div>
@@ -135,14 +135,14 @@
         <div class="flex1">
           <div>diameter</div>
           <input type="range" class="width-full"
-            [(ngModel)]="lightDetails.diameter" min="3" [max]="150"
+            [(ngModel)]="lightDetails.details.diameter" min="3" [max]="150"
           />
         </div>
         
         <div class="flex1">
           <div>colorDec</div>
           <input type="number" class="width-full"
-            [(ngModel)]="lightDetails.colorDec"
+            [(ngModel)]="lightDetails.details.colorDec"
           />
         </div>
       </div>
