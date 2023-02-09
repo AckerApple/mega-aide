@@ -467,6 +467,16 @@ export class GamesComponent {
     element.textContent = app.applicationPath
     this.saveSelectedGame()
   }
+
+  toggleAppSkipUi(app: AdditionalApp) {
+    const skip = app.commandLine.includes('--skip-ui')
+
+    if ( skip ) {
+      return app.commandLine = app.commandLine.replace(/--skip-ui([ ])*/,'')
+    }
+
+    return app.commandLine = '--skip-ui ' + app.commandLine
+  }
 }
 
 function newTextElementOn(type: string, text: string, on: Element) {

@@ -100,14 +100,28 @@
                 ></div>
               </div>
               <div *ngIf="app.type==='xinput'" class="flex-stacked gap-xxs">
-                <div class="text-xxs bold">mapping</div>
-                <xinput-app-map-select #xinputAppMapSelect
-                  class="flex" [model]="app"
-                  (change)="saveSelectedGame()"
-                ></xinput-app-map-select>
+                <div class="flex-wrap gap">
+                  <div title="Toggle if XInput app launches when this game launches. You typically DO not want the UI to load.">
+                    <div class="text-xxs bold">&nbsp;</div>
+                    <input type="checkbox" [checked]="app.commandLine.includes('--skip-ui')"
+                      (click) = "toggleAppSkipUi(app)"
+                      name="skip-ui" id="skip-ui"
+                    />
+                    <label for="skip-ui"
+                    >&nbsp;--skip-ui</label>
+                  </div>
+
+                  <div>
+                    <div class="text-xxs bold">mapping</div>
+                    <xinput-app-map-select #xinputAppMapSelect
+                      class="flex" [model]="app"
+                      (change)="saveSelectedGame()"
+                    ></xinput-app-map-select>
+                  </div>
+                </div>
                 <a *ngIf="session.launchBox.xarcadeDir" class="text-white text-xxs"
                   [routerLink]="'../../🕹/xarcade-xinput/mapping/' + (xinputAppMapSelect.mapping ? xinputAppMapSelect.mapping +'.json' : '')"
-                >xinput tools</a>
+                >🎮 xinput tools</a>
               </div>
             </td>
             <td class="pad-xxs">
