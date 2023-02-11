@@ -1,5 +1,6 @@
 import { Component, Input } from "@angular/core"
 import { animations } from "ack-angular-fx"
+import { Observable } from "rxjs"
 
 @Component({
   selector: 'loading-icon',
@@ -7,5 +8,6 @@ import { animations } from "ack-angular-fx"
   animations,
 }) export class LoadingIconComponent {
   @Input() show: any
+  @Input() show$?: Observable<number>
   @Input() label?: string
 }

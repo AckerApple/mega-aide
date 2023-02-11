@@ -234,7 +234,10 @@ export interface Emulator extends NewEmulator {
   element: Element
 }
 
-export function getElementsByTagName(elm: Element | Document, tagName: string): Element[] {
+export function getElementsByTagName(
+  elm: Element | Document,
+  tagName: string
+): Element[] {
   return new Array( ...elm.getElementsByTagName(tagName) as any )
 }
 

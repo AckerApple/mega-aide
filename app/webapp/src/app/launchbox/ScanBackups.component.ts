@@ -67,7 +67,7 @@ export class ScanBackupsComponent {
       return
     }
 
-    ++this.session.loading
+    this.session.load$.next(1)
     const promises = this.scans.map(async scan => {
       const file = await directory.findFileByPath(scan.filePath)
       if ( !file ) {
@@ -98,7 +98,6 @@ export class ScanBackupsComponent {
           
           const month = scan.lastBackupDate.getMonth()
           const cMonth = new Date().getMonth() + (yearDiff * 12)
-          console.log('xxx', cMonth - month)
           if ( cMonth - month > 2 ) {
             scan.isOld = true
             return
@@ -108,27 +107,27 @@ export class ScanBackupsComponent {
     })
 
     await Promise.all(promises)
-    --this.session.loading
+    this.session.load$.next(-1)
   }
 
   async createBackupOfScan(scan: Scan) {
-    ++this.session.loading
+    this.session.load$.next(1)
     
     const launchDir = this.session.launchBox.directoryChange.getValue()
     if ( !launchDir ) {
-      --this.session.loading
+      this.session.load$.next(-1)
       return
     }
     
     const file = await launchDir.findFileByPath( scan.filePath )
     if ( !file ) {
-      --this.session.loading
+      this.session.load$.next(-1)
       return
     }
 
     
     await createBackupOfFile(file, this.session.config.backupFolderNames)
-    --this.session.loading
+    this.session.load$.next(-1)
     
     await this.load()
   }

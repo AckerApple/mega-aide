@@ -2,7 +2,7 @@ import { EventEmitter, Injectable } from '@angular/core'
 import { DirectoryManager, DmFileReader } from 'ack-angular-components/directory-managers/DirectoryManagers'
 import { getOs, getStorage, saveStorage } from './app.utilities'
 import { getControlGamepadCode } from './inputs/platform-player-control.component'
-import { LaunchBox } from './launchbox/LaunchBox.class'
+import { ControllerSupport, LaunchBox } from './launchbox/LaunchBox.class'
 import { LedBlinky } from './ledblinky/LedBlinky.class'
 import { PlatformsMapping } from './platforms'
 import packageJson from '../../package.json'
@@ -12,11 +12,18 @@ import { Tips } from './tips.class'
 
 import platforms from './platform.map.json'
 import { Mame } from './ledblinky/mame.class'
+import { BehaviorSubject, map, Observable, shareReplay } from 'rxjs'
 
 @Injectable()
 export class SessionProvider {
   tips = new Tips()
-  loading = 0
+  
+  loads = 0
+  load$ = new BehaviorSubject( this.loads )
+  loading$ = this.load$.pipe(
+    map(amount => this.loads = this.loads + amount),
+    shareReplay(1),
+  )
   
   os = getOs()
   
@@ -30,6 +37,7 @@ export class SessionProvider {
   filePreview?: WriteFile
   toSaveFiles: WriteFile[] = []
   $filesSaved = new EventEmitter<WriteFile[]>()
+  filesReadyToSave: WriteFile[] = []
 
   config = {
     showWarn: true,
@@ -65,6 +73,26 @@ export class SessionProvider {
   constructor() {
     this.reloadPlatforms()
     this.loadConfig()
+
+    this.$filesSaved.subscribe(files => {
+      files.forEach(file => {
+        const index= this.filesReadyToSave.findIndex(lay => lay.file === file.file)
+        if ( index >= 0 ) {
+          this.filesReadyToSave.splice(index, 1)
+        }
+      })
+    })
+  }
+
+  addFileToSave(file: WriteFile) {
+    let findIndex = this.filesReadyToSave.findIndex(x => x.file === file.file)
+    if ( findIndex >= 0 ) {
+      this.filesReadyToSave[findIndex].string = file.string
+      return // already ready to save, just update string
+    }
+
+    this.filesReadyToSave.push(file)
+    this.info(`File has changes. Ready to save at bottom of page. Saved file ${file.file.directory.path}/${file.file.name}`)
   }
 
   reloadPlatforms() {
@@ -143,17 +171,45 @@ export interface WriteFile {
   string: string
 }
 
+export interface AdditionalApp {
+  details: AdditionalAppDetails // AdditionalAppDetails?
+  
+  // elements
+  element: Element
+  
+  nameElement?: Element
+  autoRunAfterElement?: Element
+  autoRunBeforeElement?: Element
+  commandLineElement?: Element
+  applicationPathElement?: Element
+}
+
 export interface PlatformInsights {
   xml: Document
   name: string
   file: DmFileReader
   games: GameInsight[]
-  additionalApps: Element[],
+  
+  getGameById: (id: string) => GameInsight | undefined
+  additionalApps$: Observable<AdditionalApp[]>
+  controllerSupports$: Observable<ControllerSupport[]>
+}
+
+export interface XInputGameInsight {
+  app: AdditionalApp,
+  mapping: string
 }
 
 export interface GameInsight {
   element: Element
   details: GameDetails
+  
+  additionalApps?: AdditionalApp[]
+  
+  xInput?: XInputGameInsight
+
+  // ui controls
+  editMapping?: boolean
 }
 
 export interface GameDetails {
@@ -169,22 +225,11 @@ export enum AdditionalAppType {
   OTHER = 'other',
 }
 
-export interface AdditionalApp {
-  type: AdditionalAppType
-  element: Element
- 
-  autoRunAfter: string
-  autoRunAfterElement: Element
-  
-  autoRunBefore: string
-  autoRunBeforeElement: Element
-  
-  name: string
-  nameElement: Element
-
-  applicationPath: string
-  applicationPathElement: Element
-
+export interface AdditionalAppDetails {
   commandLine: string
-  commandLineElement: Element
+  type: AdditionalAppType
+  autoRunAfter?: string
+  autoRunBefore?: string
+  name?: string
+  applicationPath?: string
 }

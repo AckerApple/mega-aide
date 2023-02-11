@@ -104,7 +104,7 @@ export class LEDBlinkyControlsComponent {
 
       const trueSearch = search.toLowerCase().replace(/_/g,' ')
 
-      ++this.session.loading
+      this.session.load$.next(1)
       const filteredEmulators = emulators
         .map(x => {
           const clone: NewEmulator | Emulator = {...x}
@@ -140,7 +140,7 @@ export class LEDBlinkyControlsComponent {
       // should we goto the only result?
       this.afterSearch(filteredEmulators)
       
-      --this.session.loading
+      this.session.load$.next(-1)
   
       return of(filteredEmulators)
     })

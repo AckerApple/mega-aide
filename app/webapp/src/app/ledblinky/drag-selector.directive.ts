@@ -106,10 +106,7 @@ interface Drawbox {
       )
 
       // sometimes release is considered a click, hold our processing just a little longer
-      setTimeout(() => {
-        this.processing = false
-        console.log('done processing')
-      }, 100)
+      setTimeout(() => this.processing = false, 100)
     }
 
     // if idle for 8s then close

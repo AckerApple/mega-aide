@@ -1,0 +1,72 @@
+<div class="bg-dark pad-xs flex-apart">
+  <div>
+    {{ title }}<sup class="text-xxs">&nbsp;{{games.length}}</sup>
+  </div>
+  <div>
+    <sup class="opacity-80 text-xxs"> (uses default)</sup>
+    <ng-container *ngTemplateOutlet="changeAllGames"></ng-container>
+  </div>
+</div>
+
+<table cellPadding="4" cellSpacing="1" border="0" class="table-lines width-full">
+  <tHead>
+    <tr class="bg-dark">
+      <th>title</th>
+      <th>mapping</th>
+      <th>apps</th>
+    </tr>
+  </tHead>
+  <tbody>
+    <!-- game loop -->
+    <tr *ngFor="let game of games">
+      <td class="bg-grey">
+        {{ game.details.title }}
+        <div *ngIf="game.xInput"><small class="opacity-80 text-xxs"
+        >{{ game.xInput.app.details.commandLine }}</small></div>
+      </td>
+      <td class="bg-grey hover-bg-calm active-bg-energized cursor-pointer">
+        <ng-container *ngIf="game.editMapping">
+          <ng-container *ngTemplateOutlet="editMapping; context: {$implicit: game}"></ng-container>
+        </ng-container>
+
+        <div *ngIf="!game.editMapping" class="cursor" [@fadeInOutUp]="1"
+          (click)="editGameMapping(game)"
+        >
+          <ng-container *ngIf="!game.xInput?.mapping; else gameMapName">
+            <div class="opacity-half text-center"
+            >✏️ tap to edit</div>
+          </ng-container>
+          <ng-template #gameMapName>
+            {{ game.xInput?.mapping }}
+          </ng-template>
+        </div>
+      </td>
+      <td class="bg-grey text-center">{{ game.additionalApps?.length || 0 }}</td>
+    </tr>
+  </tbody>
+</table>
+
+<ng-template #editMapping let-game>
+  <div class="flex-wrap">
+    <xinput-app-map-select
+      class="flex"
+      [model]="game.xInput?.app"
+      [platform]="platform"
+      [game]="game"
+      (change)="saveGames.emit([game]);game.editMapping=false"
+    ></xinput-app-map-select>
+    <button type="button" (click)="game.editMapping = false">close</button>
+  </div>
+</ng-template>
+
+<ng-template #changeAllGames>
+  <select *ngIf="(xarcade.mappings$ | async) as mappings"
+    placeholder="mapping file"
+    class="flex-1"
+    (change)="changePlatformGameCommandMappings($any($event.target).value)"
+  >
+    <option value="">change all to mapping</option>
+    <option *ngFor="let item of mappings" [value]="item.name"
+    >{{item.name}}</option>
+  </select>
+</ng-template>

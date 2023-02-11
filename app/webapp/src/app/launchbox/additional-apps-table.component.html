@@ -1,0 +1,65 @@
+<table cellPadding="4" cellSpacing="0" border="0" class="width-full table-striped-dark table-lines">
+  <tHead>
+    <tr>
+      <th>Name</th>
+      <th>Details</th>
+      <th></th>
+    </tr>
+  </tHead>
+  <tBody>
+    <tr *ngFor="let app of apps">
+      <td>
+        <span *ngIf="app.details.type==='xinput'">🕹</span>
+        <span *ngIf="app.details.type==='xinput-kill'">❌ 🕹</span>
+        {{app.details.name}}
+      </td>
+      <td class="child-margin">
+        <div class="flex-stacked gap-xxs">
+          <div class="text-xxs bold">path</div>
+          <span class="bg-grey pad-xxs" [(contentModel)]="app.details.applicationPath"
+            (change)="applyAppApplicationPath(app)"
+          ></span>
+        </div>
+        <div class="flex-stacked gap-xxs">
+          <div class="text-xxs bold">commandLine</div>
+          <div class="bg-grey pad-xxs text-small" [(contentModel)]="app.details.commandLine"
+            (change)="applyAppCommandLine(app)"
+          ></div>
+        </div>
+        <div *ngIf="app.details.type==='xinput'" class="flex-stacked gap-xxs">
+          <div class="flex-wrap gap">
+            <div title="Toggle if XInput app launches when this game launches. You typically DO not want the UI to load.">
+              <div class="text-xxs bold">&nbsp;</div>
+              <input type="checkbox"
+                [checked]="app.details.commandLine.includes('--skip-ui')"
+                (click) = "toggleAppSkipUi(app.details)"
+                name="skip-ui" id="skip-ui"
+              />
+              <label for="skip-ui"
+              >&nbsp;--skip-ui</label>
+            </div>
+
+            <div>
+              <div class="text-xxs bold">mapping</div>
+              <xinput-app-map-select #xinputAppMapSelect
+                class="flex"
+                [model]="app"
+                [platform]="platform"
+                [game]="game"
+                (change)="save.emit()"
+              ></xinput-app-map-select>
+            </div>
+          </div>
+          <a *ngIf="session.launchBox.xarcadeDir" class="text-white text-xxs"
+            [routerLink]="'../../🕹/xarcade-xinput/mapping/' + (xinputAppMapSelect.mapping ? xinputAppMapSelect.mapping +'.json' : '')"
+          >🎮 xinput tools</a>
+        </div>
+      </td>
+      <td class="pad-xxs">
+        <a (click)="removeAppFromApps(app, apps);save.emit()"
+          title="click to remove"
+        >🗑</a>
+      </td>
+    </tr>
+  </tBody>
+</table>

@@ -33,12 +33,17 @@ export class XarcadeXinputComponent {
 
   async readDir( directoryManager: DirectoryManager ) {
     this.session.xarcadeDirectory = directoryManager
-    this.xarcade.directory = directoryManager
-    this.xarcade.loadMappings()
+    this.xarcade.directoryChange.next( directoryManager )
   }
 
   async addFile() {
-    const name = 'new-mapping-file' + this.xarcade.mappingFiles.length + '.json'
+    const mappings = await firstValueFrom(this.xarcade.mappings$)
+    
+    if ( !mappings ) {
+      return
+    }
+
+    const name = 'new-mapping-file' + mappings.length + '.json'
     const mapDir = await this.xarcade.findMappingsDir()
     
     if ( !mapDir ) {
@@ -48,7 +53,7 @@ export class XarcadeXinputComponent {
     const newFile = await mapDir.file(name, { create: true })
     await newFile.write('{}')
     const stats = await newFile.stats()
-    this.xarcade.mappingFiles.push(stats)
+    mappings.push(stats)
   }
 
   async removeByParent(parent: DirectoryManager, item: DmFileReader) {
@@ -62,7 +67,13 @@ export class XarcadeXinputComponent {
 
     parent = parent || await this.xarcade.findMappingsDir()
     await parent.removeEntry(item.name)
-    const index = this.xarcade.mappingFiles.findIndex(x => x.name === item.name)
-    this.xarcade.mappingFiles.splice(index, 1)
+    const mappings = await firstValueFrom(this.xarcade.mappings$)
+    
+    if ( !mappings ) {
+      return
+    }
+    
+    const index = mappings.findIndex(x => x.name === item.name)
+    mappings.splice(index, 1)
   }
 }

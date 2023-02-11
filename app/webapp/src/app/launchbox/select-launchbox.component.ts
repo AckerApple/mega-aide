@@ -1,10 +1,7 @@
 import { animations } from 'ack-angular-fx'
 import { Component, EventEmitter, Output } from '@angular/core'
 import { DirectoryManager } from 'ack-angular-components/directory-managers/DirectoryManagers'
-import { xArcade } from '../app.routing.module'
-import { backups, detectIssues, games, themeSettings } from './launchbox.routing.module'
 import { SessionProvider } from '../session.provider'
-import { ledblinky } from '../ledblinky.routing.module'
 import { Subscription } from 'rxjs'
 
 @Component({
@@ -17,30 +14,14 @@ export class SelectLaunchBoxComponent {
 
   subs = new Subscription()
 
-  menu = [
-    themeSettings, detectIssues,
-    games, backups,
-  ]
-
-  constructor(public session: SessionProvider) {
-    const directory = session.launchBox.directoryChange.getValue()
-    if ( directory ) {
-      this.onDirectory()
-    }
-    
-    this.subs.add(
-      this.session.launchBox.directoriesChange.subscribe(() => {
-        this.onDirectory()
-      })
-    )
-  }
+  constructor(public session: SessionProvider) {}
 
   ngOnDestroy(){
     this.subs.unsubscribe()
   }
   
   async setDirectory(directoryManager: DirectoryManager) {
-    ++this.session.loading
+    this.session.load$.next(1)
     const launchbox = this.session.launchBox
     
     // emit to listeners
@@ -49,21 +30,6 @@ export class SelectLaunchBoxComponent {
     
     this.change.emit(directoryManager)
     this.session.save()
-    this.onDirectory()
-    --this.session.loading
-  }
-  
-  onDirectory() {
-    const directory = this.session.ledBlinky.directoryChange.getValue()
-    const addBlinky = directory && !this.menu.includes(ledblinky)
-    // add as launchbox menu item
-    if ( addBlinky ) {
-      this.menu.push(ledblinky)
-    }
-    
-    // add as launchbox menu item
-    if ( this.session.xarcadeDirectory && !this.menu.includes(xArcade) ) {
-      this.menu.push(xArcade)
-    }
-  }
+    this.session.load$.next(-1)
+  }  
 }

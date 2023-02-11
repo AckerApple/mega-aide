@@ -1,15 +1,15 @@
 import { Route } from '@angular/router'
-import { SelectLaunchBoxComponent } from './select-launchbox.component'
 import { GamesComponent } from './games.component'
-import { DetectIssuesComponent } from './DetectIssues.component'
-import { ScanBackupsComponent } from './ScanBackups.component'
 import { ThemeSettingsComponent } from './ThemeSettings.component'
-import { LaunchBoxBackupsComponent } from './backups.component'
+import { backups, backups2 } from './routing.backups'
+import { detectIssues, detectIssues2, scanBackups } from './detectIssues.routing'
+import { detectDupControllers, detectXinputIssues, detectXinputPlatform } from './detectXinputIssues.routing'
+import { LaunchBoxComponent } from './launchbox.component'
 
 export const launchBox: Route = {
   path: '🧰',
   title: 'LaunchBox',
-  component: SelectLaunchBoxComponent,
+  component: LaunchBoxComponent,
   data: {
     emoji: '🧰',
     description: 'Useful utilities to assist with LaunchBox',
@@ -20,33 +20,6 @@ export const launchBox: Route = {
 export const launchBox2: Route = {
   ...launchBox,
   path: 'launchbox',
-}
-
-export const detectIssues: Route = {
-  path: '🧰/detect-issues',
-  title: 'Detect Issues',
-  component: DetectIssuesComponent,
-  data: {
-    emoji: '🔦',
-    description: 'Robot like reporting of potential Launchbox issues',
-    wrapClass: 'bg-black radius-25 pad-2x'
-  }
-}
-
-export const scanBackups: Route = {
-  path: '🧰/detect-issues/scan-backups',
-  title: 'Scan Backups',
-  component: ScanBackupsComponent,
-  data: {
-    emoji: '↩️',
-    description: 'Detect outdated or non-existent backups',
-    wrapClass: 'bg-black radius-25 pad-2x'
-  }
-}
-
-export const detectIssues2: Route = {
-  ...detectIssues,
-  path: 'launchbox/detect-issues'
 }
 
 export const games: Route = {
@@ -63,22 +36,6 @@ export const games: Route = {
 const games2: Route = {
   path: 'launchbox/games',
   ...games,
-}
-
-export const backups: Route = {
-  path: '🧰/↩',
-  title: 'Backups',
-  component: LaunchBoxBackupsComponent,
-  data: {
-    emoji: '↩',
-    description: 'File navigator to restore backup files',
-    wrapClass: 'bg-black radius-25 pad-2x'
-  }
-}
-
-export const backups2: Route = {
-  ...backups,
-  path: 'launchbox/backups',
 }
 
 export const themeSettings: Route = {
@@ -100,7 +57,10 @@ const themeSettings2: Route = {
 export const routeMap = {
   launchBox, launchBox2,
   themeSettings, themeSettings2,
-  detectIssues, detectIssues2, scanBackups,
+  
+  detectIssues, detectIssues2, detectXinputPlatform,
+  detectXinputIssues, scanBackups, detectDupControllers,
+
   games, games2,
   backups, backups2
 }

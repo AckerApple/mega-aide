@@ -15,9 +15,9 @@
   <div class="text-center pad">
     ⬆️ Select LaunchBox folder above to unlock features
   </div>
-  <br /><br />
+  <br />
   <details class="pad">
-    <summary>📁 read more about this app and what it does with folder access</summary>
+    <summary class="opacity-80">📁 read more about this app and what it does with folder access</summary>
     <div class="bg-dark pad">
       <p>
         Once you select your LaunchBox folder, files will be read to offer helpful support.
@@ -33,14 +33,4 @@
       </ul>
     </div>
   </details>
-</div>
-
-<div *ngIf="session.launchBox.directory$ | async" [@fadeInOutUp]="1">
-  <div>
-    <div class="text-center text-xs opacity-half">choose a tool below</div>
-
-    <menu-stack-list [menu]="menu" class="flex-1 flex-center"
-      btnClass="bg-positive"
-    ></menu-stack-list>
-  </div>
 </div>

@@ -71,67 +71,14 @@
     </div>
     <div *ngIf="!selected.gameView">
       <h3>{{selected.additionalApps.length}} Additional Apps</h3>
-      <table cellPadding="4" cellSpacing="0" border="0" class="width-full table-striped-dark table-lines">
-        <tHead>
-          <tr>
-            <th>Name</th>
-            <th>Details</th>
-            <th></th>
-          </tr>
-        </tHead>
-        <tBody>
-          <tr *ngFor="let app of selected.additionalApps">
-            <td>
-              <span *ngIf="app.type==='xinput'">🕹</span>
-              <span *ngIf="app.type==='xinput-kill'">❌ 🕹</span>
-              {{app.name}}
-            </td>
-            <td class="child-margin">
-              <div class="flex-stacked gap-xxs">
-                <div class="text-xxs bold">path</div>
-                <span class="bg-grey pad-xxs" [(contentModel)]="app.applicationPath"
-                  (change)="applyAppApplicationPath(app)"
-                ></span>
-              </div>
-              <div class="flex-stacked gap-xxs">
-                <div class="text-xxs bold">commandLine</div>
-                <div class="bg-grey pad-xxs text-small" [(contentModel)]="app.commandLine"
-                  (change)="applyAppCommandLine(app)"
-                ></div>
-              </div>
-              <div *ngIf="app.type==='xinput'" class="flex-stacked gap-xxs">
-                <div class="flex-wrap gap">
-                  <div title="Toggle if XInput app launches when this game launches. You typically DO not want the UI to load.">
-                    <div class="text-xxs bold">&nbsp;</div>
-                    <input type="checkbox" [checked]="app.commandLine.includes('--skip-ui')"
-                      (click) = "toggleAppSkipUi(app)"
-                      name="skip-ui" id="skip-ui"
-                    />
-                    <label for="skip-ui"
-                    >&nbsp;--skip-ui</label>
-                  </div>
-
-                  <div>
-                    <div class="text-xxs bold">mapping</div>
-                    <xinput-app-map-select #xinputAppMapSelect
-                      class="flex" [model]="app"
-                      (change)="saveSelectedGame()"
-                    ></xinput-app-map-select>
-                  </div>
-                </div>
-                <a *ngIf="session.launchBox.xarcadeDir" class="text-white text-xxs"
-                  [routerLink]="'../../🕹/xarcade-xinput/mapping/' + (xinputAppMapSelect.mapping ? xinputAppMapSelect.mapping +'.json' : '')"
-                >🎮 xinput tools</a>
-              </div>
-            </td>
-            <td class="pad-xxs">
-              <a (click)="removeAppFromApps(app, selected.additionalApps);saveSelectedGame()"
-                title="click to remove"
-              >🗑</a>
-            </td>
-          </tr>
-        </tBody>
-      </table>
+      
+      <additional-apps-table
+        [apps]="selected.additionalApps"
+        [platform]="selected.game.platform"
+        [game]="selected.game.game"
+        (save) = "saveSelectedGame()"
+      ></additional-apps-table>
+      
       <div class="flex-wrap margin-v gap-xs">
         <button *ngIf="!selected.hasXinput" type="button" class="bg-balanced flex1"
           (click)="addXinputIntoSelected()"
@@ -168,7 +115,7 @@
   </div>
   
   
-  <div *ngIf="toSaveFiles.length">
+  <div *ngIf="toSaveFiles.length" [@fadeInOutUp]="1">
     <button type="button" class="bg-balanced width-full"
       (click)="saveFiles()"
     >Save {{toSaveFiles.length}} Files</button>

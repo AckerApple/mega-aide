@@ -1,5 +1,9 @@
 TODO: 
 
+FIX:
+- Download app has a directory stack issue
+  - occurred when saving an XInput mapping in LaunchBox Additional Apps
+
 - small printable format out of various button mappings for systems
   - intended to be printed and visible on arcade button panel
 

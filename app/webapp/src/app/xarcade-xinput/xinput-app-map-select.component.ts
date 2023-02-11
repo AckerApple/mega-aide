@@ -1,21 +1,42 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges } from "@angular/core"
-import { AdditionalApp } from "../session.provider"
+import { firstValueFrom } from "rxjs"
+import { addXInputToGame } from "../launchbox/games.utils"
+import { AdditionalApp, GameInsight, PlatformInsights } from "../session.provider"
+import { XArcadeXInputProvider } from "./XArcadeXInput.provider"
 
 @Component({
   selector: 'xinput-app-map-select',
   templateUrl: './xinput-app-map-select.html',
   exportAs: 'xinputAppMapSelect'
 }) export class xinputAppMapSelectComponent {
-  @Input() model!: AdditionalApp
-  // @Output() modelChange = new EventEmitter<AdditionalApp>()
+  @Input() game!: GameInsight
+  @Input() platform!: PlatformInsights
+
+  @Input() model?: AdditionalApp
+  @Output() modelChange = new EventEmitter<AdditionalApp>()
+  
   @Output() change = new EventEmitter<{previousValue: string, currentValue:string}>()
+  
+  
   mapping!: string
 
+  constructor(public xarcade: XArcadeXInputProvider) {}
+
   ngOnChanges( _changes: SimpleChanges ){
-    this.mapping = this.model ? getCommandMapping(this.model.commandLine) : ''
+    this.mapping = this.model ? getCommandMapByAdditionalApp(this.model) : ''
   }
 
-  applyGameCommandMapping(currentValue: string) {
+  async applyGameCommandMapping(currentValue: string) {
+    if ( !this.model ) {
+      const dir = await firstValueFrom(this.xarcade.directory$)
+      const apps = addXInputToGame(this.game, this.platform, dir.path)
+      this.model = apps[0] // the first one is the main
+      this.game.xInput = {
+        app: this.model,
+        mapping: currentValue,
+      }
+    }
+
     applyGameCommandMapping(this.model, currentValue)
     this.change.emit({
       previousValue: this.mapping,
@@ -26,18 +47,29 @@ import { AdditionalApp } from "../session.provider"
 }
 
 export function applyGameCommandMapping(
-  appDetails: AdditionalApp,
+  app: AdditionalApp,
   mapping: string
-) {
-  const commandElement = appDetails.commandLineElement
-  const command = commandElement.textContent as string
+): AdditionalApp {
+  let commandElement = app.commandLineElement
+
+  if ( !commandElement ) {
+    commandElement = app.commandLineElement = document.createElement('CommandLine')
+    app.element.appendChild(app.commandLineElement)
+  }
+
+  const command = commandElement?.textContent || ''
   const newCommand = setCommandMapping(command, mapping)
   
-  appDetails.commandLineElement.textContent = newCommand
-  appDetails.commandLine = newCommand
+  commandElement.textContent = newCommand
+  app.details.commandLine = newCommand
+
+  return app
 }
 
-export function setCommandMapping(command: string, mapping: string) {
+export function setCommandMapping(
+  command: string,
+  mapping: string
+) {
   const args = getCommandArgs(command)
   const mapIndex = args?.findIndex(item => item.includes('--mapping')) as number
   if ( mapIndex < 0 || mapIndex >= args.length-1 ) {
@@ -69,4 +101,9 @@ function commandSafeArg(commandArg: string): string {
   }
 
   return '"' + commandArg + '"'
+}
+
+export function getCommandMapByAdditionalApp(model: AdditionalApp) {
+  const command = model.details.commandLine
+  return command ? getCommandMapping(command) : ''  
 }

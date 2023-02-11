@@ -1,13 +1,14 @@
 import { Component } from '@angular/core'
 import { Prompts } from 'ack-angular'
 import { animations } from 'ack-angular-fx'
-import { firstValueFrom, Subscription } from 'rxjs'
-import { removeAppFromApps } from './LaunchBox.class'
-import { AdditionalApp, AdditionalAppType, GameInsight, PlatformInsights, SessionProvider } from '../session.provider'
+import {  firstValueFrom, Subscription } from 'rxjs'
+import { AdditionalApp, AdditionalAppDetails, AdditionalAppType, GameInsight, PlatformInsights, SessionProvider } from '../session.provider'
 import { xmlDocToString } from '../xml.functions'
 import { ActivatedRoute, Router } from '@angular/router'
 import { routeMap as ledBlinkRouteMap } from '../ledblinky.routing.module'
 import { getElementsByTagName } from '../ledblinky/LedBlinky.utils'
+import { xArcade } from '../app.routing.module'
+import { addXInputToGame } from './games.utils'
 
 interface GamePlatform {
   game: GameInsight
@@ -262,13 +263,17 @@ export class GamesComponent {
     this.searchGames.sort(({game: gameA}, {game: gameB})=>String(gameA.details.title||'').toLowerCase()>String(gameB.details.title||'').toLowerCase()?1:-1)
   }
 
-  showGame(game: GamePlatform) {
-    const additionalApps = this.session.launchBox.filterAdditionalAppsByGame(game.platform.additionalApps, game.game.details)
-      .map(app => this.session.launchBox.mapAdditionalApp(app))
+  async showGame(game: GamePlatform) {
+    const apps = await firstValueFrom(game.platform.additionalApps$)
+    const additionalApps = this.session.launchBox.filterAdditionalAppsByGame(
+      apps,
+      game.game.details,
+    )
+      // .map(app => this.session.launchBox.mapAdditionalApp(app))
 
     this.selected = {
       game,
-      hasXinput: additionalApps.find(app => app.type === AdditionalAppType.XINPUT) ? true : false,
+      hasXinput: additionalApps.find(app => app.details.type === AdditionalAppType.XINPUT) ? true : false,
       additionalApps
     }
 
@@ -282,20 +287,6 @@ export class GamesComponent {
       }, 
       queryParamsHandling: 'merge', // remove to replace all query params by provided
     })
-  }
-
-  addXinputKillIntoSelected() {
-    const selected = this.selected as SelectedGame
-    if ( !selected ) {
-      return
-    }
-    const platformXml = selected.game.platform.xml
-    const firstElm = platformXml.getElementsByTagName('LaunchBox')[0]
-    const killXinputApp = this.newKillXinputApp(selected.game.game.details.id)
-    firstElm.appendChild(killXinputApp.element)
-    selected.additionalApps.push(killXinputApp)
-    selected.hasXinput = true
-    this.saveSelectedGame()
   }
 
   saveSelectedGame() {
@@ -317,16 +308,23 @@ export class GamesComponent {
       return
     }
     
-    const xinputApp = this.newXinputApp(selected.game.game.details.id)
-
-    const platformXml = selected.game.platform.xml
-    const firstElm = platformXml.getElementsByTagName('LaunchBox')[0]
-    firstElm.appendChild(xinputApp.element)
+    const xarcadePath = this.session.launchBox.xarcadeDir?.path as string
+    if ( !xarcadePath ) {
+      this.session.error('Cannot determine xarcade path')
+    }  
     
-    selected.additionalApps.push(xinputApp)
+    const apps = addXInputToGame(
+      selected.game.game,
+      selected.game.platform,
+      xarcadePath,
+    )
+    
+    selected.additionalApps.push( ...apps )
     selected.hasXinput = true
+    this.saveSelectedGame()
+
+    
     this.addGameToSave(selected.game)
-    this.addXinputKillIntoSelected()
   }
 
   removeXinputFromSelected() {
@@ -340,161 +338,10 @@ export class GamesComponent {
     this.addGameToSave(selected.game)
   }
 
-  newKillXinputApp(gameId: string): AdditionalApp {
-    const xarcadePath = this.session.launchBox.xarcadeDir?.path as string
-    
-    if ( !xarcadePath ) {
-      this.session.error('Cannot determine xarcade path')
-    }
-
-    return this.getNewApp({
-      gameId,
-      applicationPath: xarcadePath + '/xarcade-xinput/kill xinput.exe',
-      name: 'kill xinput',
-      type: AdditionalAppType.XINPUT_KILL,
-      commandLine: '',
-      autoRunAfter: 'true',
-      autoRunBefore: 'false'
-    })
-  }
-
-  newXinputApp(gameId: string): AdditionalApp {    
-    const xarcadePath = this.session.launchBox.xarcadeDir?.path as string
-    
-    if ( !xarcadePath ) {
-      this.session.error('Cannot determine xarcade path')
-    }
-
-    return this.getNewApp({
-      gameId,
-      applicationPath: xarcadePath+'/xarcade-xinput/XArcade XInput.exe',
-      name: 'xinput',
-      type: AdditionalAppType.XINPUT,
-      commandLine: '--skip-ui',
-      autoRunAfter: 'false',
-      autoRunBefore: 'true'
-    })
-  }
-
-  async removeAppFromApps(app: AdditionalApp, apps: AdditionalApp[]) {
-    const confirm = await firstValueFrom(
-      this.prompts.confirm('remove additional app')
-    )
-
-    if ( confirm ) {
-      removeAppFromApps(app, apps)
-    }
-  }
-
-  getNewApp({
-    applicationPath, name, type,
-    commandLine, gameId,
-    autoRunAfter, autoRunBefore,
-  }: {
-    applicationPath: string
-    name: string
-    gameId: string
-    commandLine: string
-    autoRunAfter: string
-    autoRunBefore: string
-    type: AdditionalAppType
-  }): AdditionalApp {
-    const newApp = createElement('AdditionalApplication')
-   
-    /** Things possibly missing:
-      <GogAppId/>
-      <OriginAppId/>
-      <OriginInstallPath/>
-      <UseDosBox>false</UseDosBox>
-      <UseEmulator>false</UseEmulator>
-      <Developer/>
-      <Publisher/>
-      <Region/>
-      <Version/>
-      <Status/>
-      <EmulatorId/>
-      <SideA>false</SideA>
-      <SideB>false</SideB>
-      <Priority>0</Priority>
-    */
-    newTextElementOn('ID', uuidv4(), newApp)
-    newTextElementOn('GameID', gameId, newApp)
-    newTextElementOn('PlayCount', '0', newApp)
-    newTextElementOn('PlayTime', '0', newApp)
-    newTextElementOn('WaitForExit', 'false', newApp)
-    const {element: applicationPathElement} = newTextElementOn('ApplicationPath', applicationPath, newApp)
-    const {element: nameElement} = newTextElementOn('Name', name, newApp)
-    const {element: commandLineElement} = newTextElementOn('CommandLine', commandLine, newApp)
-    const {element: autoRunAfterElement} = newTextElementOn('AutoRunAfter', autoRunAfter, newApp)
-    const {element: autoRunBeforeElement} = newTextElementOn('AutoRunBefore', autoRunBefore, newApp)
-  
-    return {
-      type,
-      element: newApp,
-     
-      autoRunAfter,
-      autoRunAfterElement,
-      
-      autoRunBefore,
-      autoRunBeforeElement,
-      
-      name,
-      nameElement,
-    
-      applicationPath,
-      applicationPathElement,
-    
-      commandLine,
-      commandLineElement,
-    }
-  }
-
   saveFiles() {
     this.session.toSaveFiles = this.toSaveFiles.map(x => ({
       file: x.platform.file,
       string: xmlDocToString(x.platform.xml)
     }))
   }
-
-  applyAppCommandLine(app: AdditionalApp) {
-    const element = app.element.getElementsByTagName('CommandLine')[0]
-    element.textContent = app.commandLine
-    this.saveSelectedGame()
-  }
-  
-  applyAppApplicationPath(app: AdditionalApp) {
-    const element = app.element.getElementsByTagName('ApplicationPath')[0]
-    element.textContent = app.applicationPath
-    this.saveSelectedGame()
-  }
-
-  toggleAppSkipUi(app: AdditionalApp) {
-    const skip = app.commandLine.includes('--skip-ui')
-
-    if ( skip ) {
-      return app.commandLine = app.commandLine.replace(/--skip-ui([ ])*/,'')
-    }
-
-    return app.commandLine = '--skip-ui ' + app.commandLine
-  }
-}
-
-function newTextElementOn(type: string, text: string, on: Element) {
-  const element = createElement(type)
-  element.textContent = text
-  on.appendChild(element)
-  return { text, element }
-}
-
-function createElement(tagName: string): Element {
-  const doc = new DOMParser().parseFromString(`<${tagName}></${tagName}>`, 'text/xml')
-  return doc.children[0]
-}
-
-function uuidv4() {
-  const first = [1e7] as any
-  const formula = (first+-1e3+-4e3+-8e3+-1e11)
-  return formula.replace(/[018]/g, (c: any) =>
-    (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-  );
 }

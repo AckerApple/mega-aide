@@ -11,10 +11,5 @@ export class XinputMapSelectComponent {
   
   constructor(
     public xarcade: XArcadeXInputProvider,
-  ) {
-  }
-  
-  ngOnInit(){
-    this.xarcade.loadMappings()
-  }
+  ) {}
 }

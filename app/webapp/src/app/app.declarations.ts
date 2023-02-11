@@ -51,6 +51,12 @@ import { DragSelectorDirective } from './ledblinky/drag-selector.directive'
 import { DragSelectorTargetDirective } from './ledblinky/drag-selector-target.directive'
 import { InputMapsComponent } from './ledblinky/input-maps.component'
 import { SelectLedblinkyDirectoryComponent } from './ledblinky/select-ledblinky-directory.component'
+import { LaunchBoxComponent } from './launchbox/launchbox.component'
+import { AdditionalAppsTableComponent } from './launchbox/additional-apps-table.component'
+import { XinputGamesTableComponent } from './launchbox/xinput-games-table.component'
+import { DetectXinputComponent } from './launchbox/detect-issues/detect-xinput.component'
+import { DetectXInputPlatformComponent } from './launchbox/detect-issues/detect-xinput-platform.component'
+import { DetectDupControllersComponent } from './launchbox/detect-issues/detect-dup-controllers.component'
 
 export const declarations = [
   AppComponent,
@@ -76,12 +82,18 @@ export const declarations = [
   MenuComponent,
   DebugComponent,
   
+  DetectXinputComponent,
+  DetectIssuesComponent,
+  DetectXInputPlatformComponent,
+  DetectDupControllersComponent,
+  AdditionalAppsTableComponent,
+  XinputGamesTableComponent,
+  LaunchBoxComponent,
   LaunchBoxBackupsComponent,
   ScanBackupsComponent,
   SelectLaunchBoxComponent,
   GamesComponent,
   BackupsComponent,
-  DetectIssuesComponent,
   ThemeSettingsComponent,
 
   XarcadeXinputComponent,

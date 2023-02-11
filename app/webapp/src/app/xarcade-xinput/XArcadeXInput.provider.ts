@@ -1,64 +1,91 @@
 import { Injectable } from "@angular/core"
 import { DirectoryManager, FileStats } from "ack-angular-components/directory-managers/DirectoryManagers"
+import { BehaviorSubject, combineLatest, EMPTY, from, map, merge, mergeAll, mergeMap, Observable, of, share, shareReplay, switchMap } from "rxjs"
 import { SessionProvider } from "../session.provider"
 
 export const xarcadeXinputPickerId = 'xarcadeXinputPicker'
 const pathTo = 'xarcade-xinput/mappings'
 
-@Injectable()
-export class XArcadeXInputProvider {
-  directory!: DirectoryManager
-  // mappingFileNames: string[] = []
-  mappingFiles: FileStats[] = []
+/** Used in two different sections that cannot share references
+ * 1. In LaunchBox, we need the relative path to Xinput from within LaunchBox
+ * 2. In the XInput dedicated section, we don't care about relative paths
+*/
+@Injectable() export class XArcadeXInputProvider {
+  directoryChange = new BehaviorSubject<DirectoryManager | undefined>( undefined )
+  
+  directoryByLaunchBox$ = this.session.launchBox.directories$.pipe(
+    switchMap(() => {
+      // are we maybe already loaded?
+      const directory = this.directoryChange.getValue()
+      if ( directory ) {
+        return of(directory)
+      }
+
+      // load from launch box
+      if ( this.session.launchBox.xarcadeDir ) {
+        this.directoryChange.next(this.session.launchBox.xarcadeDir)
+        // return EMPTY
+        return of(this.session.launchBox.xarcadeDir)
+      }
+
+      return EMPTY
+    }), // continue if directory defined otherwise cancel pipe
+    shareReplay(1),
+  )
+
+  directory$ = combineLatest([
+    this.directoryChange,
+    this.directoryByLaunchBox$,
+  ]).pipe(
+    switchMap((c, x) => c ? of(c) : EMPTY), // continue if directory defined otherwise cancel pipe
+    map(x => x[0] as DirectoryManager),
+    shareReplay(1), // once we have a defined directory, remember for new subs
+  )
+
+  mappings$: Observable<FileStats[] | undefined> = this.directory$.pipe(
+    mergeMap(
+      (directory: DirectoryManager) => from(this.getMappings(directory)),
+    ),
+    shareReplay(1),
+  )
 
   constructor(public session: SessionProvider) {}
  
-  autoLoadDir(): DirectoryManager | undefined {
-    if ( this.session.xarcadeDirectory ) {
-      return this.directory = this.session.xarcadeDirectory
-    }
+  async findMappingsDir() {
+    const directory = this.directoryChange.getValue()
 
-    if ( !this.session.launchBox.xarcadeDir ) {
+    if ( !directory ) {
       return
     }
 
-    return this.directory = this.session.launchBox.xarcadeDir
-  }
-
-  async findMappingsDir() {
-    let mappings = await this.directory.findDirectory('mappings')
+    let mappings = await directory.findDirectory('mappings')
 
     if ( mappings ) {
       return mappings
     }
     
-    return await this.directory.findDirectory(pathTo)
+    return await directory.findDirectory(pathTo)
   }
 
-  async loadMappings() {
-    if ( !this.directory ) {
-      this.autoLoadDir()
-      if ( !this.directory ) {
-        this.session.warn('xarcade xinput directory has not been loaded')
-        return
-      }
-    }
-
+  async getMappings(
+    directory: DirectoryManager
+  ): Promise<FileStats[] | undefined> {
     const mappings = await this.findMappingsDir()
-    
+      
     if ( !mappings ) {
-      this.session.warn(`unable to locate "mappings" or "${pathTo}" 📁 folder(s) within ${this.directory.path}`)
+      this.session.warn(`unable to locate "mappings" or "${pathTo}" 📁 folder(s) within ${directory.path}`)
       return
     }
     
     try {
       const files = await mappings.getFiles()
       
-      this.mappingFiles = await Promise.all(
+      const mappingFiles = await Promise.all(
         files.filter(file => file.name.split('.').pop() === 'json')
         .map(file => file.stats())
       )
 
+      return mappingFiles
     } catch (err) {
       this.session.error(`Error loading XArcade mappings folder ${pathTo}`,err)
       throw err

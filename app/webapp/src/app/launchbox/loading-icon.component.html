@@ -1,5 +1,5 @@
 <div class="pad">
-  <div *ngIf="show" class="pos-abs animate__animated animate__heartBeat animate__infinite"
+  <div *ngIf="show || (show$ | async)" class="pos-abs animate__animated animate__heartBeat animate__infinite"
     [@fadeInOutUp]="1"
   >
     <ng-container *ngTemplateOutlet="loading"></ng-container>

@@ -22,7 +22,7 @@
   <div class="pad-xs gap text-smx border-top border-white flex-valign-center flex-wrap"
     style="background-color: rgb(5, 46, 124);"
   >
-    <loading-icon class="pos-abs right-0" [show]="session.loading"></loading-icon>
+    <loading-icon class="pos-abs right-0" [show$]="session.loading$"></loading-icon>
     <a *ngIf="routeState.RouteWatchReporter.$history.length > 1"
       [@fadeInOutUp]="1"
       [title]="'back upto ' + routeState.RouteWatchReporter.$history.length + ' times'"
@@ -88,6 +88,14 @@
       <route-reporter #routeState="RouteReporter"></route-reporter>
       <fx-tracker #fx="FxTracker" [activatedRoute]="routeState.activated"></fx-tracker>      
     </div>
+
+    <div *ngIf="session.filesReadyToSave.length" [@fadeInOutUp]="1">
+      <button type="button"
+        class="bg-balanced width-full"
+        (click)="session.toSaveFiles = session.filesReadyToSave"
+      >💾 SAVE {{session.filesReadyToSave.length}} FILES</button>
+    </div>
+
     <div *ngIf="routeState.current.config?.path !== 'menu'"
       [@fadeInOutUp]="1"
       class="flex-1 flex margin-top"

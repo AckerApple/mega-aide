@@ -5,11 +5,11 @@
   >🗑</a>
 </ng-template>
 
-<ng-container *ngIf="xarcade.mappingFiles.length">
+<ng-container *ngIf="(xarcade.mappings$ | async) as mappings">
   <h3>Mapping files</h3>
   <p>Choose a file to work with below...</p>
   <hr class="border-1 border-white" />
-  <finder-files [columns]="[xarcade.mappingFiles]" routerLinkBase="mapping/">
+  <finder-files [columns]="[mappings]" routerLinkBase="mapping/">
     <finder-column type="name"></finder-column>
     <finder-column [template]="finderOptions"></finder-column>
   </finder-files>

@@ -14,8 +14,6 @@ import { LedController } from "./LedBlinky.utils";
   constructor(public session: SessionProvider) {}
 
   async ngOnInit(){
-    console.log('start')
     const results = await firstValueFrom(this.session.ledBlinky.inputsMap$)
-    console.log('results', results)
   }
 }

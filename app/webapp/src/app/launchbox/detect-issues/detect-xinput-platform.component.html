@@ -1,0 +1,9 @@
+<select-launchbox></select-launchbox>
+
+<div *ngIf="(platform$ | async) as platform">
+  <xinput-games-table [games]="platform.games"
+    [platform]="platform.platform"
+    [title]="platform.platform.name"
+    (saveGames)="updatePlatformGames(platform.platform, $event)"
+  ></xinput-games-table>
+</div>

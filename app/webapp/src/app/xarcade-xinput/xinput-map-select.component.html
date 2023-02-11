@@ -1,10 +1,8 @@
-<select placeholder="📄 select mapping"
-  [(ngModel)]="model" class="flex-1"
+<select [(ngModel)]="model" class="flex-1"
   (ngModelChange)="modelChange.emit(model=$event.replace('.json',''))"
 >
-  <option value="">choose mapping file</option>
-  <option *ngFor="let item of xarcade.mappingFiles"
-    [value]="item.name"
-    [selected]="model === item.name.replace('.json','')"
+  <option value="">📄 select mapping file</option>
+  <option *ngFor="let item of (xarcade.mappings$ | async)"
+    [value]="item.name.replace('.json','')"
   >{{ item.name }}</option>
 </select>

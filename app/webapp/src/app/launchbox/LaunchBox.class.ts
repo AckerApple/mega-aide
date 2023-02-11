@@ -1,18 +1,16 @@
-import { EventEmitter } from "@angular/core"
 import { DirectoryManager, DmFileReader } from "ack-angular-components/directory-managers/DirectoryManagers"
-import { findElementText, getGameElementId, getGameElementTitle, isPathKillXinput, isPathXinput } from "./DetectIssues.component"
-import { AdditionalApp, AdditionalAppType, GameDetails, GameInsight, PlatformInsights, SessionProvider } from "../session.provider"
-import { BehaviorSubject, EMPTY, Observable, of, shareReplay, Subscription, switchMap } from "rxjs"
+import { AdditionalApp, AdditionalAppDetails, AdditionalAppType, GameDetails, GameInsight, PlatformInsights, SessionProvider } from "../session.provider"
+import { BehaviorSubject, bindCallback, EMPTY, from, mergeMap, Observable, of, shareReplay, Subscription, switchMap } from "rxjs"
 import { getElementsByTagName } from "../ledblinky/LedBlinky.utils"
+import { findElementText, getGameElementId, getGameElementTitle, isPathKillXinput, isPathXinput } from "./detect-issues/detect.utils"
 
 /* when done with this class you must .destroy() it */
 export class LaunchBox {
   directoryChange = new BehaviorSubject<DirectoryManager | undefined>( undefined )
   directory$ = this.directoryChange.pipe(
-    switchMap(c => c ? of(c) : EMPTY),
-    shareReplay(1),
+    switchMap(c => c ? of(c) : EMPTY), // continue if directory defined otherwise cancel pipe
+    shareReplay(1), // once we have a defined directory, remember for new subs
   )
-
 
   // xarcade loaded from launchbox tools dir
   xarcadeDir?: DirectoryManager
@@ -20,25 +18,21 @@ export class LaunchBox {
   // ledBlinky loaded from launchbox tools dir
   ledBlinkyDir?: DirectoryManager
 
-  directoriesChange = new EventEmitter<DirectoryManager>() // when xinput, mame, or ledblinky has changed
+  directories$ = this.directory$.pipe(
+    mergeMap(directory => from(this.findOtherDirs(directory))),
+    shareReplay(1), // once we have a defined directory, remember for new subs
+  )
   subs = new Subscription()
 
   constructor(public session: SessionProvider) {
-    this.subs.add(
-      this.directory$.subscribe(async directory => {
-        await Promise.all([
-          this.tryAddMame(directory),
-          this.tryAddXinputByTools(directory),
-          this.tryAddLedBlinkyByTools(directory),
-        ])
-    
-        this.directoriesChange.emit()
-      })
-    )
   }
 
-  destroy() {
-    this.subs.unsubscribe()
+  async findOtherDirs(directory: DirectoryManager) {
+    await Promise.all([
+      this.tryAddMame(directory),
+      this.tryAddXinputByTools(directory),
+      this.tryAddLedBlinkyByTools(directory),
+    ])
   }
 
   async tryAddXinputByTools(directoryManager: DirectoryManager) {
@@ -53,7 +47,7 @@ export class LaunchBox {
 
     this.session.xarcadeDirectory = xarcadeDir
     // notate that the link was found via LaunchBox for back and forth jumping
-    this.session.launchBox.xarcadeDir = xarcadeDir      
+    this.session.launchBox.xarcadeDir = xarcadeDir
   }
 
   async tryAddLedBlinkyByTools(directoryManager: DirectoryManager) {
@@ -115,7 +109,6 @@ export class LaunchBox {
         continue
       }
       
-      // const platformFile = await this.getPlatformFileDetails(name as string, file)
       results.push({name, file})
     }
     
@@ -157,14 +150,13 @@ export class LaunchBox {
         break
       }
 
-      const name = element.textContent
-      const file = await directory.findFileByPath(`Data/Platforms/${name}.xml`) as DmFileReader
+      const name = element.textContent as string
+      const platformFile = await this.getPlatformFileByName(directory, name)
 
-      if ( !file ) {
+      if ( !platformFile ) {
         continue
       }
 
-      const platformFile = await this.getPlatformFileDetails(name as string, file)
       const result = await each(platformFile, {stop})
       results.push(result)
     }
@@ -172,25 +164,73 @@ export class LaunchBox {
     return results.filter(x => x) as EachResult[]
   }
 
+  async getPlatformFileByName(
+    directory: DirectoryManager,
+    name: string,
+  ): Promise<PlatformInsights| undefined> {
+    return this.getPlatformFileByFileName(directory, name + '.xml')
+  }
+
+  async getPlatformFileByFileName(
+    directory: DirectoryManager,
+    name: string,
+  ): Promise<PlatformInsights| undefined> {
+    const file = await directory.findFileByPath(`Data/Platforms/${name}`) as DmFileReader
+
+    if ( !file ) {
+      return
+    }
+
+    const platformFile = await this.getPlatformFileDetails(name as string, file)  
+    return platformFile
+  }
+  
   async getPlatformFileDetails(
     name: string,
     file: DmFileReader
   ): Promise<PlatformInsights> {
     const xml = await file.readAsXml()
+    const gameElements = getElementsByTagName(xml, 'Game') as Element[]
+    const games = gameElements.map(element => {
+      const gameInsights: GameInsight = {
+        element,
+        details: elementToGameDetails(element),
+      }
+      return gameInsights
+    })
 
-    const gameElements = new Array(...xml.getElementsByTagName('Game') as any) as Element[]
-    const [ games, additionalApps ] = [
-      gameElements.map(element => {
-        const gameInsights: GameInsight = {
-          element,
-          details: elementToGameDetails(element),
-        }
-        return gameInsights
-      }),
-      new Array(...xml.getElementsByTagName('AdditionalApplication') as any) as Element[]
-    ]
+    // TODO: create a page to read duplicates
+    const controllerSupports$ = new Observable(subscriber => {
+      const control: ControllerSupport[] = getElementsByTagName(xml, 'GameControllerSupport')
+        .map(elm => mapControllerSupport(elm)
+      )
+      subscriber.next(control)
+    }).pipe(
+      shareReplay(1)
+    ) as unknown as Observable<ControllerSupport[]>
 
-    return { xml, name, file, games, additionalApps }
+    const additionalApps$ = new Observable(subscriber => {
+      const app: AdditionalApp[] = getElementsByTagName(xml, 'AdditionalApplication')
+      .map(elm => mapAdditionalApp(elm)
+      )
+      subscriber.next(app)
+    }).pipe(
+      shareReplay(1)
+    ) as unknown as Observable<AdditionalApp[]>
+
+    const getGameById = (
+      gameId: string
+    ): (GameInsight | undefined) => {
+      return games.find(game => game.details.id === gameId)
+    }
+
+    return {
+      xml, name, file, games,
+
+      getGameById,
+      additionalApps$,
+      controllerSupports$,
+    }
   }
 
   async loadData(fileName: string): Promise<DmFileReader | undefined> {
@@ -210,10 +250,13 @@ export class LaunchBox {
     return platformFile
   }
 
-  filterAdditionalAppsByGame(additionalApps: Element[], game: GameDetails) {
+  filterAdditionalAppsByGame(
+    additionalApps: AdditionalApp[],
+    game: GameDetails
+  ) {
     const gameId = game.id
     return additionalApps.filter(app => {
-      const elms = app.getElementsByTagName('GameID')
+      const elms = app.element.getElementsByTagName('GameID')
       if ( !elms.length ) {
         return
       }
@@ -221,7 +264,10 @@ export class LaunchBox {
     })
   }
 
-  filterGamesByAppElement(games: GameInsight[], app: Element) {
+  filterGamesByAppElement(
+    games: GameInsight[],
+    app: Element
+  ) {
     const elms = app.getElementsByTagName('GameID')
     if ( !elms.length ) {
       return
@@ -234,27 +280,12 @@ export class LaunchBox {
     return games.filter(game => game.details.id === gameId)
   }
 
-  mapAdditionalApp(element: Element): AdditionalApp {
-    const {child: applicationPathElement, text: applicationPath} = getChildElementAndText(element, 'ApplicationPath')
-    const {child: commandLineElement, text: commandLine} = getChildElementAndText(element, 'CommandLine')
-    const {child: autoRunAfterElement, text: autoRunAfter} = getChildElementAndText(element, 'AutoRunAfter')
-    const {child: autoRunBeforeElement, text: autoRunBefore} = getChildElementAndText(element, 'AutoRunBefore')
-    const {child: nameElement, text: name} = getChildElementAndText(element, 'Name')
-    
-    return {
-      element,
-      type: getTypeByAddApp(applicationPath),
-      commandLineElement, commandLine,
-      applicationPath, applicationPathElement,
-      autoRunAfter, autoRunAfterElement,
-      autoRunBefore, autoRunBeforeElement,
-      name, nameElement,
-    }
-  }
-
   removeXinputFromApps(apps: AdditionalApp[]) {
     apps.map((app, index) => ({app, index}))
-      .filter(app => [AdditionalAppType.XINPUT, AdditionalAppType.XINPUT_KILL].includes(app.app.type))
+      .filter(app => [
+        AdditionalAppType.XINPUT,
+        AdditionalAppType.XINPUT_KILL
+      ].includes(app.app.details.type))
       .reverse()
       .forEach(app => removeAppFromApps(app.app, apps))
   }
@@ -277,8 +308,22 @@ export function removeAppFromApps(
   apps.splice(index, 1)
 }
 
-function getChildElementAndText(element: Element, tagName: string) {
-  const child = element.getElementsByTagName(tagName)[0]
+interface ChildAndText {
+  child: Element
+  text: string
+}
+
+function getChildElementAndText(
+  element: Element,
+  tagName: string
+): ChildAndText | undefined {
+  const matches = element.getElementsByTagName(tagName)  
+  const child = matches[0]
+
+  if ( !child ) {
+    return
+  }
+
   const text = child.textContent || ''
   return { child, text }
 }
@@ -305,4 +350,67 @@ export function elementToGameDetails(
     applicationPath: findElementText(element, 'ApplicationPath') as string
   }
   return details
+}
+
+interface ControllerSupportDetails {
+  controllerId: string
+  gameId: string
+  supportLevel?: string
+}
+
+export interface ControllerSupport {
+  element: Element
+  details: ControllerSupportDetails
+  
+  controllerIdElement: Element
+  gameIdElement: Element
+  supportLevelElement?: Element
+}
+
+export function mapControllerSupport(
+  element: Element
+): ControllerSupport {
+  const controllerId = getChildElementAndText(element, 'ControllerId') as ChildAndText
+  const gameId = getChildElementAndText(element, 'GameId') as ChildAndText
+  const supportLevel = getChildElementAndText(element, 'SupportLevel')
+
+  const details: ControllerSupportDetails = {
+    controllerId: controllerId.text,
+    gameId: gameId.text,
+    supportLevel: supportLevel?.text,
+  }
+
+  return {
+    element,
+    details,
+    controllerIdElement: controllerId?.child,
+    gameIdElement: gameId?.child,
+    supportLevelElement: supportLevel?.child,
+  }
+}
+
+export function mapAdditionalApp(element: Element): AdditionalApp {
+  const applicationPath = getChildElementAndText(element, 'ApplicationPath') as ChildAndText
+  const commandLine = getChildElementAndText(element, 'CommandLine')
+  const autoRunAfter = getChildElementAndText(element, 'AutoRunAfter')
+  const autoRunBefore = getChildElementAndText(element, 'AutoRunBefore')
+  const name = getChildElementAndText(element, 'Name')
+
+  const details: AdditionalAppDetails = {
+    type: getTypeByAddApp(applicationPath.text),
+    commandLine: commandLine?.text || '',
+    applicationPath: applicationPath?.text,
+    autoRunAfter: autoRunAfter?.text,
+    autoRunBefore: autoRunBefore?.text,
+    name: name?.text,
+  }
+  
+  return {
+    element, details,
+    commandLineElement: commandLine?.child,
+    applicationPathElement: applicationPath?.child,
+    autoRunAfterElement: autoRunAfter?.child,
+    autoRunBeforeElement: autoRunBefore?.child,
+    nameElement: name?.child,
+  }
 }
