@@ -240,9 +240,9 @@ export class LaunchBox {
         return gameInsights
       })
       subscriber.next(games)
-    })/*.pipe(
+    }).pipe(
       shareReplay(1)
-    ) as unknown as Observable<GameInsight[]>*/
+    ) as unknown as Observable<GameInsight[]>
     
     const additionalApps$ = new Observable<AdditionalApp[]>(subscriber => {
       const apps: AdditionalApp[] = getElementsByTagName(xml, 'AdditionalApplication')

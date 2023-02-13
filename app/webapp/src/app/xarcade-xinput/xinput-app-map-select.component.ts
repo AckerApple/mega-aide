@@ -6,7 +6,7 @@ import { XArcadeXInputProvider } from "./XArcadeXInput.provider"
 
 @Component({
   selector: 'xinput-app-map-select',
-  templateUrl: './xinput-app-map-select.html',
+  templateUrl: './xinput-app-map-select.component.html',
   exportAs: 'xinputAppMapSelect'
 }) export class xinputAppMapSelectComponent {
   @Input() game!: GameInsight
@@ -24,6 +24,7 @@ import { XArcadeXInputProvider } from "./XArcadeXInput.provider"
 
   ngOnChanges( _changes: SimpleChanges ){
     this.mapping = this.model ? getCommandMapByAdditionalApp(this.model) : ''
+    console.log('this.mapping', this.mapping)
   }
 
   async applyGameCommandMapping(currentValue: string) {

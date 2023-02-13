@@ -1,6 +1,11 @@
 <select-launchbox></select-launchbox>
-			
-<loading-icon [show]="scanning" label="👁 Scanning files..."></loading-icon>
+
+<div class="flex-wrap flex-apart">
+  <loading-icon [show]="scanning" label="👁 Scanning files..."></loading-icon>
+  <div *ngIf="scanning">
+    Platforms scanned: {{ count }}
+  </div>
+</div>
 
 <div *ngIf="session.launchBox.directory$ | async">
   <div *ngIf="platformGames.length && stats.hasDefaultMix" [@fadeInOutUp]="1" class="bg-orange pad">
@@ -146,7 +151,7 @@
         <td>{{ platform.name }}</td>
         <td>{{ platform.xArcadeApps.mapped.length }}</td>
         <td>{{ platform.xArcadeApps.unmapped.length }}</td>
-        <td>{{ platform.games.length }}</td>
+        <td>{{ $any(platform.games$ | async).length }}</td>
       </tr>
       <tr *ngIf="platform.xArcadeApps.viewDetails" [@fadeInOutUp]="1">
         <td colspan="4" class="bg-energized">
@@ -163,7 +168,7 @@
 
           <div class="flex-wrap gap">
             <a type="button" class="text-sm flex-1 bg-calm" [routerLink]="platform.file.name"
-            >⠶ view all {{ platform.games.length }} games</a>
+            >⠶ view all {{ $any(platform.games$ | async).length }} games</a>
 
             <a type="button" class="text-sm flex-1 bg-calm" [routerLink]="'/' + routes.backups.path"
               [queryParams]="{path:platform.file.directory.path, file:platform.file.name}"

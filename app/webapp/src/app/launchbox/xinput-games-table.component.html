@@ -53,7 +53,7 @@
       [model]="game.xInput?.app"
       [platform]="platform"
       [game]="game"
-      (change)="saveGames.emit([game]);game.editMapping=false"
+      (change)="game.xInput.mapping=$event.currentValue;saveGames.emit([game]);game.editMapping=false"
     ></xinput-app-map-select>
     <button type="button" (click)="game.editMapping = false">close</button>
   </div>
@@ -66,7 +66,7 @@
     (change)="changePlatformGameCommandMappings($any($event.target).value)"
   >
     <option value="">change all to mapping</option>
-    <option *ngFor="let item of mappings" [value]="item.name"
+    <option *ngFor="let item of mappings" [value]="item.name.replace('.json','')"
     >{{item.name}}</option>
   </select>
 </ng-template>

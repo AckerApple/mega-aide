@@ -14,7 +14,10 @@ import { changePlatformGameCommandMappings } from "../changePlatformGameCommandM
   templateUrl: './detect-xinput.component.html',
 }) export class DetectXinputComponent {
   routes = { backups, detectXinputIssues }
+  
+  // scan details
   scanning = 0
+  count = 0
   
   noCommandPlatforms: PlatformGameApp[] = [] // platforms with games that DO NOT have and mappings
   searchPlatformGames: PlatformGameApp[] = [] // platforms with games that have mappings
@@ -161,10 +164,10 @@ import { changePlatformGameCommandMappings } from "../changePlatformGameCommandM
     // the search will be a filtered list of platformGames
     this.searchPlatformGames = platformGames
 
-    let count = 0
+    this.count = 0
     ++this.scanning
     await this.session.launchBox.eachPlatform(async (platform) => {
-      ++count
+      ++this.count
       const result = await readPlatformFile(platform, this.session.launchBox, this.stats)
 
       if( result.xArcadeApps.commands.length ) {
@@ -173,7 +176,7 @@ import { changePlatformGameCommandMappings } from "../changePlatformGameCommandM
         this.noCommandPlatforms.push(result)
       }
 
-      if ( count % 5 ) {
+      if ( this.count % 5 ) {
         platformGames.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
         this.noCommandPlatforms.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
       }
