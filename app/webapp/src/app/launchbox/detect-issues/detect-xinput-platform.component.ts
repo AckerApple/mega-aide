@@ -1,6 +1,6 @@
 import { Component } from "@angular/core"
 import { ActivatedRoute } from "@angular/router"
-import { from, mergeMap, shareReplay } from "rxjs"
+import { firstValueFrom, from, mergeMap, shareReplay } from "rxjs"
 import { GameInsight, SessionProvider } from "src/app/session.provider"
 import { xmlDocToString } from "src/app/xml.functions"
 import { MapStats, PlatformGameApp, readPlatformFile, regMapXarcadeOnto, updatePlatformByGame } from "./detect.utils"
@@ -29,7 +29,8 @@ import { MapStats, PlatformGameApp, readPlatformFile, regMapXarcadeOnto, updateP
             this.stats
           )
 
-          const games = platformMap.games.map(game => {
+          const platGames = await firstValueFrom(platformMap.games$)
+          const games = platGames.map(game => {
             const addApps = game.additionalApps || []
             
             addApps.forEach(app => {

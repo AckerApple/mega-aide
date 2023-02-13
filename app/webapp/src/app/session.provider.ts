@@ -69,6 +69,8 @@ export class SessionProvider {
   }
   openAnchor = openAnchor // due to native os, we need to open <a> href links this way
   reportIssueLink = `https://github.com/AckerApple/mega-aide/issues/new?title=Mega-aide app issue: &body=My issue is:${encodeURIComponent('\n\n\nMy debug info is:\n' + JSON.stringify(this.debug, null, 2))}`
+  
+  performance: any = getPerformance() // performance as any // may not be available in all browsers
 
   constructor() {
     this.reloadPlatforms()
@@ -82,6 +84,16 @@ export class SessionProvider {
         }
       })
     })
+
+    // app performance reporting
+    const performanceInterval = setInterval(() => {
+      // take a snapshot of only the info we need
+      this.performance = getPerformance()
+
+      if ( !this.performance ) {
+        clearInterval(performanceInterval) // performance is not trackable
+      }
+    }, 2000)
   }
 
   addFileToSave(file: WriteFile) {
@@ -188,9 +200,9 @@ export interface PlatformInsights {
   xml: Document
   name: string
   file: DmFileReader
-  games: GameInsight[]
   
-  getGameById: (id: string) => GameInsight | undefined
+  games$: Observable<GameInsight[]>
+  getGameById: (id: string) => Promise<GameInsight | undefined>
   additionalApps$: Observable<AdditionalApp[]>
   controllerSupports$: Observable<ControllerSupport[]>
 }
@@ -204,12 +216,14 @@ export interface GameInsight {
   element: Element
   details: GameDetails
   
-  additionalApps?: AdditionalApp[]
   
   xInput?: XInputGameInsight
-
+  
   // ui controls
   editMapping?: boolean
+  
+  additionalApps?: AdditionalApp[]
+  controllerSupports$: Observable<ControllerSupport[]>
 }
 
 export interface GameDetails {
@@ -232,4 +246,27 @@ export interface AdditionalAppDetails {
   autoRunBefore?: string
   name?: string
   applicationPath?: string
+}
+
+
+function getPerformance() {
+  if ( !performance ) {
+    console.warn('cannot track performance')
+    return
+  }
+
+  const memory = (performance as any).memory
+
+  if ( !memory ) {
+    console.warn('cannot track memory')
+    return
+  }
+  
+  return {
+    memory: {
+      jsHeapSizeLimit: memory.jsHeapSizeLimit,
+      totalJSHeapSize: memory.totalJSHeapSize,
+      usedJSHeapSize: memory.totalJSHeapSize,
+    }
+  }
 }

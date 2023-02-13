@@ -1,9 +1,10 @@
 {
   "name": "mega-aide",
-  "version": "0.0.63",
+  "version": "0.0.64",
   "description": "Things learned and things to remember for my Megacade",
   "scripts": {
     "start": "npm run start:webapp",
+    "start:native": "cd app && npm run start",
     "start:webapp": "cd app && npm run start:webapp",
     "clear:webapp": "cd app && npm run clear:webapp",
     "clear:cache": "npm run clear:webapp",

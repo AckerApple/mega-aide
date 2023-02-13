@@ -7,7 +7,9 @@
 </div>
 
 <div *ngIf="testDir">
-  <div *ngFor="let test of tests" class="flex gap">
+  <div *ngFor="let test of tests" class="flex gap"
+    (click)="runTest(test, testDir)"
+  >
     <span>{{ test.pass === undefined ? '◻️' : (test.pass ? '✅' : '❌') }}</span>&nbsp;<span>{{test.label}}</span>
     <div *ngIf="test.error">
       {{test.error | json}}

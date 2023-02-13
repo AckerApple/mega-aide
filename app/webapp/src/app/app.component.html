@@ -108,9 +108,11 @@
 
   <br /><br />
   
-  <div class="text-center text-white text-xs">
-    <div class="opacity-half">🔗 helpful links</div>
-    <div class="bg-black text-white pad radius-10">
+  <div class="text-center text-white text-xs child-margin-xs">
+    <div class="bg-black pad radius-10">
+      <div>
+        <div class="opacity-half">🔗 helpful links</div>
+      </div>
       <a class="text-white nowrap" target="_blank"
         href="https://github.com/AckerApple/mega-aide/tree/main/app/dist/myapp"
         (click)="openAnchor($event)"
@@ -143,7 +145,16 @@
         (click)="session.openAnchor($event)"
       >🐞 report issue with this app</a>
     </div>
-  </div>
+
+    <!-- memory usage -->
+    <div *ngIf="session.performance as stats"
+      class="flex-wrap gap flex-center pad-xxs"
+    >
+      <div class="pad-xxs bg-calm">
+        🧠 memory used {{stats.memory.usedJSHeapSize / 1000000 | number : '1.2-2'}}mb of {{stats.memory.jsHeapSizeLimit / 1000000 | number : '1.2-2'}}mb - {{(stats.memory.usedJSHeapSize / stats.memory.jsHeapSizeLimit) * 100 | number : '1.0-0'}}%
+      </div>
+    </div>
+</div>
   
   <br />
   <ng-container *ngTemplateOutlet="warnTemplate"></ng-container>

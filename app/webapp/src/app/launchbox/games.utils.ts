@@ -20,6 +20,16 @@ function uuidv4() {
   );
 }
 
+export function addAppToPlatform(
+  app: AdditionalApp,
+  platform: PlatformInsights,
+) {
+  const platformXml = platform.xml
+  // add new app right into the platform file, right now
+  const firstElm = platformXml.getElementsByTagName('LaunchBox')[0]
+  firstElm.appendChild(app.element)
+}
+
 export function newXinputApp(
   game: GameInsight,
   platform: PlatformInsights,
@@ -27,11 +37,8 @@ export function newXinputApp(
 ): AdditionalApp {
   const id = game.details.id
   const xinputApp = getNewXinputApp(id, xarcadePath)
-  const platformXml = platform.xml
-  
-  // add new app right into the platform file, right now
-  const firstElm = platformXml.getElementsByTagName('LaunchBox')[0]
-  firstElm.appendChild(xinputApp.element)
+
+  addAppToPlatform(xinputApp, platform)
 
   game.additionalApps = game.additionalApps || []
   game.additionalApps.push(xinputApp)
@@ -39,18 +46,22 @@ export function newXinputApp(
   return xinputApp
 }
 
-function getNewApp({
-  applicationPath, name, type,
-  commandLine, gameId,
-  autoRunAfter, autoRunBefore,
+export function getNewApp({
+  gameId,
+  applicationPath = '',
+  name = '',
+  type = AdditionalAppType.OTHER,
+  commandLine = '',
+  autoRunAfter = 'false',
+  autoRunBefore = 'false',
 }: {
-  applicationPath: string
-  name: string
   gameId: string
-  commandLine: string
-  autoRunAfter: string
-  autoRunBefore: string
-  type: AdditionalAppType
+  applicationPath?: string
+  name?: string
+  commandLine?: string
+  autoRunAfter?: string // false || true
+  autoRunBefore?: string // false || true
+  type?: AdditionalAppType
 }): AdditionalApp {
   const newApp = createElement('AdditionalApplication')
  
@@ -135,10 +146,8 @@ function addXInputKillToGame(
   platform: PlatformInsights,
   xarcadePath: string
 ): AdditionalApp {
-  const platformXml = platform.xml
-  const firstElm = platformXml.getElementsByTagName('LaunchBox')[0]
   const killXinputApp = newKillXinputApp(game.details.id, xarcadePath)
-  firstElm.appendChild(killXinputApp.element)
+  addAppToPlatform(killXinputApp, platform)
   
   game.additionalApps = game.additionalApps || []
   game.additionalApps.push(killXinputApp)

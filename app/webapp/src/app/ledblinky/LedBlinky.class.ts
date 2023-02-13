@@ -72,7 +72,7 @@ export class LedBlinky {
     shareReplay(1),
   )
 
-  newInputCodesFile$ = this.getFileLoader(LEDBlinkyFiles.NewInputCodes)
+  newInputCodesFile$ = this.getFileTryLoader(LEDBlinkyFiles.NewInputCodes)
   newInputCodes$ = this.newInputCodesFile$.pipe(
     mergeMap(file =>
       from(this.getNewInputCodes(file))
@@ -81,7 +81,7 @@ export class LedBlinky {
   )
 
 
-  animEditorObjectFile$ = this.getFileLoader(LEDBlinkyFiles.LEDBlinkyAnimationEditor)
+  animEditorObjectFile$ = this.getFileTryLoader(LEDBlinkyFiles.LEDBlinkyAnimationEditor)
   animEditorObject$ = this.animEditorObjectFile$.pipe(
     mergeMap(file => this.getAnimEditorObject(file))
   )
@@ -154,16 +154,8 @@ export class LedBlinky {
     return promise
   }
 
-  async loadFileByDir(
-    fileName: LEDBlinkyFiles,
-    dir: DirectoryManager,
-  ) {
-    const file = await dir.findFileByPath(fileName)
-    return { dir, file }
-  }
-
-  controlsFile$ = this.getFileLoader(LEDBlinkyFiles.LEDBlinkyControls)
-  inputsMapFile$ = this.getFileLoader(LEDBlinkyFiles.LEDBlinkyInputMap)
+  controlsFile$ = this.getFileTryLoader(LEDBlinkyFiles.LEDBlinkyControls)
+  inputsMapFile$ = this.getFileTryLoader(LEDBlinkyFiles.LEDBlinkyInputMap)
   inputsMap$: Observable<InputsMap> = this.inputsMapFile$.pipe(
     mergeMap(file => from(this.getInputsMapByDir(file))),
     shareReplay(1)
@@ -183,26 +175,15 @@ export class LedBlinky {
     })
   )
 
-  unknownGamesFile$ = this.getFileLoader(LEDBlinkyFiles.UnknownGames)
+  unknownGamesFile$ = this.getFileTryLoader(LEDBlinkyFiles.UnknownGames)
   unknownGames$: Observable<NewEmulator[] | undefined> = this.unknownGamesFile$.pipe(
     mergeMap(datFile => from(
       this.getUnknownGamesByDat(datFile)
     ))
   )
 
-  getFileLoader(file: LEDBlinkyFiles) {
-    return this.directory$.pipe(
-      mergeMap(dir => from(this.loadFileByDir(file, dir))),
-      switchMap(result => {      
-        if ( !result.file ) {
-          const directory = result.dir
-          this.session.warn(`cannot find file ${directory.path} ${file}`)
-          return EMPTY
-        }
-  
-        return of(result.file)
-      }),
-    )
+  getFileTryLoader(file: LEDBlinkyFiles) {
+    return fileTryLoadingPipes(file, this.directory$)
   }
 
   async getControlsByDir(
@@ -413,4 +394,32 @@ function registerPorts(
   if ( !inputCodes[codeIndex].labels.includes(port.details.label) ) {
     inputCodes[codeIndex].labels.push(port.details.label)
   }
+}
+
+export function fileTryLoadingPipes(
+  file: string,
+  directory$: Observable<DirectoryManager>
+) {
+  return directory$.pipe(
+    mergeMap(dir => from(loadFileByDir(file, dir))),
+    switchMap(result => {      
+      if ( !result.file ) {
+        const directory = result.dir
+        // this.session.warn(`cannot find file ${directory.path} ${file}`)
+        console.warn(`cannot find file ${directory.path} ${file}`)
+        return EMPTY // cancel the pipe
+      }
+  
+      return of(result.file)
+    }),
+  )
+}
+
+
+async function loadFileByDir(
+  fileName: string,
+  dir: DirectoryManager,
+) {
+  const file = await dir.findFileByPath(fileName)
+  return { dir, file }
 }

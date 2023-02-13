@@ -12,16 +12,19 @@
       </div>
       <div>
         <div>Platform filter</div>
-        <select [(ngModel)]="platformName" (ngModelChange)="performSearch(searchText)">
+        <select (change)="performSearch(platformName=searchText)">
           <option value="">CHOOSE A PLATFORM</option>
-          <option *ngFor="let platform of platformNames" [value]="platform"
-            [selected]="platform.toLowerCase() === platformName?.toLowerCase()"
+          <option *ngFor="let platform of (session.launchBox.platformNames$ | async)" [value]="platform"
+            [selected]="platform.toLowerCase()+'.xml' === platformName?.toLowerCase()"
           >{{ platform }}</option>
         </select>           
       </div>
     </div>
     
-    <loading-icon [show]="searching" label="🔦 Searching..."></loading-icon>
+    <div [class.invisible]="!searching" class="flex-wrap flex-apart flex-valign-center">
+      <loading-icon [show]="searching"></loading-icon>
+      <span>Platfroms scanned: {{ platformsRead }}</span>
+    </div>  
     
     <div *ngIf="searchGames.length">
       <div class="overflow max-height-600">
@@ -61,49 +64,65 @@
       {{selected.game.game.details.title}}
     </h2>
     <br />
-    <div *ngIf="selected.gameView === 'xml'">
-      <textarea class="width-full" rows="24" wrap="off">{{ selected.xmlString }}</textarea>
-      <div class="flex-wrap">
-        <button type="button" class="bg-dark flex1"
-          (click)="selected.gameView = undefined"
-        >🅧 CLOSE</button>
+
+    <div class="flex-wrap gap-xs">
+      <button type="button" class="flex1"
+        (click)="selected.view = selected.view === 'additional-apps' ? undefined : 'additional-apps'"
+        [class.bg-energized] = "!selected.view || selected.view === 'additional-apps'"
+      >📱 Additional Apps</button>
+
+      <button type="button" class="flex1"
+        (click)="selected.view = selected.view === 'controller-support' ? undefined : 'controller-support'"
+        [class.bg-energized] = "selected.view === 'controller-support'"
+      >🎮 Controller Support</button>
+
+      <button type="button" class="flex1"
+        (click)="selected.view === 'xml' ? undefined : viewSelectedGameXml(selected)"
+        [class.bg-energized] = "selected.view === 'xml'"
+      >🔬 XML</button>
+    </div>
+
+    <br />
+
+    <div [@childStag50]="selected.view" [@fadeInOutUp]="1">
+      <!-- xml -->
+      <div *ngIf="selected.view === 'xml'" [@fadeInOutUp]="1">
+        <textarea class="width-full" rows="24" wrap="off">{{ selected.xmlString }}</textarea>
+      </div>
+
+      <!-- controller support -->
+      <div *ngIf="selected.view === 'controller-support'" [@fadeInOutUp]="1">
+        <ng-container *ngIf="(selected.game.game.controllerSupports$ | async) as controllerSupports">
+          <h3>{{controllerSupports.length}} Controller Supports</h3>
+          <div class="pad text-warning bg-warning">
+            🚧 Area is a work in progress
+          </div>
+          <div class="flex-center">
+            <table cellPadding="4" cellSpacing="4" border="0" class="table-lines">
+              <thead>
+                <tr>
+                  <td>Controller</td>
+                  <td>Support Level</td>
+                </tr>
+              </thead>
+              <tr *ngFor="let item of controllerSupports">
+                <td>{{ item.details.controllerId }}</td>
+                <td>{{ item.details.supportLevel }}</td>
+              </tr>
+            </table>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- additional apps -->
+      <div *ngIf="!selected.view || selected.view === 'additional-apps'" [@fadeInOutUp]="1">
+        <ng-container *ngTemplateOutlet="additionalAppsTemplate;context:{
+          $implicit: selected.additionalApps$ | async,
+          selected: selected
+        }"></ng-container>
       </div>
     </div>
-    <div *ngIf="!selected.gameView">
-      <h3>{{selected.additionalApps.length}} Additional Apps</h3>
-      
-      <additional-apps-table
-        [apps]="selected.additionalApps"
-        [platform]="selected.game.platform"
-        [game]="selected.game.game"
-        (save) = "saveSelectedGame()"
-      ></additional-apps-table>
-      
-      <div class="flex-wrap margin-v gap-xs">
-        <button *ngIf="!selected.hasXinput" type="button" class="bg-balanced flex1"
-          (click)="addXinputIntoSelected()"
-        >+ADD XINPUT</button>
 
-        <a type="button" routerLink="/🧰/↩" class="bg-calm"
-          [queryParams]="{
-            path:selected.game.platform.file.directory.path,
-            file:selected.game.platform.file.name
-          }"
-        >↩️ FILE BACKUPS</a>
-
-        <button *ngIf="selected.hasXinput" type="button" class="bg-assertive flex1"
-          (click)="removeXinputFromSelected()"
-        >+REMOVE XINPUT</button>
-
-        <button type="button" class="bg-calm flex1"
-          (click)="viewSelectedGameXml()"
-        >VIEW XML</button>
-
-        <button type="button" class="bg-dark flex1"
-          (click)="selected = undefined"
-        >🅧 CLOSE</button>
-      </div>
-    </div>
     <div class="opacity-60 text-xs flex-wrap gap">
       <div>
         platform xml path: {{selected.game.platform.file.directory.path}}/{{selected.game.platform.file.name}}
@@ -112,6 +131,12 @@
         [queryParams]="{search:selected.game.game.details.title}"
       ><u>🚦LED Blinky</u></a>
     </div>
+    
+    <br />
+    
+    <button type="button" class="bg-dark flex1 width-full"
+      (click)="selected = undefined"
+    >🅧 CLOSE</button>
   </div>
   
   
@@ -124,4 +149,37 @@
 
 <ng-template #selectLaunchBox>
   <select-launchbox></select-launchbox>
+</ng-template>
+
+<ng-template #additionalAppsTemplate let-additionalApps let-selected="selected">
+  <h3>{{additionalApps.length}} Additional Apps</h3>
+      
+  <additional-apps-table
+    [apps]="additionalApps"
+    [platform]="selected.game.platform"
+    [game]="selected.game.game"
+    (save) = "saveSelectedGame()"
+  ></additional-apps-table>
+  
+  <div class="flex-wrap margin-v gap-xs">
+    <button type="button" class="bg-balanced flex1"
+      (click)="addAppInto(additionalApps)"
+    >+ADD APP</button>
+
+    <button *ngIf="!selected.hasXinput" type="button" class="bg-balanced flex1"
+      (click)="addXinputInto(additionalApps)"
+    >🎮 +ADD XINPUT</button>
+
+    <a type="button" routerLink="/🧰/↩" class="bg-calm"
+      [queryParams]="{
+        path:selected.game.platform.file.directory.path,
+        file:selected.game.platform.file.name
+      }"
+    >↩️ FILE BACKUPS</a>
+
+    <button *ngIf="(selected.hasXinput$ | async) as hasXinput"
+      type="button" class="bg-assertive flex1"
+      (click)="removeXinputFrom(selected, additionalApps)"
+    >+REMOVE XINPUT</button>
+  </div>
 </ng-template>

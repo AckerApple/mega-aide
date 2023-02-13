@@ -1,6 +1,6 @@
 import { Component } from "@angular/core"
 import { animations } from "ack-angular-fx"
-import { combineLatest, BehaviorSubject, firstValueFrom, map, Observable, debounceTime, distinctUntilChanged, delay } from "rxjs"
+import { combineLatest, BehaviorSubject, firstValueFrom, map, Observable, debounceTime, distinctUntilChanged, delay, shareReplay } from "rxjs"
 import { GameInsight, PlatformInsights, SessionProvider } from "src/app/session.provider"
 import { xmlDocToString } from "src/app/xml.functions"
 import { ControllerSupport } from "../LaunchBox.class"
@@ -10,6 +10,11 @@ import { ControllerSupport } from "../LaunchBox.class"
   templateUrl: './detect-dup-controllers.component.html',
 }) export class DetectDupControllersComponent {
   search$ = new BehaviorSubject('')
+  pagesize = 200
+  
+  // scan status
+  platformsRead = 0
+  platformRead?: PlatformInsights
 
   private platforms: PlatformDups[] = [] // used to stop a search in progress
   platforms$: Observable<PlatformDups[]> = combineLatest([
@@ -19,73 +24,14 @@ import { ControllerSupport } from "../LaunchBox.class"
     debounceTime(300),
     map(([search]) => {
       const platforms: PlatformDups[] = this.platforms = []
+      this.platformsRead = 0
 
       // safe change detection
       setTimeout(() => this.session.load$.next(1), 0)
       
       this.session.launchBox.eachPlatform(async (platform, {stop}) => {
-        const controlSupports = await firstValueFrom(platform.controllerSupports$)
-
-        const platformDups: PlatformDups = {
-          platform, gamesWithDups: []
-        }
-
-        search = search ? search.toLowerCase() : ''
-        
-        for (const control of controlSupports) {
-          if ( platforms !== this.platforms ) {
-            stop()
-            break
-          }
-  
-          const game = platform.getGameById( control.details.gameId )
-
-          if ( !game ) {
-            console.warn('should not get here. A <ControllerSupport> has no matching game')
-            continue
-          }
-
-          if ( search && !game.details.title.toLowerCase().includes(search) ) {
-            continue // not a search match
-          }
-
-          const existingGame = platformDups.gamesWithDups.find(item => item.game === game)
-          if ( existingGame ) {
-            const existingControl = existingGame.controllers.find(
-              existingControl => existingControl.control.details.controllerId === control.details.controllerId
-            )
-            
-            if ( existingControl ) {
-              existingControl.duplicates.push(control)
-              continue
-            }
-
-            existingGame.controllers.push({
-              control, duplicates: [],
-            })
-            continue
-          }
-
-          platformDups.gamesWithDups.push({
-            game,
-            controllers: [{
-              control, 
-              duplicates: [],
-            }],
-          })
-        }
-
-        platformDups.gamesWithDups = platformDups.gamesWithDups.filter(item => {
-          item.controllers = item.controllers.filter(control => 
-            control.duplicates.length
-          )
-
-          return item.controllers.length
-        })
-
-        if ( platformDups.gamesWithDups.length ) {
-          platforms.push( platformDups )
-        }
+        this.platformRead = platform
+        setTimeout(() => this.readPlatform(platform, platforms, search, stop), 0)
       })
       .then(platforms => {
         this.session.load$.next(-1)
@@ -98,6 +44,101 @@ import { ControllerSupport } from "../LaunchBox.class"
   )
 
   constructor( public session: SessionProvider ) {}
+
+  async readPlatform(
+    platform: PlatformInsights,
+    platforms: PlatformDups[],
+    search: string,
+    stop: () => void,
+  ) {
+    const unfilteredSupports = await firstValueFrom(platform.controllerSupports$)
+    const supportStats = unfilteredSupports.reduce((all, support) => {
+      const index = all.findIndex(a =>
+        a.support.details.gameId === support.details.gameId &&
+        a.support.details.controllerId === support.details.controllerId
+      )
+
+      if ( index >= 0 ) {
+        all[index].duplicates.push(support)
+      } else {
+        all.push({
+          support, duplicates: []
+        })
+      }
+
+      return all
+    }, [] as SupportDuplicate[])
+
+    const controlSupports = supportStats.filter(x => x.duplicates.length > 1)
+    ++this.platformsRead
+
+    if ( !controlSupports.length ) {
+      return // no duplicates here
+    }
+
+    const platformDups: PlatformDups = {
+      platform, gamesWithDups: [], page: 1
+    }
+
+    search = search ? search.toLowerCase() : ''
+    for (const setup of controlSupports) {
+      const { support, duplicates } = setup
+      if ( platforms !== this.platforms ) {
+        stop() // we detected a new search
+        break
+      }
+
+      const gameId = support.details.gameId
+      if ( search ) {
+        const game = await platform.getGameById( gameId ) as GameInsight
+
+        if ( !game ) {
+          console.warn('should not get here. A <ControllerSupport> has no matching game')
+          continue
+        }
+
+        if ( search && !game.details.title.toLowerCase().includes(search) ) {
+          continue // not a search match
+        }
+      }
+
+      const game$ = new Observable<GameInsight | undefined>(sub => {
+        platform.getGameById( gameId )
+          .then(game => {
+            if ( !game ) {
+              console.warn('should not get here. A <ControllerSupport> has no matching game')
+              sub.next( undefined )
+              return
+            }
+
+            sub.next( game )
+          })
+      }).pipe(
+        shareReplay(1)
+      )
+
+      platformDups.gamesWithDups.push({
+        gameId: support.details.gameId,
+        game$,
+        controllers: [{
+          control: support, 
+          duplicates,
+        }],
+      })
+    }
+
+    platformDups.gamesWithDups = platformDups.gamesWithDups.filter(item => {
+      item.controllers = item.controllers.filter(control => 
+        control.duplicates.length
+      )
+
+      return item.controllers.length
+    })
+
+    if ( platformDups.gamesWithDups.length ) {
+      platforms.push( platformDups )
+    }
+  }
 
   fixAllPlatforms(platforms: PlatformDups[]) {
     this.session.load$.next(1)
@@ -153,7 +194,8 @@ interface ControllerDup {
 }
 
 interface GameWithDups {
-  game: GameInsight
+  gameId: string
+  game$: Observable<GameInsight | undefined>
   controllers: ControllerDup[]
   
   // ui controls
@@ -166,6 +208,7 @@ interface PlatformDups {
   
   // ui controls
   showGames?: boolean
+  page: number
 }
 
 function fixGame(
@@ -179,7 +222,7 @@ function fixGame(
   }
 }
 
-function fixControl(
+async function fixControl(
   game: GameWithDups,
   control: ControllerDup,
   platform: PlatformDups,
@@ -199,10 +242,17 @@ function fixControl(
     game.controllers.splice(controlIndex, 1)
   }
 
+  // if we've dealt with all duplicates, we can remove it as a listed item
   if ( game.controllers.length === 0 ) {
-    const index = platform.gamesWithDups.findIndex(x => x.game === game.game)
+    const gameId = game.gameId
+    const index = platform.gamesWithDups.findIndex(x => x.gameId === gameId)
     if ( index >= 0 ) {
       platform.gamesWithDups.splice(index, 1)
     }
   }
+}
+
+interface SupportDuplicate {
+  support: ControllerSupport
+  duplicates: ControllerSupport[]
 }

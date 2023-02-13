@@ -1,14 +1,32 @@
 import { DirectoryManager, DmFileReader } from "ack-angular-components/directory-managers/DirectoryManagers"
 import { AdditionalApp, AdditionalAppDetails, AdditionalAppType, GameDetails, GameInsight, PlatformInsights, SessionProvider } from "../session.provider"
-import { BehaviorSubject, bindCallback, EMPTY, from, mergeMap, Observable, of, shareReplay, Subscription, switchMap } from "rxjs"
+import { BehaviorSubject, EMPTY, firstValueFrom, from, mergeMap, Observable, of, shareReplay, Subscription, switchMap } from "rxjs"
 import { getElementsByTagName } from "../ledblinky/LedBlinky.utils"
 import { findElementText, getGameElementId, getGameElementTitle, isPathKillXinput, isPathXinput } from "./detect-issues/detect.utils"
+import { fileTryLoadingPipes } from "../ledblinky/LedBlinky.class"
 
 /* when done with this class you must .destroy() it */
 export class LaunchBox {
   directoryChange = new BehaviorSubject<DirectoryManager | undefined>( undefined )
-  directory$ = this.directoryChange.pipe(
-    switchMap(c => c ? of(c) : EMPTY), // continue if directory defined otherwise cancel pipe
+  directory$: Observable<DirectoryManager> = this.directoryChange.pipe(
+    switchMap(dir => {
+      if ( !dir ) {
+        return EMPTY
+      }
+
+      return new Observable<DirectoryManager>(subscriber => {
+        // look for known directories
+        dir.findDirectory('Data/Platforms')
+          .then(platforms => {
+            if ( !platforms ) {
+              this.session.error('Selected 🧰 LaunchBox folder does not appear to be correct. Could not find confirmation folder Data/Platforms')
+              return
+            }
+      
+            subscriber.next(dir)
+          })
+      })
+    }), // continue if directory defined otherwise cancel pipe
     shareReplay(1), // once we have a defined directory, remember for new subs
   )
 
@@ -28,11 +46,13 @@ export class LaunchBox {
   }
 
   async findOtherDirs(directory: DirectoryManager) {
-    await Promise.all([
+    const [mame, xinput, ledBlinky] = await Promise.all([
       this.tryAddMame(directory),
       this.tryAddXinputByTools(directory),
       this.tryAddLedBlinkyByTools(directory),
     ])
+
+    return { mame, xinput, ledBlinky }
   }
 
   async tryAddXinputByTools(directoryManager: DirectoryManager) {
@@ -47,7 +67,7 @@ export class LaunchBox {
 
     this.session.xarcadeDirectory = xarcadeDir
     // notate that the link was found via LaunchBox for back and forth jumping
-    this.session.launchBox.xarcadeDir = xarcadeDir
+    return this.session.launchBox.xarcadeDir = xarcadeDir
   }
 
   async tryAddLedBlinkyByTools(directoryManager: DirectoryManager) {
@@ -62,7 +82,7 @@ export class LaunchBox {
 
     this.session.ledBlinky.directoryChange.next( dir )
     // notate that the link was found via LaunchBox for back and forth jumping
-    this.session.launchBox.ledBlinkyDir = dir
+    return this.session.launchBox.ledBlinkyDir = dir
   }
 
   async tryAddMame(directoryManager: DirectoryManager) {
@@ -75,27 +95,30 @@ export class LaunchBox {
       return
     }
 
-    this.session.mame.directory = dir
+    return this.session.mame.directory = dir
   }
 
-  async getPlatformNames(): Promise<string[]> {
-    const platformFile = await this.session.launchBox.loadData('Platforms.xml')
+  platformsFile$ = fileTryLoadingPipes(
+    'Data/Platforms.xml',
+    this.directory$,
+  )
 
-    if ( !platformFile ) {
-      return []
-    }
-
-    const platformElms = await platformFile.readXmlElementsByTagName('Platform')
-    const namedElements: Element[] = []
-    platformElms.forEach(x => {
-      namedElements.push( ...getElementsByTagName(x, 'Name') )
+  platformNames$ = this.platformsFile$.pipe(
+    mergeMap(platformFile => {
+      return platformFile.readXmlElementsByTagName('Platform')
+      .then((platformElms) => {
+        const namedElements: Element[] = []
+        platformElms.forEach(x => {
+          namedElements.push( ...getElementsByTagName(x, 'Name') )
+        })
+        
+        return namedElements.map(x => x.textContent as string).sort((a,b)=>String(a||'').toLowerCase()>String(b||'').toLowerCase()?1:-1)
+      })
     })
-    
-    return namedElements.map(x => x.textContent as string).sort((a,b)=>String(a||'').toLowerCase()>String(b||'').toLowerCase()?1:-1)
-  }
+  )
 
   async getPlatformFiles(): Promise<{name: string, file: DmFileReader}[]> {
-    const platformNames = await this.getPlatformNames()
+    const platformNames = await firstValueFrom( this.platformNames$ )
     const results: {name: string, file: DmFileReader}[] = []
     const directory = this.session.launchBox.directoryChange.getValue()
     if ( !directory ) {
@@ -122,29 +145,28 @@ export class LaunchBox {
       on: {stop: () => any}
     ) => EachResult
   ): Promise<EachResult[]> {
-    const platformFile = await this.session.launchBox.loadData('Platforms.xml')
-
-    if ( !platformFile ) {
-      return []
-    }
-
-    const platformElms = await platformFile.readXmlElementsByTagName('Platform')
-    const namedElements: Element[] = []
-    platformElms.forEach(elm => {
-      namedElements.push(...getElementsByTagName(elm,'Name'))
-    })
-
-    let stopped = false
-    const stop = () => {
-      stopped = true
-    }
+    const platformFile = await firstValueFrom(this.platformsFile$)
 
     const directory = this.session.launchBox.directoryChange.getValue()
     if ( !directory ) {
       return []
     }
 
-    const results = []
+    // game name of every platform
+    const platformElms = await platformFile.readXmlElementsByTagName('Platform')
+    const namedElements: Element[] = platformElms.map(elm =>
+      getElementsByTagName(elm,'Name')
+    ).reduce((all, now) => {
+      all.push(...now)
+      return all
+    }, [] as Element[])
+
+    let stopped = false
+    const stop = () => {
+      stopped = true
+    }
+
+    const results: EachResult[] = []
     for (const element of namedElements) {
       if ( stopped ) {
         break
@@ -161,7 +183,7 @@ export class LaunchBox {
       results.push(result)
     }
 
-    return results.filter(x => x) as EachResult[]
+    return results
   }
 
   async getPlatformFileByName(
@@ -190,42 +212,54 @@ export class LaunchBox {
     file: DmFileReader
   ): Promise<PlatformInsights> {
     const xml = await file.readAsXml()
-    const gameElements = getElementsByTagName(xml, 'Game') as Element[]
-    const games = gameElements.map(element => {
-      const gameInsights: GameInsight = {
-        element,
-        details: elementToGameDetails(element),
-      }
-      return gameInsights
-    })
 
-    // TODO: create a page to read duplicates
-    const controllerSupports$ = new Observable(subscriber => {
+    const controllerSupports$ = new Observable<ControllerSupport[]>(subscriber => {
       const control: ControllerSupport[] = getElementsByTagName(xml, 'GameControllerSupport')
         .map(elm => mapControllerSupport(elm)
       )
       subscriber.next(control)
-    }).pipe(
+    })/*.pipe(
       shareReplay(1)
-    ) as unknown as Observable<ControllerSupport[]>
+    ) as unknown as Observable<ControllerSupport[]>*/
 
-    const additionalApps$ = new Observable(subscriber => {
-      const app: AdditionalApp[] = getElementsByTagName(xml, 'AdditionalApplication')
-      .map(elm => mapAdditionalApp(elm)
-      )
-      subscriber.next(app)
-    }).pipe(
+    const games$: Observable<GameInsight[]> = new Observable(subscriber => {  
+      const games: GameInsight[] = getElementsByTagName(xml, 'Game')
+      .map(element => {
+        const details = elementToGameDetails(element)
+        const gameInsights: GameInsight = {
+          element, details,
+          
+          controllerSupports$: new Observable<ControllerSupport[]>(subscriber => {
+            const elms = getElementsByTagName(xml, 'GameControllerSupport')
+            const mapped = elms.map(elm => mapControllerSupport(elm))
+            const supports: ControllerSupport[] = mapped
+              .filter(support => support.details.gameId === details.id)
+            subscriber.next(supports)
+          })
+        }
+        return gameInsights
+      })
+      subscriber.next(games)
+    })/*.pipe(
       shareReplay(1)
-    ) as unknown as Observable<AdditionalApp[]>
+    ) as unknown as Observable<GameInsight[]>*/
+    
+    const additionalApps$ = new Observable<AdditionalApp[]>(subscriber => {
+      const apps: AdditionalApp[] = getElementsByTagName(xml, 'AdditionalApplication')
+        .map(elm => mapAdditionalApp(elm))
+      subscriber.next(apps)
+    })
 
-    const getGameById = (
+    const getGameById = async (
       gameId: string
-    ): (GameInsight | undefined) => {
-      return games.find(game => game.details.id === gameId)
+    ): Promise<GameInsight | undefined> => {
+      return (await firstValueFrom(games$)).find(game => game.details.id === gameId)
     }
 
     return {
-      xml, name, file, games,
+      xml, name, file,
+      
+      games$,
 
       getGameById,
       additionalApps$,
@@ -233,7 +267,9 @@ export class LaunchBox {
     }
   }
 
-  async loadData(fileName: string): Promise<DmFileReader | undefined> {
+  async loadData(
+    fileName: string
+  ): Promise<DmFileReader | undefined> {
     const filePath = 'Data/' + fileName
     const directory = this.directoryChange.getValue()
     

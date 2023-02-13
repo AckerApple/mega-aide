@@ -77,7 +77,13 @@
 </ng-template>
 
 <ng-template #loading>
-  <loading-icon [show$]="session.loading$"></loading-icon>
+  <div class="flex-wrap flex-apart flex-valign-center">
+    <loading-icon [show$]="session.loading$"></loading-icon>
+    <div class="text-xs text-right">
+      <div>Platfroms scanned: {{ platformsRead }}</div>
+      <div>{{ platformRead?.name }}</div>
+    </div>
+  </div>
 </ng-template>
 
 <ng-template #gamesTable let-games let-platform="platform">
@@ -88,12 +94,14 @@
         <th>controller duplicates</th>
       </tr>
     </thead>
-    <ng-container *ngFor="let game of games">
+    <ng-container *ngFor="let game of $any(games | slice: (platform.page-1)*pagesize : platform.page*pagesize); index as i">
       <tr class="hover-bg-calm cursor-pointer"
         (click)="game.show = !game.show"
         [class.bg-energized] = "game.show"
       >
-        <td>{{ game.game.details.title }}</td>
+        <td>
+          {{ $any(game.game$ | async)?.details.title }}
+        </td>
         <td class="text-center">
           <button type="button"
             (click)="fixGame(game, platform)"
@@ -110,6 +118,17 @@
       </tr>
     </ng-container>
   </table>
+  <div *ngIf="games.length > pagesize" class="bg-grey pad flex-wrap gap flex-valign-center">
+    <button *ngIf="platform.page > 0" [@fadeInOutUp]="1"
+      type="button" class="flex1"
+      (click)="platform.page = platform.page - 1"
+    >BACK</button>
+    <div>Page {{ platform.page }}</div>
+    <button *ngIf="platform.page < games.length / pagesize" [@fadeInOutUp]="1"
+      type="button" class="flex1"
+      (click)="platform.page = platform.page + 1"
+    >NEXT</button>
+  </div>
 </ng-template>
 
 <ng-template #controlTable let-controls let-game="game" let-platform="platform">

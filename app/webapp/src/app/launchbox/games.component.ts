@@ -1,14 +1,13 @@
 import { Component } from '@angular/core'
 import { Prompts } from 'ack-angular'
 import { animations } from 'ack-angular-fx'
-import {  firstValueFrom, Subscription } from 'rxjs'
-import { AdditionalApp, AdditionalAppDetails, AdditionalAppType, GameInsight, PlatformInsights, SessionProvider } from '../session.provider'
+import { firstValueFrom, map, Observable, Subscription } from 'rxjs'
+import { AdditionalApp, AdditionalAppType, GameInsight, PlatformInsights, SessionProvider } from '../session.provider'
 import { xmlDocToString } from '../xml.functions'
 import { ActivatedRoute, Router } from '@angular/router'
 import { routeMap as ledBlinkRouteMap } from '../ledblinky.routing.module'
 import { getElementsByTagName } from '../ledblinky/LedBlinky.utils'
-import { xArcade } from '../app.routing.module'
-import { addXInputToGame } from './games.utils'
+import { addAppToPlatform, addXInputToGame, getNewApp } from './games.utils'
 
 interface GamePlatform {
   game: GameInsight
@@ -17,11 +16,11 @@ interface GamePlatform {
 
 interface SelectedGame {
   game: GamePlatform
-  additionalApps: AdditionalApp[]
-  hasXinput: boolean
+  additionalApps$: Observable<AdditionalApp[]>
+  hasXinput$: Observable<boolean>
   
   xmlString?: string
-  gameView?: any // what to view about a game (xml, form)
+  view?: any // what to view about a game (xml, form)
 }
 
 @Component({
@@ -39,8 +38,7 @@ export class GamesComponent {
   maxGames = 200
   selected?: SelectedGame
   subs = new Subscription()
-
-  platformNames: string[] = []
+  platformsRead = 0
   
   ledBlinkRouteMap = ledBlinkRouteMap
 
@@ -92,8 +90,6 @@ export class GamesComponent {
     if ( !directory ) {
       return
     }
-
-    this.loadPlatforms()
     
     const searchRoms = await this.attemptSearchRom()
     if ( searchRoms?.length ) {
@@ -121,19 +117,10 @@ export class GamesComponent {
     return this.trySearchGames(searchRom, {romNameMode: true})
   }
 
-  async loadPlatforms() {
-    this.platformNames = await this.session.launchBox.getPlatformNames()
-    return this.platformNames
-  }
-
-  viewSelectedGameXml() {
-    if ( !this.selected ) {
-      return
-    }
-
-    this.selected.gameView = 'xml'
-    const doc = this.selected.game.game.element
-    this.selected.xmlString = xmlDocToString(doc)
+  viewSelectedGameXml(selected: SelectedGame) {
+    selected.view = 'xml'
+    const doc = selected.game.game.element
+    selected.xmlString = xmlDocToString(doc)
   }
 
   async trySearchGames(
@@ -198,18 +185,19 @@ export class GamesComponent {
     text: string,
     { myDelay, romNameMode }: { myDelay: any, romNameMode?: boolean }
   ): Promise<GamePlatform[]> {
+    const launchBox = this.session.launchBox
     this.lastSearch = text
-    ++this.searching
     this.searchGames.length = 0
 
     const search = text.toLowerCase().replace(/_/g, ' ')
-    const isNameMatch = (name: string) => name.toLowerCase().replace(/_/g, ' ').includes(search)
-    let filter = (game: GameInsight, _platform: PlatformInsights) => isNameMatch(game.details.title)
+    const searchSplit = search.split(' ')
+
+    let filter = platformFilter
     
     if ( romNameMode ) {
       filter = (
         game: GameInsight,
-        platform: PlatformInsights
+        _platform: PlatformInsights
       ) => {
         const appPathSplit = game.details.applicationPath.split(/(\/|\\)/)
 
@@ -217,7 +205,7 @@ export class GamesComponent {
         const platformName = this.platformName
         if ( platformName ) {
           const pathHasPlatformName = appPathSplit.find(x => x.toLowerCase() === platformName.toLowerCase())
-          if ( !pathHasPlatformName && !isNameMatch(game.details.title)  ) {
+          if ( !pathHasPlatformName && !isNameMatch(game.details.title, searchSplit)  ) {
             return false // 99% sure its not this platform
           }
         }
@@ -235,24 +223,49 @@ export class GamesComponent {
       }
     }
     
-    await this.session.launchBox.eachPlatform((platform, {stop}) => {
+    ++this.searching
+    this.platformsRead = 0
+
+    // only one platform?
+    if ( this.platformName ) {
+      const dir = await firstValueFrom(launchBox.directory$)
+      const platform = await launchBox.getPlatformFileByFileName(dir, this.platformName)
+      if ( platform ) {
+        await this.scanPlatform(platform, filter, searchSplit)
+        --this.searching
+        return this.searchGames
+      }
+    }
+    
+    await this.session.launchBox.eachPlatform(async (platform, {stop}) => {
       if ( this.searchGames.length > this.maxGames || myDelay !== this.searchDelay ) {
+        // this.session.warn('search stopped')
         stop() // this search is over
       }
 
+      this.scanPlatform(platform, filter, searchSplit)
       // if we are not in rom mode we can limit platforms
-      const platformNameMatched = !romNameMode && this.platformName && platform.name != this.platformName
+      const platformNameMatched = !romNameMode
       if ( platformNameMatched ) {
         return; // skip
       }
-
-      const matchGames = platform.games.filter(x => filter(x, platform)).map(game => ({ game, platform }))
-      this.searchGames.push(...matchGames)
     })
     
     --this.searching
 
     return this.searchGames
+  }
+
+  async scanPlatform(
+    platform: PlatformInsights,
+    filter: (game: GameInsight, platform: PlatformInsights, searchSplit: string[]) => boolean,
+    searchSplit: string[]
+  ) {
+    ++this.platformsRead
+
+    const games = await firstValueFrom(platform.games$)
+    const matchGames = games.filter(x => filter(x, platform, searchSplit)).map(game => ({ game, platform }))
+    this.searchGames.push(...matchGames)
   }
 
   sortSearchPlatform() {
@@ -263,18 +276,24 @@ export class GamesComponent {
     this.searchGames.sort(({game: gameA}, {game: gameB})=>String(gameA.details.title||'').toLowerCase()>String(gameB.details.title||'').toLowerCase()?1:-1)
   }
 
-  async showGame(game: GamePlatform) {
-    const apps = await firstValueFrom(game.platform.additionalApps$)
-    const additionalApps = this.session.launchBox.filterAdditionalAppsByGame(
-      apps,
-      game.game.details,
+  async showGame(
+    game: GamePlatform
+  ) {
+    const additionalApps$ = game.platform.additionalApps$.pipe(
+      map(apps =>
+        this.session.launchBox.filterAdditionalAppsByGame(
+          apps,
+          game.game.details,
+        )
+      )
     )
-      // .map(app => this.session.launchBox.mapAdditionalApp(app))
 
     this.selected = {
       game,
-      hasXinput: additionalApps.find(app => app.details.type === AdditionalAppType.XINPUT) ? true : false,
-      additionalApps
+      additionalApps$,
+      hasXinput$: additionalApps$.pipe(
+        map(apps => apps.find(app => app.details.type === AdditionalAppType.XINPUT) ? true : false),
+      )
     }
 
     // just update url params
@@ -302,13 +321,39 @@ export class GamesComponent {
     }    
   }
 
-  addXinputIntoSelected() {
+  addAppInto(
+    additionalApps: AdditionalApp[]
+  ) {
+    const selected = this.selected as SelectedGame
+    if ( !selected ) {
+      return
+    }
+
+    const gameId = selected.game.game.details.id
+    const app = getNewApp({ gameId })
+    const platform = selected.game.platform
+    addAppToPlatform(app, platform)
+    
+    additionalApps.push( app )
+    
+    this.saveSelectedGame()
+    this.addGameToSave(selected.game)
+  }
+
+  async addXinputInto(
+    additionalApps: AdditionalApp[]
+  ) {
     const selected = this.selected as SelectedGame
     if ( !selected ) {
       return
     }
     
-    const xarcadePath = this.session.launchBox.xarcadeDir?.path as string
+    const launchBox = this.session.launchBox
+    
+    // cause xarcadeDir to be loaded
+    const directories = await firstValueFrom(launchBox.directories$)
+    
+    const xarcadePath = directories.xinput?.path as string
     if ( !xarcadePath ) {
       this.session.error('Cannot determine xarcade path')
     }  
@@ -319,22 +364,21 @@ export class GamesComponent {
       xarcadePath,
     )
     
-    selected.additionalApps.push( ...apps )
-    selected.hasXinput = true
+    additionalApps.push( ...apps )
     this.saveSelectedGame()
-
-    
     this.addGameToSave(selected.game)
   }
 
-  removeXinputFromSelected() {
-    const selected = this.selected
+  removeXinputFrom(
+    selected: SelectedGame | undefined,
+    additionalApps: AdditionalApp[]
+  ) {
     if ( !selected ) {
       return
     }
     
-    this.session.launchBox.removeXinputFromApps(selected.additionalApps)
-    selected.hasXinput = false
+    this.session.launchBox.removeXinputFromApps(additionalApps)
+    // selected.hasXinput = false
     this.addGameToSave(selected.game)
   }
 
@@ -344,4 +388,21 @@ export class GamesComponent {
       string: xmlDocToString(x.platform.xml)
     }))
   }
+}
+
+function isNameMatch(
+  name: string,
+  searchSplit: string[],
+) {
+  const compare = name.toLowerCase().replace(/_/g, ' ')
+  return searchSplit.every(search => compare.includes(search))
+}
+
+
+function platformFilter(
+  game: GameInsight,
+  _platform: PlatformInsights,
+  searchSplit: string[],
+) {
+  return isNameMatch(game.details.title, searchSplit)
 }

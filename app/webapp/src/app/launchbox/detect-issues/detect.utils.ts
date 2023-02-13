@@ -78,9 +78,10 @@ export async function readPlatformMap(
   platformMap.xArcadeApps.mapped.length = 0
   platformMap.xArcadeApps.unmapped.length = 0
   
-  additionalApps.forEach(app => {    
+  additionalApps.forEach(async app => {    
+    const games = await firstValueFrom(platformMap.games$)
     const gameMatches = launchBox.filterGamesByAppElement(
-      platformMap.games,
+      games,
       app.element
     )
 
