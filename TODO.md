@@ -1,8 +1,7 @@
 TODO: 
 
-FIX:
-- Download app has a directory stack issue
-  - occurred when saving an XInput mapping in LaunchBox Additional Apps
+Detect File size issues
+- Display all platform files in order by size and callout any that are over 400mb
 
 - small printable format out of various button mappings for systems
   - intended to be printed and visible on arcade button panel

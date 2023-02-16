@@ -2,12 +2,15 @@
 
 <!--XArcade XInput mappings-->
 <div class="flex-right gap">
-  <a type="button" [routerLink]="'/' + routes.detectDupControllers.path"
-  >⚔️ Scan Controller Duplicates</a>
+  <a type="button" class="flex1" [routerLink]="'/' + routes.scanFileSizes.path"
+  >💾 Scan file sizes</a>
 
-  <a type="button" [routerLink]="'/' + routes.detectXinputIssues.path"
-  >🗺 Scan XInput Apps</a>
+  <a type="button" class="flex1" [routerLink]="'/' + routes.detectDupControllers.path"
+  >⚔️ Scan controller duplicates</a>
+
+  <a type="button" class="flex1" [routerLink]="'/' + routes.detectXinputIssues.path"
+  >🗺 Scan xinput apps</a>
   
-  <a type="button" routerLink="/🧰/detect-issues/scan-backups"
-  >↩️ Scan Backups</a>
+  <a type="button" class="flex1" routerLink="/🧰/detect-issues/scan-backups"
+  >↩️ Scan backups</a>
 </div>

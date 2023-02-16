@@ -1,0 +1,56 @@
+<div *ngIf="(session.launchBox.directory$ | async) as directory; else selectLaunchBox" [@fadeInOutUp]="1"
+  class="flex-stacked flex-center"
+>
+  <div>Select a platform below to reveal more insights...</div>
+  <table cellPadding="4" cellSpacing="4" border="0" class="table-lines bg-dark">
+    <thead>
+      <tr class="bg-grey">
+        <th>platform name</th>
+        <th>size</th>
+      </tr>
+    </thead>
+    <ng-container *ngIf="(files$ | async) as files">
+      <ng-container *ngFor="let file of files">
+        <tr class="hover-bg-energized"
+          [ngClass] = "file.stats.size > 634303590 ? 'bg-assertive' : file.stats.size > 211434530 ? 'bg-orange text-black' : ''"
+          (click)="file.viewDetails = !file.viewDetails;scanPlatform(file)"
+          [class.bg-energized]="file.viewDetails"
+        >
+          <td>{{ file.name }}</td>
+          <td>{{ ((file.stats.size || 0) / 1000 / 1000) | number : '1.0-2' }} MB</td>
+        </tr>
+        <tr *ngIf="file.viewDetails" [@fadeInOutUp]="1">
+          <td colspan="2" class="bg-grey">
+            <div *ngIf="!file.xmlStats" class="pos-rel" [@fadeInOutUp]="1">
+              <div class="top-0 pos-abs animate__animated animate__heartBeat animate__infinite">Loading...</div>
+            </div>
+            <!-- greater than 600mb -->
+            <div *ngIf="file.stats.size > 634303590" class="bg-assertive pad">This file is extraordinarily large</div>
+            <!-- greater than 200mb -->
+            <div *ngIf="file.stats.size <= 634303590 && file.stats.size > 211434530" class="bg-orange pad">This file is getting fairly large</div>
+            <br />
+            <div *ngIf="file.xmlStats" [@fadeInOutUp]="1">
+              <div class="flex-wrap gap-xs">
+                <div class="flex1 flex-stacked flex-center gap-xxs bg-dark" *ngFor="let item of file.xmlStats | keyvalue">
+                  <div class="text-xs">{{ item.key }}</div>
+                  <div class="text-xs"><strong>{{ item.value }}</strong></div>
+                </div>
+              </div>
+              <div *ngIf="file.xmlStats.gameControllerSupports > file.xmlStats.games"
+                class="bg-assertive"
+              >
+                <strong>Issue detected</strong>
+                <div>You have more controller supports than games, in this platform. This is a sign of an issue</div>
+                <div>🚧 Coming soon: This app will help supply you with a fix</div>
+              </div>
+            </div>
+          </td>
+        </tr>
+      </ng-container>
+    </ng-container>
+  </table>
+</div>
+
+<ng-template #selectLaunchBox>
+  <select-launchbox></select-launchbox>
+</ng-template>

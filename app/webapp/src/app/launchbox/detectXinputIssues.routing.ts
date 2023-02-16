@@ -1,7 +1,8 @@
-import { Route } from "@angular/router";
-import { DetectDupControllersComponent } from "./detect-issues/detect-dup-controllers.component";
-import { DetectXInputPlatformComponent } from "./detect-issues/detect-xinput-platform.component";
+import { Route } from '@angular/router'
+import { DetectDupControllersComponent } from './detect-issues/detect-dup-controllers.component'
+import { DetectXInputPlatformComponent } from './detect-issues/detect-xinput-platform.component'
 import { DetectXinputComponent } from './detect-issues/detect-xinput.component'
+import { ScanFilesComponent } from './detect-issues/scan-files.component'
 
 export const detectXinputIssues: Route = {
   path: '🧰/detect-issues/🎮',
@@ -21,6 +22,17 @@ export const detectDupControllers: Route = {
   data: {
     emoji: '⚔️',
     description: 'Robot detection of multiple same controller mappings',
+    wrapClass: 'bg-black radius-25 pad-2x'
+  }
+}
+
+export const scanFileSizes: Route = {
+  path: '🧰/detect-issues/💾',
+  title: 'Scan Launchbox files',
+  component: ScanFilesComponent,
+  data: {
+    emoji: '💾',
+    description: 'Find issues related to file sizes or item counts within those files',
     wrapClass: 'bg-black radius-25 pad-2x'
   }
 }

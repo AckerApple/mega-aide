@@ -1,6 +1,6 @@
 {
   "name": "mega-aide",
-  "version": "0.0.66",
+  "version": "0.0.67",
   "description": "Things learned and things to remember for my Megacade",
   "scripts": {
     "start": "npm run start:webapp",
@@ -10,8 +10,9 @@
     "clear:cache": "npm run clear:webapp",
     "save": "npm run patch:versions && git add . && git commit -m \"update\" && git push",
     "build": "npm run build:app && npm run clear:gh-pages && npm run build:gh-pages",
+    "done": "echo \"✅ done building main\"",
     "build:app": "cd app && npm run build",
-    "clear:gh-pages": "cd ../gh-pages && rm runtime.* && rm polyfills.* && rm styles.* && rm main.*",
+    "clear:gh-pages": "cd ../gh-pages && rm runtime.* || true && rm polyfills.* || true && rm styles.* || true && rm main.* || true",
     "build:gh-pages": "cp -R ./app/webapp/dist/webapp/. ../gh-pages && npm run gh-pages:adjust && npm run dist:404",
     "dist:404": "cp ../gh-pages/index.html ../gh-pages/404.html",
     "deploy": "npm run build && npm run save && npm run deploy:gh-pages",

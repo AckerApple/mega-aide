@@ -57,6 +57,7 @@ import { XinputGamesTableComponent } from './launchbox/xinput-games-table.compon
 import { DetectXinputComponent } from './launchbox/detect-issues/detect-xinput.component'
 import { DetectXInputPlatformComponent } from './launchbox/detect-issues/detect-xinput-platform.component'
 import { DetectDupControllersComponent } from './launchbox/detect-issues/detect-dup-controllers.component'
+import { ScanFilesComponent } from './launchbox/detect-issues/scan-files.component'
 
 export const declarations = [
   AppComponent,
@@ -89,6 +90,7 @@ export const declarations = [
   AdditionalAppsTableComponent,
   XinputGamesTableComponent,
   LaunchBoxComponent,
+  ScanFilesComponent,
   LaunchBoxBackupsComponent,
   ScanBackupsComponent,
   SelectLaunchBoxComponent,

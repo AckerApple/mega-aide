@@ -3,7 +3,7 @@ import { GamesComponent } from './games.component'
 import { ThemeSettingsComponent } from './ThemeSettings.component'
 import { backups, backups2 } from './routing.backups'
 import { detectIssues, detectIssues2, scanBackups } from './detectIssues.routing'
-import { detectDupControllers, detectXinputIssues, detectXinputPlatform } from './detectXinputIssues.routing'
+import { scanFileSizes, detectDupControllers, detectXinputIssues, detectXinputPlatform } from './detectXinputIssues.routing'
 import { LaunchBoxComponent } from './launchbox.component'
 
 export const launchBox: Route = {
@@ -58,7 +58,7 @@ export const routeMap = {
   launchBox, launchBox2,
   themeSettings, themeSettings2,
   
-  detectIssues, detectIssues2, detectXinputPlatform,
+  scanFileSizes, detectIssues, detectIssues2, detectXinputPlatform,
   detectXinputIssues, scanBackups, detectDupControllers,
 
   games, games2,

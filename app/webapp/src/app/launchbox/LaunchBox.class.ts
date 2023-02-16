@@ -1,6 +1,6 @@
 import { DirectoryManager, DmFileReader } from "ack-angular-components/directory-managers/DirectoryManagers"
 import { AdditionalApp, AdditionalAppDetails, AdditionalAppType, GameDetails, GameInsight, PlatformInsights, SessionProvider } from "../session.provider"
-import { BehaviorSubject, EMPTY, firstValueFrom, from, mergeMap, Observable, of, shareReplay, Subscription, switchMap } from "rxjs"
+import { BehaviorSubject, combineLatest, EMPTY, firstValueFrom, from, map, mergeMap, Observable, of, shareReplay, Subject, Subscription, switchMap } from "rxjs"
 import { getElementsByTagName } from "../ledblinky/LedBlinky.utils"
 import { findElementText, getGameElementId, getGameElementTitle, isPathKillXinput, isPathXinput } from "./detect-issues/detect.utils"
 import { fileTryLoadingPipes } from "../ledblinky/LedBlinky.class"
@@ -44,6 +44,25 @@ export class LaunchBox {
     shareReplay(1), // once we have a defined directory, remember for new subs
   )
   subs = new Subscription()
+
+  platformsFile$ = fileTryLoadingPipes(
+    'Data/Platforms.xml',
+    this.directory$,
+  )
+
+  platformNames$ = this.platformsFile$.pipe(
+    mergeMap(platformFile => {
+      return platformFile.readXmlElementsByTagName('Platform')
+      .then((platformElms) => {
+        const namedElements: Element[] = []
+        platformElms.forEach(x => {
+          namedElements.push( ...getElementsByTagName(x, 'Name') )
+        })
+        
+        return namedElements.map(x => x.textContent as string).sort((a,b)=>String(a||'').toLowerCase()>String(b||'').toLowerCase()?1:-1)
+      })
+    })
+  )
 
   constructor(public session: SessionProvider) {
   }
@@ -103,45 +122,33 @@ export class LaunchBox {
     return this.session.mame.directory = dir
   }
 
-  platformsFile$ = fileTryLoadingPipes(
-    'Data/Platforms.xml',
+  platformFiles$ = combineLatest([
+    this.platformNames$,
     this.directory$,
-  )
+  ]).pipe(
+    map(([platformNames, directory]) => {
+      const results: {name: string, file: DmFileReader}[] = []
+      const result$ = new Subject<{name: string, file: DmFileReader}>()
+  
+      for (let index=0; index < platformNames.length; ++index) {
+        const name = platformNames[index]
+        directory.findFileByPath(`Data/Platforms/${name}.xml`).then(file => {
+          if ( !file ) {
+            return
+          }
+          const result = {name, file}
+          results.push(result)
+          result$.next(result)
 
-  platformNames$ = this.platformsFile$.pipe(
-    mergeMap(platformFile => {
-      return platformFile.readXmlElementsByTagName('Platform')
-      .then((platformElms) => {
-        const namedElements: Element[] = []
-        platformElms.forEach(x => {
-          namedElements.push( ...getElementsByTagName(x, 'Name') )
+          if ( index === platformNames.length-1 ) {
+            result$.complete()
+          }
         })
-        
-        return namedElements.map(x => x.textContent as string).sort((a,b)=>String(a||'').toLowerCase()>String(b||'').toLowerCase()?1:-1)
-      })
-    })
-  )
-
-  async getPlatformFiles(): Promise<{name: string, file: DmFileReader}[]> {
-    const platformNames = await firstValueFrom( this.platformNames$ )
-    const results: {name: string, file: DmFileReader}[] = []
-    const directory = this.session.launchBox.directoryChange.getValue()
-    if ( !directory ) {
-      return results
-    }
-
-    for (const name of platformNames) {
-      const file = await directory.findFileByPath(`Data/Platforms/${name}.xml`) as DmFileReader
-
-      if ( !file ) {
-        continue
       }
       
-      results.push({name, file})
-    }
-    
-    return results
-  }
+      return { results, result$ }
+    })
+  )
 
   /** loops all platform.xml files creates a filtered map of valid return results  */
   async eachPlatform<EachResult>(

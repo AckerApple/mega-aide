@@ -21,7 +21,7 @@ export class BackupsComponent {
   @Input() fileName?: string
   
   loading: number = 0
-  columns: (DmFileReader | DirectoryManager)[][] = []
+  columns: (DmFileReader | DirectoryManager | FileStats)[][] = []
   backupsFound: string[] = []
   sourceFile?: DmFileReader
   backupFiles: BackupFile[] = []
@@ -90,7 +90,7 @@ export class BackupsComponent {
   }
 
   async loadItem(
-    item: DmFileReader | DirectoryManager,
+    item: DmFileReader | DirectoryManager | FileStats,
     parent: DirectoryManager
   ) {
     const dirLike = (item as DirectoryManager)
@@ -120,9 +120,16 @@ export class BackupsComponent {
     const columnItems = folders.map(folder => {
       (folder as any).kind = 'DIRECTORY'
       return folder
-    }) as (DirectoryManager | DmFileReader)[]
+    }) as (DirectoryManager | DmFileReader | FileStats)[]
     this.columns.push(columnItems) // folderNames.map(name => ({name, kind: 'DIRECTORY'}))
+    this.loadFilesWithBackups(dir, folderNames, columnItems)
+  }
 
+  async loadFilesWithBackups(
+    dir: DirectoryManager,
+    folderNames: string[],
+    columnItems: (DirectoryManager | DmFileReader | FileStats)[],
+  ) {
     const buFolderNames = this.session.config.backupFolderNames
     this.backupsFound.push( ...buFolderNames.filter(x => folderNames.includes(x)) )
 
@@ -132,7 +139,8 @@ export class BackupsComponent {
         for (const backupFolderName of this.backupsFound) {
           const matchFound = await findBackupInDirByName(dir, backupFolderName, file.name)
           if ( matchFound ) {
-            columnItems.push(file)
+            const stats = await file.stats()
+            columnItems.push(stats)
             break // don't check any other backups folders
           }
         }
@@ -205,8 +213,9 @@ async function getBackupsInDirByName(
 
   const backupFiles = await backupDir.listFiles()
   const buFileNames = filterNameInBackupFiles(fileName, backupFiles)
-  const fileLoads = buFileNames.map(fileName => backupDir.file(fileName))
-  return Promise.all(fileLoads)
+  const promises = buFileNames.map(fileName => backupDir.file(fileName))
+  const fileLoads = Promise.all(promises)
+  return fileLoads
 }
 
 async function findBackupInDirByName(

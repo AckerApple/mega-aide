@@ -85,7 +85,7 @@
     (click)="item.kind === 'DIRECTORY' && parent = item;itemClick.emit(item)"
   >
     <ng-container *ngIf="item[schema.name]">
-      {{ ((item[schema.name || 'size'] || 0) / 1000 / 1000) | number }} MB
+      {{ ((item[schema.name || 'size'] || 0) / 1000 / 1000) | number : '1.0-2' }} MB
     </ng-container>
   </a>
 </ng-template>
