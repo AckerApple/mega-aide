@@ -1,5 +1,6 @@
 import { Component } from '@angular/core'
 import { animations } from 'ack-angular-fx'
+import { firstValueFrom } from 'rxjs'
 import { SessionProvider, WriteFile } from '../session.provider'
 import { LightsConfig } from './LedBlinky.utils'
 
@@ -29,24 +30,28 @@ export class LayoutsComponent {
     }
   }
 
-  save() {
-    const saves: WriteFile[] = this.unsavedLayouts.map(x => {
-      const string = getLightsConfigSaveString(x)
+  async save() {
+    const promises = this.unsavedLayouts.map(async x => {
+      const string = await getLightsConfigSaveString(x)
       return { file: x.file, string }
     })
+
+    const saves: WriteFile[] = await Promise.all(promises)
 
     this.session.toSaveFiles.push( ...saves )
   }
 }
 
-function getLightsConfigSaveString(config: LightsConfig) {
-  const lights = config.lights.map(light => {
-    const x = Math.ceil(light.details.x)
-    const y = Math.ceil(light.details.y)
-    const dia = Math.ceil(light.details.diameter)
-    return `${light.details.name}=${x},${y},${light.details.colorDec},${dia}`
-  }
-  ).join('\n')
+async function getLightsConfigSaveString(config: LightsConfig) {
+  const promises = config.lights.map(async light => {
+    const details = await firstValueFrom( light.details$ )
+    const x = Math.ceil(details.x)
+    const y = Math.ceil(details.y)
+    const dia = Math.ceil(details.diameter)
+    return `${details.name}=${x},${y},${details.colorDec},${dia}`
+  })
+  
+  const lights = (await Promise.all(promises)).join('\n')
 
   const write = '[Settings]\n' + 
   objectToIniFileLines(config.settings) + '\n' +

@@ -1,6 +1,7 @@
 import { Component } from "@angular/core"
+import { ActivatedRoute, Router } from "@angular/router"
 import { animations } from "ack-angular-fx"
-import { combineLatest, BehaviorSubject, firstValueFrom, map, Observable, debounceTime, distinctUntilChanged, delay, shareReplay } from "rxjs"
+import { combineLatest, BehaviorSubject, firstValueFrom, map, Observable, debounceTime, distinctUntilChanged, delay, shareReplay, Subject, ReplaySubject } from "rxjs"
 import { GameInsight, PlatformInsights, SessionProvider } from "src/app/session.provider"
 import { xmlDocToString } from "src/app/xml.functions"
 import { ControllerSupport } from "../LaunchBox.class"
@@ -9,7 +10,9 @@ import { ControllerSupport } from "../LaunchBox.class"
   animations,
   templateUrl: './detect-dup-controllers.component.html',
 }) export class DetectDupControllersComponent {
-  search$ = new BehaviorSubject('')
+  search$ = new BehaviorSubject( this.activatedRoute.snapshot.queryParams['search'] )
+  platformName$ = new BehaviorSubject( this.activatedRoute.snapshot.queryParams['platformName'] )
+  reload$ = new ReplaySubject<number>()
   pagesize = 200
   
   // scan status
@@ -18,11 +21,14 @@ import { ControllerSupport } from "../LaunchBox.class"
 
   private platforms: PlatformDups[] = [] // used to stop a search in progress
   platforms$: Observable<PlatformDups[]> = combineLatest([
-    this.search$,
+    // this.search$,
+    // this.platformName$,
+    this.reload$,
     this.session.launchBox.directory$,
   ]).pipe(
-    debounceTime(300),
-    map(([search]) => {
+    // debounceTime(300),
+    map(() => {
+      const [search, platformName] = [this.search$.getValue(), this.platformName$.getValue()]
       const platforms: PlatformDups[] = this.platforms = []
       this.platformsRead = 0
 
@@ -32,18 +38,31 @@ import { ControllerSupport } from "../LaunchBox.class"
       this.session.launchBox.eachPlatform(async (platform, {stop}) => {
         this.platformRead = platform
         setTimeout(() => this.readPlatform(platform, platforms, search, stop), 0)
-      })
+        // this.readPlatform(platform, platforms, search, stop)
+      }, { platformName })
       .then(platforms => {
         this.session.load$.next(-1)
         return platforms
       })
-      
-      
+
+      // update page query params
+      this.router.navigate([], {
+        relativeTo: this.activatedRoute,
+        queryParams: {
+          search, platformName
+        }, 
+        queryParamsHandling: 'merge', // remove to replace all query params by provided
+      })
+        
       return platforms
     })
   )
 
-  constructor( public session: SessionProvider ) {}
+  constructor(
+    public session: SessionProvider,
+    public activatedRoute: ActivatedRoute,
+    public router: Router,
+  ) {}
 
   async readPlatform(
     platform: PlatformInsights,
@@ -81,6 +100,7 @@ import { ControllerSupport } from "../LaunchBox.class"
     }
 
     search = search ? search.toLowerCase() : ''
+    const searchSplit = search.split(' ')
     for (const setup of controlSupports) {
       const { support, duplicates } = setup
       if ( platforms !== this.platforms ) {
@@ -97,7 +117,8 @@ import { ControllerSupport } from "../LaunchBox.class"
           continue
         }
 
-        if ( search && !game.details.title.toLowerCase().includes(search) ) {
+        const lowerTitle = game.details.title.toLowerCase()
+        if ( !searchSplit.every(search => lowerTitle.includes(search)) ) {
           continue // not a search match
         }
       }

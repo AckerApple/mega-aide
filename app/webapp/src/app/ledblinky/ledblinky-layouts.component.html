@@ -39,12 +39,18 @@
       <div>add button</div>
       <select (change)="addLight(lights, $any($event.target).value)">
         <option>-- CHOOSE A BUTTON --</option>
-        <option *ngFor="let missing of missingLights$ | async"
-          [value]="missing.details.name"
-        >{{ missing.details.name}}</option>
+        <ng-container *ngFor="let missing of (missingLights$ | async)">
+          <ng-container *ngTemplateOutlet="missingOption;context:{
+            $implicit: missing.details$ | async
+          }"></ng-container>
+        </ng-container>
       </select>
     </div>
   </div>
+</ng-template>
+
+<ng-template #missingOption let-details>
+  <option [value]="details.name">{{ details.name}}</option>
 </ng-template>
 
 <ng-template #lightStage let-zoomVar="zoom">
@@ -63,35 +69,51 @@
     [drag-selector]="selectedLights"
   >
     <!-- show single light details -->
-    <div *ngIf="(showLightDetails$ | async) as lightDetails" class="flex-center">
+    <div *ngIf="(showLightDetails$ | async) as light" class="flex-center">
       <div class="pos-abs width-full height-full flex-center flex-valign-center bg-dark opacity-half"
         (click)="showLightDetails$.next()"
         style="z-index:2"
       ></div>
       <div class="pos-abs pad" style="z-index:3">
-        <ng-container *ngTemplateOutlet="singleLightDetails;context:{$implicit:lightDetails, zoom: zoomVar}"></ng-container>
+        <ng-container *ngTemplateOutlet="singleLightDetails;context:{
+          $implicit: light,
+          details: $any(light).details$ | async,
+          zoom: zoomVar
+        }"></ng-container>
       </div>
     </div>
 
     <!-- light loop -->
-    <div *ngFor="let light of lights$ | async"
-      class="pos-abs flex-stacked flex-center cursor-pointer"
-      [style.left.px] = "(light.details.x - bounds.horizontal.min) * zoomVar"
-      [style.top.px] = "(light.details.y - bounds.vertical.min) * zoomVar"
-      (dragstart)="setLightDrag($event, light)"
-      (drag)="updateLightDrag($event, light)"
-      [draggable]="edit"
-      (click)="showLightDetails$.next(light)"
-
-      #dragSelectorTarget="dragSelectorTarget"
-      [drag-selector-target]="light"
-    >
-      <ng-container *ngTemplateOutlet="lightTemplate;context:{$implicit:light, zoom:zoomVar, dragSelectorTarget:dragSelectorTarget}"></ng-container>
-    </div>
+    <ng-container *ngFor="let light of lights$ | async">
+      <ng-container *ngIf="(light.details$ | async) as details">
+        <div 
+          class="pos-abs flex-stacked flex-center cursor-pointer"
+          [style.left.px] = "(details.x - bounds.horizontal.min) * zoomVar"
+          [style.top.px] = "(details.y - bounds.vertical.min) * zoomVar"
+          (dragstart)="setLightDrag($event, light)"
+          (drag)="updateLightDrag($event, light)"
+          [draggable]="edit"
+          (click)="showLightDetails$.next(light)"
+      
+          #dragSelectorTarget="dragSelectorTarget"
+          [drag-selector-target]="light"
+        >
+          <ng-container *ngTemplateOutlet="lightTemplate;context:{
+            $implicit: light,
+            details: details,
+            zoom:zoomVar,
+            dragSelectorTarget:dragSelectorTarget
+          }"></ng-container>
+        </div>    
+        </ng-container>
+    </ng-container>
   </div>
 </ng-template>
 
-<ng-template #singleLightDetails let-lightDetails let-zoom="zoom">
+<ng-template #singleLightDetails let-light
+  let-details="details"
+  let-zoom="zoom"
+>
   <div>
     <div class="text-black pad pos-rel border-4"
       style="background-color:rgba(255,255,255,.9);border-color:rgba(255,255,255,.8);"
@@ -101,12 +123,14 @@
       >🅧</a>
       
       <div class="flex-center flex-stacked">
-        <ng-container *ngTemplateOutlet="lightTemplate;context:{$implicit:lightDetails, zoom: zoom}"></ng-container>
+        <ng-container *ngTemplateOutlet="lightTemplate;context:{
+          $implicit: light,
+          details: light.details$ | async,
+          zoom: zoom
+        }"></ng-container>
       </div>
-      <!--
-        <h3 class="margin-bottom">{{ lightDetails.name }}</h3>
-      -->
-      <select [(ngModel)]="lightDetails.details.name">
+
+      <select [(ngModel)]="details.name">
         <option>-- CHOOSE A BUTTON --</option>
         <option *ngFor="let label of (session.ledBlinky.inputsMap$ | async)?.labels"
           [value]="label.label"
@@ -117,8 +141,8 @@
         <div class="flex1">
           <div>x</div>
           <input type="range" class="width-full"
-            [(ngModel)]="lightDetails.details.x"
-            min="0" [max]="(session.ledBlinky.displaySize?.width || 1024) - (lightDetails.details.diameter || 0)"
+            [(ngModel)]="details.x"
+            min="0" [max]="(session.ledBlinky.displaySize?.width || 1024) - (details.diameter || 0)"
             step="1"
           />
         </div>
@@ -126,8 +150,8 @@
         <div class="flex1">
           <div>y</div>
           <input type="range" class="width-full"
-            [(ngModel)]="lightDetails.details.y"
-            min="0" [max]="(session.ledBlinky.displaySize?.height || 768) -  (lightDetails.details.diameter || 0)"
+            [(ngModel)]="details.y"
+            min="0" [max]="(session.ledBlinky.displaySize?.height || 768) -  (details.diameter || 0)"
             step="1"
           />
         </div>
@@ -135,28 +159,40 @@
         <div class="flex1">
           <div>diameter</div>
           <input type="range" class="width-full"
-            [(ngModel)]="lightDetails.details.diameter" min="3" [max]="150"
+            [(ngModel)]="details.diameter" min="3" [max]="150"
           />
         </div>
         
         <div class="flex1">
           <div>colorDec</div>
-          <input type="number" class="width-full"
-            [(ngModel)]="lightDetails.details.colorDec"
-          />
+          <div class="flex-wrap">
+            <input type="color"
+              [ngModel]="light.cssColor$ | async"
+              (ngModelChange)="updateLightColor(light, details, $event)"
+            />
+            <div class="flex1">
+              <input type="number" class="width-full"
+                [(ngModel)]="details.colorDec"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </ng-template>
 
-<ng-template #lightTemplate let-light let-zoom="zoom" let-dragSelectorTarget="dragSelectorTarget">
+<ng-template #lightTemplate let-light
+  let-details="details"
+  let-zoom="zoom"
+  let-dragSelectorTarget="dragSelectorTarget"
+>
   <div class="radius-half"
-    [style.width.px] = "light.details.diameter * zoom"
-    [style.height.px] = "light.details.diameter * zoom"
-    [style.background-color] = "light.cssColor"
+    [style.width.px] = "details.diameter * zoom"
+    [style.height.px] = "details.diameter * zoom"
+    [style.background-color] = "light.cssColor$ | async"
     [ngClass] = "dragSelectorTarget?.selected ? 'border-2 border-white' : ''"
   ></div>
   <div [style.font-size.px]="($any(lightConfig?.settings?.LEDLabelFontSize | number) || 12) * zoom"
-  >{{light.details.name}}</div>
+  >{{details.name}}</div>
 </ng-template>

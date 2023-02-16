@@ -69,12 +69,12 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
     this.lights$,
     this.session.ledBlinky.inputsMap$
   ]).pipe(
-    map(([lights, inputsMap]) => {
+    mergeMap(([lights, inputsMap]) => {
       if ( !lights || !inputsMap ) {
-        return
+        return of( undefined )
       }
       const missing = getMissingLights(lights, inputsMap)
-      return missing
+      return from(missing)
     })
   )
 
@@ -134,7 +134,7 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
     return lights
   }
 
-  applyBounds(lights: Light[]) {
+  async applyBounds(lights: Light[]) {
     if ( this.edit ) {
       return this.bounds = {
         horizontal: {
@@ -146,8 +146,9 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
       }
     }
     
-    this.bounds = lights.reduce((all, now) => {
-      const details = now.details
+    const lightDetails = await Promise.all(lights.map(light => firstValueFrom(light.details$)))
+    
+    this.bounds = lightDetails.reduce((all, details) => {
       const pad = 15
       if ( details.x < all.horizontal.min || all.horizontal.min === 0 ) {
         all.horizontal.min = details.x - pad
@@ -207,9 +208,10 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
       this.selectedLights.push(light)
     }
 
-    this.selectedLights.forEach(light => {
-      light.startDragX = light.details.x
-      light.startDragY = light.details.y
+    this.selectedLights.forEach(async light => {
+      const details = await firstValueFrom(light.details$)
+      light.startDragX = details.x
+      light.startDragY = details.y
     })
   }
 
@@ -229,9 +231,10 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
     // lastLightDrag.light.details.x = offsetX
     // lastLightDrag.light.details.y = offsetY
 
-    this.selectedLights.forEach(light => {
-      light.details.x = (light as any).startDragX + xDiff / zoom
-      light.details.y = (light as any).startDragY + yDiff / zoom
+    this.selectedLights.forEach(async light => {
+      const details = await firstValueFrom(light.details$)
+      details.x = (light as any).startDragX + xDiff / zoom
+      details.y = (light as any).startDragY + yDiff / zoom
     })
   }
 
@@ -273,27 +276,42 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
     this.changed.emit(this.lightConfig)
   }
 
-  addLight(lights: Light[], lightName?: string) {
+  addLight(
+    lights: Light[],
+    lightName?: string
+  ) {
     if ( !lightName ) {
       return
     }
+
+    const details$ = of({
+      name: lightName,
+      x: 0,
+      y: 0,
+      colorDec: 0,
+      diameter: 20,
+    }).pipe( shareReplay(1) )
     
     lights.push({
-      colorHex: '',
-      cssColor: '#fff',
-      details: {
-        name: lightName,
-        x: 0,
-        y: 0,
-        colorDec: 0,
-        diameter: 20,
-      }
+      cssColor$: new BehaviorSubject('#ffffff'),
+      // colorHex: '',
+      details$
     })
   }
 
   stopDrag($event: MouseEvent) {
     $event.preventDefault()
     $event.stopPropagation()
+  }
+
+  updateLightColor(
+    light: Light,
+    details: LightDetails,
+    cssColor: string,
+  ) {
+    light.cssColor$.next(cssColor)
+    const noHashColor = cssColor.replace('#','')
+    details.colorDec = parseInt(noHashColor, 16)
   }
 }
 
@@ -306,13 +324,16 @@ function remapPlayerControlsToLight(
     return light
   }
 
-  light.cssColor = '' // first remove layout color
+  light.cssColor$ = new BehaviorSubject('') // first remove layout color
   
   players.forEach(player => {
     const controls = player.controls
-    controls.forEach(control => {
-      if ( control.layoutLabel === light.details.name ) {
-        light.cssColor = control.cssColor // change the color by passed in controller
+    controls.forEach(async control => {
+      const layoutLabel = await firstValueFrom(control.layoutLabel$)
+      const details = await firstValueFrom(light.details$)
+      if ( layoutLabel === details.name ) {
+        const color = await firstValueFrom(control.cssColor$)
+        light.cssColor$.next(color) // change the color by passed in controller
       }
     })
   })
@@ -320,25 +341,42 @@ function remapPlayerControlsToLight(
   return light
 }
 
-function getMissingLights(
+async function getMissingLights(
   lights: Light[],
   inputsMap: InputsMap
-): Light[] {
+): Promise<Light[]> {
   // return lights.filter(light => !inputsMap.labels.find(name => name.label === light.name))
+  const promises = lights.map(light => firstValueFrom(light.details$))
+  
+  const details = await Promise.all(promises)
+  
   const missing = inputsMap.labels.filter(
-    label => !lights.find(light => light.details.name === label.label)
+    label => !details.find(light => light.name === label.label)
   )
-  return missing.map(miss => ({
-    colorHex: '',
-    cssColor: '',
-    details: {
+
+  return missing.map(miss => {
+    const details$ = of({
       name: miss.label,
       x: 0,
       y: 0,
       colorDec: 0,
       diameter: 10,
+    })
+
+    const cssColor$ = new BehaviorSubject('')
+
+    /*const colorHex$ = details$.pipe(
+      map(details => '')
+    )*/
+  
+    const light: Light = {
+      details$,
+      // colorHex$,
+      cssColor$,
     }
-  }))
+
+    return light
+  })
 }
 
 interface LightDrag {

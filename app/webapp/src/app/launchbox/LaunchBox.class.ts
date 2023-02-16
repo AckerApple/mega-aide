@@ -22,7 +22,10 @@ export class LaunchBox {
               this.session.error('Selected 🧰 LaunchBox folder does not appear to be correct. Could not find confirmation folder Data/Platforms')
               return
             }
-      
+
+            // load ledblinky and more
+            this.findOtherDirs(dir)
+
             subscriber.next(dir)
           })
       })
@@ -65,6 +68,7 @@ export class LaunchBox {
       return
     }
 
+    // this.session.info('Found XArcade XInput from LaunchBox')
     this.session.xarcadeDirectory = xarcadeDir
     // notate that the link was found via LaunchBox for back and forth jumping
     return this.session.launchBox.xarcadeDir = xarcadeDir
@@ -74,12 +78,13 @@ export class LaunchBox {
     // attempt to set xarcade path by launch box tools path
     const path = 'tools/LEDBlinky'
     const dir = await directoryManager.findDirectory( path )  
-
+    
     if ( !dir ) {
       this.session.warn(`Cannot find ${path} folder`)
       return
     }
 
+    // this.session.info('Found LEDBlinky from LaunchBox')
     this.session.ledBlinky.directoryChange.next( dir )
     // notate that the link was found via LaunchBox for back and forth jumping
     return this.session.launchBox.ledBlinkyDir = dir
@@ -143,23 +148,20 @@ export class LaunchBox {
     each: (
       platformFile: PlatformInsights,
       on: {stop: () => any}
-    ) => EachResult
+    ) => EachResult,
+    { platformName }: { platformName?: string } = {}
   ): Promise<EachResult[]> {
-    const platformFile = await firstValueFrom(this.platformsFile$)
+    let platformNames = await firstValueFrom(this.platformNames$)
 
     const directory = this.session.launchBox.directoryChange.getValue()
     if ( !directory ) {
       return []
     }
 
-    // game name of every platform
-    const platformElms = await platformFile.readXmlElementsByTagName('Platform')
-    const namedElements: Element[] = platformElms.map(elm =>
-      getElementsByTagName(elm,'Name')
-    ).reduce((all, now) => {
-      all.push(...now)
-      return all
-    }, [] as Element[])
+    if ( platformName ) {
+      platformName = platformName.toLowerCase()
+      platformNames = platformNames.filter(name => name.toLowerCase() === platformName)
+    }
 
     let stopped = false
     const stop = () => {
@@ -167,14 +169,12 @@ export class LaunchBox {
     }
 
     const results: EachResult[] = []
-    for (const element of namedElements) {
+    for (const name of platformNames) {
       if ( stopped ) {
         break
       }
 
-      const name = element.textContent as string
       const platformFile = await this.getPlatformFileByName(directory, name)
-
       if ( !platformFile ) {
         continue
       }

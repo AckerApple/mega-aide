@@ -20,12 +20,19 @@
 
   <ng-container *ngIf="(romControl$ | async) as romControl">
     <ng-container *ngIf="(emulator$ | async) as emulator">
-      <ng-container *ngTemplateOutlet="romTemplate;context:{romControl:romControl, emulator:emulator}"></ng-container>
+      <ng-container *ngTemplateOutlet="romTemplate;context:{
+        $implicit: romControl,
+        emulator: emulator
+      }"></ng-container>
     </ng-container>
   </ng-container>
 </ng-template>
 
-<ng-template #romTemplate let-romControl="romControl" let-emulator="emulator">
+<ng-template #romTemplate
+  let-romControl
+  let-emulator="emulator"
+  let-details="details"
+>
   <h4>{{ emulator.details.emuname }}</h4>
   <h2>{{ romControl.details.voice || romControl.details.groupName }}</h2>
   <div class="flex-wrap gap-xs">
@@ -37,8 +44,10 @@
       </button>
     </div>
   </div>
+
   <div class="flex-wrap gap flex1">
     <div class="flex-wrap gap flex1" [@childStag]="romControl.players">
+      <!-- player loop -->
       <ng-container *ngFor="let player of romControl.players; let playerIndex = index">
         <div *ngIf="player.show" class="flex2 bg-dark flex-stacked"
           [@fadeInOutUp]="1"
@@ -81,94 +90,13 @@
                 </tr>
 
                 <tr *ngFor="let control of player.controls; let controlIndex = index">
-                  <td>
-                    <button type="button" class="text-xxs pad-xxs"
-                      [ngClass] = "control.edit ? 'bg-energized' : control.edited ? 'bg-orange' : 'bg-calm'"
-                      (click)="control.edit = !control.edit"
-                    >{{ control.edited ? 'edited' : 'edit' }}</button>
-                  </td>
-                  <td>
-                    <div *ngIf="!control.edit">
-                      {{ control.details.name }}
-                    </div>
-                    <div *ngIf="control.edit">
-                      <!--todo need on changes-->
-                      <select [(ngModel)]="control.details.name"
-                        (ngModelChange)="control.edited = true"
-                      >
-                        <ng-container *ngIf="(session.ledBlinky.controls$ | async) as controls">
-                          <ng-container *ngIf="controls.availMap && controls.availMap[ playerIndex ]">
-                            <option *ngFor="let code of controls.availMap[ playerIndex ]"
-                              [value]="code.name"
-                            >{{code.name}}</option>
-                          </ng-container>
-                        </ng-container>
-                      </select>                         
-                    </div>
-                  </td>
-                  <td>
-                    <!--todo need on changes-->
-                    <div *ngIf="!control.edit" [(contentModel)]="control.details.voice"
-                      (contentModelChange)="control.edited=true"
-                    ></div>
-                    <div *ngIf="control.edit">
-                      <input type="text" class="width-full min-width-200" maxLength="125"
-                        placeholder="🔊 voice"
-                        [(ngModel)]="control.details.voice"
-                        (ngModelChange)="control.edited = true"
-                      />
-                    </div>
-                  </td>
-                  <td class="text-shadow-grey-blur"
-                    [style.background-color]="control.cssColor"
-                  >
-                    <a *ngIf="!control.edit" (click)="control.edit = true">
-                      {{ control.details.color }}
-                    </a>
-                    <div *ngIf="control.edit">
-                      <!--todo need on changes-->
-                      <input type="color" [(ngModel)]="control.details.color"
-                        (ngModelChange)="control.edited = true;"
-                        (change)="control.cssColor=$any($event.target).value"
-                      />
-                      <select [(ngModel)]="control.details.color"
-                        (ngModelChange)="control.edited = true;"
-                        (change)="control.cssColor=$any($event.target).value"
-                      >
-                        <option *ngFor="let color of session.ledBlinky.colors | keyvalue"
-                          [value]="color.key"
-                        >{{color.key}}</option>
-                      </select>                         
-                    </div>
-                  </td>
-                  <td>
-                    <div *ngIf="!control.edit">
-                      {{ control.inputCodes.join('\n') }}
-                    </div>
-                    <div *ngIf="control.edit">
-                      <!--todo need on changes-->
-                      <div *ngFor="let controlCode of control.inputCodes; let codeIndex = index">
-                        <select (change)="control.edited = true">
-                          <option></option>
-                          <option *ngFor="let inputCode of (inputsMap$ | async)?.inputCodes"
-                            [value]="inputCode.inputCode"
-                            [selected]="controlCode === inputCode.inputCode"
-                          >{{inputCode.inputCode}}</option>
-                          <optgroup label="New Input Codes">
-                            <option *ngFor="let inputCode of session.ledBlinky.newInputCodes$ | async | keyvalue"
-                              [value]="inputCode.key"
-                              [selected]="controlCode === inputCode.key"
-                            >{{inputCode.key}}</option>
-                          </optgroup>
-                        </select>                         
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <button *ngIf="control.edit" type="button" class="text-xs pad-xs bg-assertive"
-                      (click)="player.controls.splice(controlIndex, 1)"
-                    >🗑 delete</button>
-                  </td>
+                  <ng-container *ngTemplateOutlet="playerControlRow;context:{
+                    $implicit: control,
+                    player: player,
+                    playerIndex: playerIndex,
+                    details: control.details$ | async,
+                    controlIndex: controlIndex
+                  }"></ng-container>
                 </tr>
               </tbody>
             </table>
@@ -270,4 +198,101 @@
   <ng-template #playerLabel>
     Player {{ details.number }} 🕹 Controls
   </ng-template>
+</ng-template>
+
+
+<ng-template #playerControlRow let-control
+  let-player="player"
+  let-playerIndex="playerIndex"
+  let-details="details"
+  let-controlIndex="controlIndex"
+>
+  <td>
+    <button type="button" class="text-xxs pad-xxs"
+      [ngClass] = "control.edit ? 'bg-energized' : control.edited ? 'bg-orange' : 'bg-calm'"
+      (click)="control.edit = !control.edit"
+    >{{ control.edited ? 'edited' : 'edit' }}</button>
+  </td>
+  <td>
+    <div *ngIf="!control.edit">
+      {{ details.name }}
+    </div>
+    <div *ngIf="control.edit">
+      <!--todo need on changes-->
+      <select [(ngModel)]="details.name"
+        (ngModelChange)="control.edited = true"
+      >
+        <ng-container *ngIf="(session.ledBlinky.controls$ | async) as controls">
+          <ng-container *ngIf="controls.availMap && controls.availMap[ playerIndex ]">
+            <option *ngFor="let code of controls.availMap[ playerIndex ]"
+              [value]="code.name"
+            >{{code.name}}</option>
+          </ng-container>
+        </ng-container>
+      </select>                         
+    </div>
+  </td>
+  <td>
+    <!--todo need on changes-->
+    <div *ngIf="!control.edit" [(contentModel)]="details.voice"
+      (contentModelChange)="control.edited=true"
+    ></div>
+    <div *ngIf="control.edit">
+      <input type="text" class="width-full min-width-200" maxLength="125"
+        placeholder="🔊 voice"
+        [(ngModel)]="details.voice"
+        (ngModelChange)="control.edited = true"
+      />
+    </div>
+  </td>
+  <td class="text-shadow-grey-blur"
+    [style.background-color]="control.cssColor$ | async"
+  >
+    <a *ngIf="!control.edit" (click)="control.edit = true">
+      {{ details.color }}
+    </a>
+    <div *ngIf="control.edit">
+      <!--todo need on changes-->
+      <input type="color" [ngModel]="control.cssColor$ | async"
+        (ngModelChange)="control.edited = true;"
+        (change)="control.updateToCssColor$.next($any($event.target).value)"
+      />
+      <select [(ngModel)]="details.color"
+        (ngModelChange)="control.edited = true;"
+        (change)="control.cssColor=$any($event.target).value"
+      >
+        <option *ngFor="let color of session.ledBlinky.colors | keyvalue"
+          [value]="color.key"
+        >{{color.key}}</option>
+      </select>                         
+    </div>
+  </td>
+  <td>
+    <div *ngIf="!control.edit">
+      {{ $any(control.inputCodes$ | async)?.join('\n') }}
+    </div>
+    <div *ngIf="control.edit">
+      <!--todo need on changes-->
+      <div *ngFor="let controlCode of control.inputCodes; let codeIndex = index">
+        <select (change)="control.edited = true">
+          <option></option>
+          <option *ngFor="let inputCode of (inputsMap$ | async)?.inputCodes"
+            [value]="inputCode.inputCode"
+            [selected]="controlCode === inputCode.inputCode"
+          >{{inputCode.inputCode}}</option>
+          <optgroup label="New Input Codes">
+            <option *ngFor="let inputCode of session.ledBlinky.newInputCodes$ | async | keyvalue"
+              [value]="inputCode.key"
+              [selected]="controlCode === inputCode.key"
+            >{{inputCode.key}}</option>
+          </optgroup>
+        </select>                         
+      </div>
+    </div>
+  </td>
+  <td>
+    <button *ngIf="control.edit" type="button" class="text-xs pad-xs bg-assertive"
+      (click)="player.controls.splice(controlIndex, 1)"
+    >🗑 delete</button>
+  </td>
 </ng-template>

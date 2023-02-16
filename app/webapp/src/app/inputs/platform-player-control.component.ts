@@ -197,7 +197,10 @@ import { LastButtonsProvider } from './LastButtons.provider'
     this.platformMap.players[playerIndex].push(newControl)
   }
 
-  setControlColorByPlayerIndex(event: Event, playerIndex: number) {
+  setControlColorByPlayerIndex(
+    event: Event,
+    playerIndex: number
+  ) {
     const value = (event.target as any).value
     const playerMap = this.playersMap[playerIndex]
     const control: Control = playerMap.lastDrag?.control as any

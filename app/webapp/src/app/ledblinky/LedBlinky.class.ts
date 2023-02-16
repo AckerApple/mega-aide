@@ -289,7 +289,7 @@ export interface AvailControlsMap {
   }[]
 }
 
-function getAvailControlsMap(
+async function getAvailControlsMap(
   inputsMap: InputsMap,
   controlDefaults: ControlDefault,
 ) {
@@ -298,24 +298,28 @@ function getAvailControlsMap(
       [name: string]: string[]
     }
   } = {}
-  
-  controlDefaults.controls.forEach(x => {
-    const name = x.details.name
-    if ( !x.inputCodes || name.charAt(0) === '_' ) {
+
+  const promises = controlDefaults.controls.map(async x => {
+    const details = await firstValueFrom(x.details$)
+    const name = details.name
+    const inputCodes = await firstValueFrom(x.inputCodes$)
+    
+    if ( !inputCodes || name.charAt(0) === '_' ) {
       return
     }
 
-    const playerIndex = x.details.allowConfigPlayerNum
-
+    const playerIndex = details.allowConfigPlayerNum
     if ( !playerIndex ) {
       return
     }
 
     const uniquePlayer = uniqueNames[playerIndex] = uniqueNames[playerIndex] || {}
     const keyCodes = uniquePlayer[name] = uniquePlayer[name] || []
-    const newCodes = x.inputCodes.filter((x: string) => !keyCodes.includes(x))
+    const newCodes = inputCodes.filter((x: string) => !keyCodes.includes(x))
     keyCodes.push( ...newCodes )
   })
+
+  await Promise.all(promises)
 
   const all: AvailControlsMap = {}
 

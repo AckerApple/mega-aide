@@ -1,12 +1,12 @@
 import { Component } from "@angular/core";
-import { ActivatedRoute, Router } from "@angular/router";
+import { ActivatedRoute } from "@angular/router";
 import { animations } from "ack-angular-fx";
-import { from, lastValueFrom, map, merge, mergeMap, Observable, shareReplay, Subscription } from "rxjs";
+import { firstValueFrom, from, map, mergeMap, Observable, of, shareReplay, Subscription } from "rxjs";
 import { routeMap as launchBoxRouteMap } from "../launchbox/launchbox.routing.module"
-import { rom, routeMap } from "../ledblinky.routing.module";
+import { routeMap } from "../ledblinky.routing.module";
 import { SessionProvider } from "../session.provider";
 import { findEmulatorByName } from "./ledblinky-controls.component"
-import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, LedBlinkyControls, NewControlGroup, NewEmulator, NewPlayer, Player, PlayerControl, PlayerControlDetails, PlayerDetails } from "./LedBlinky.utils";
+import { ControlGroup, Emulator, getControlByElement, LedBlinkyControls, NewControlGroup, NewEmulator, NewPlayer, Player, PlayerControl, PlayerControlDetails, PlayerDetails } from "./LedBlinky.utils";
 
 @Component({
   animations,
@@ -91,7 +91,6 @@ import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, LedBlinkyControls
     controls: LedBlinkyControls | undefined,
     unknownGames?: NewEmulator[]
   ): Promise<(NewEmulator | Emulator)[] | undefined> {
-    const ledBlinky = this.session.ledBlinky
     const unknownMode = this.activatedRoute.snapshot.queryParams['unknownMode']
     this.unknownMode = unknownMode ? JSON.parse(unknownMode) : false
     // always load known emulators, may need to match with an unknown
@@ -152,23 +151,18 @@ import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, LedBlinkyControls
     romElement.appendChild(element)
   }
 
-  addPlayerControl(player: Player | NewPlayer) {
-    const details: PlayerControlDetails = {
-      name: '',
-      voice: '',
-      color: '',
-      primaryControl: '',
-      inputCodes: '',
-    }
+  async addPlayerControl(player: Player | NewPlayer) {    
     const element = document.createElement('control')
-    setElmAttributes(element, details)
-    
-    const control: PlayerControl = {
-      details,
-      element,
-      cssColor: '',
-      inputCodes: []
-    }
+    const colors = await firstValueFrom(this.session.ledBlinky.colors$)
+    const control = getControlByElement(element, colors,
+      {
+        name: '',
+        voice: '',
+        color: '',
+        primaryControl: '',
+        inputCodes: '',
+      }
+    )
     
     player.controls.push(control)
     // add to parent element
@@ -176,10 +170,14 @@ import { ControlGroup, Emulator, IniNameValuePairs, InputsMap, LedBlinkyControls
   }
 }
 
-function setElmAttributes(element: Element, data: Record<string, string | undefined | null>) {
+function setElmAttributes(
+  element: Element,
+  data: Record<string, string | undefined | null>
+): Record<string, string | undefined | null> {
   Object.entries(data).forEach(([name, value]) => {
     element.setAttribute(name, value as string)
   })
+  return data
 }
 
 function paramRomElm(

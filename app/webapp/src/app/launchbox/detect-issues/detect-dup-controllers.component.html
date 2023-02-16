@@ -5,19 +5,31 @@
 >
   <div class="flex-wrap">
     <div class="flex1">
-      <div class="flex-valign-center">
+      <form class="flex-valign-center" (submit)="reload$.next( 1 )">
         <div class="pos-rel">
           <div class="pos-abs bottom-0 line-height-0 pad-left-xs">🔍</div>
         </div>
-        <input type="text" class="pad-left-3x width-full"
+        
+        <input type="text" class="pad-left-3x width-full" name="search$"
           [ngModel]="search$ | async" (ngModelChange)="search$.next($event)"
           maxLength="125" placeholder="Game Search"
         />
-      </div>
+
+        <select name="platformName$" [ngModel]="platformName$ | async" (ngModelChange)="platformName$.next($event)">
+          <option value="">Platform filter</option>
+          <option *ngFor="let name of (session.launchBox.platformNames$ | async)"
+            [value]="name"
+          >{{ name }}</option>
+        </select>
+
+        <button type="submit">scan</button>
+      </form>
     </div>
   </div>
 
-  <ng-container *ngTemplateOutlet="platformTable;context:{$implicit: platforms$ | async}"></ng-container>
+  <div *ngIf="reload$ | async" [@fadeInOutUp]="1">
+    <ng-container *ngTemplateOutlet="platformTable;context:{$implicit: platforms$ | async}"></ng-container>
+  </div>
 </div>
 
 <ng-template #platformTable let-platforms>

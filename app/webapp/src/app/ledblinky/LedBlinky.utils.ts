@@ -1,4 +1,6 @@
 import { DmFileReader } from "ack-angular-components/directory-managers/DirectoryManagers"
+import { BehaviorSubject, combineLatest, firstValueFrom, from, map, mergeMap, Observable, of, shareReplay, Subject } from "rxjs"
+import { hexToRgb } from "../inputs/platform.component"
 import { AvailControlsMap } from "./LedBlinky.class"
 
 /** 
@@ -14,20 +16,23 @@ export async function getLightConfigByLayoutFile(
 
   const lights = Object.entries(layout).reduce((all, now) => {
     const details = now[1].replace(/(^,|,$)/g,'').split(',')
-    const decodedColor = intToHex(Number(details[2]))
-    const lightDetails: LightDetails = {
+    const colorDec = Number(details[2])
+    const details$ = of({
       name: now[0],
       x: Number(details[0]),
       y: Number(details[1]),
-      colorDec: Number(details[2]),
+      colorDec,
       diameter: Number(details[3]),
-    }
+    }).pipe( shareReplay(1) )
+
     const result: Light = {
-      colorHex: decodedColor,
-      cssColor: decodedColor,
-      details: lightDetails,
+      // colorHex: decodedColor,
+      cssColor$: new BehaviorSubject( intToHex(colorDec) ),
+      details$,
     }
+    
     all.push(result)
+    
     return all
   }, [] as Light[])
 
@@ -80,10 +85,12 @@ export interface LightDetails {
 }
 
 export interface Light {
-  details: LightDetails
+  details$: Observable<LightDetails>
+  
   // computed
-  colorHex: string
-  cssColor: string
+  cssColor$: BehaviorSubject<string>
+  // colorHex$: Observable<string>
+
   startDragX?: number
   startDragY?: number
 }
@@ -161,16 +168,19 @@ export interface PlayerControlDetails {
 }*/
 
 export interface PlayerControl {
-  details: PlayerControlDetails
   element: Element
+  
+  details$: Observable<PlayerControlDetails>
+  inputCodes$: Observable<string[]>
   
   edit?: boolean
   edited?: boolean
 
   // computed data points
-  layoutLabel?: string // runtime conversion of player.controls[n].inputCodes into LEDBlinkyInputMap.xml ledControllers[x].ports[x].label
-  inputCodes: string[]
-  cssColor: string
+  layoutLabel$: Observable<string | undefined> // runtime conversion of player.controls[n].inputCodes into LEDBlinkyInputMap.xml ledControllers[x].ports[x].label
+  cssColor$: Observable<string>
+
+  updateToCssColor$: BehaviorSubject<string>
 }
 
 export interface NewControlGroup {
@@ -315,15 +325,28 @@ function ledColorNameToCss(
   return name
 }
 
-function ledNumberedColorToCss(colorNums: string) {
-  const colorRange = 12 // LEDBlinky has a 48 scale, lets half to make things little brighter
+function ledNumberedColorToCss(
+  colorNums: string,
+  curve = .6
+) {
   const colorPos = colorNums.split(',').map(x => Number(x)) as [number, number, number]
+  /* const colorPos = [48, 48, 48]  
+  const colorRange = 12 // LEDBlinky has a 48 scale, lets divide it to make things little brighter
   const percents = [
-    Math.ceil((colorPos[0]/colorRange) * 100),
-    Math.ceil((colorPos[1]/colorRange) * 100),
-    Math.ceil((colorPos[2]/colorRange) * 100),
+    Math.ceil((colorPos[0] / colorRange) * 100),
+    Math.ceil((colorPos[1] / colorRange) * 100),
+    Math.ceil((colorPos[2] / colorRange) * 100),
   ]
   const end =  `rgba(${percents[0]}%, ${percents[1]}%, ${percents[2]}%, 1)`
+  */
+
+  const end = '#' + colorPos.map(num => {
+    const percent = num/48
+    const add = curve * (num /48)
+    const endPercent = percent + add
+    const endNum = endPercent * 255
+    return Math.floor(endNum > 255 ? 255 : endNum).toString(16)
+  }).map(x => x.length === 1 ? '0'+x : x).join('')
   return end
 }
 
@@ -343,7 +366,9 @@ function mapEmulatorElement(
   const mapped: ControlGroup[] = controlGroups.map(controlGroup => {
     const playerElements: Element[] = getElementsByTagName(controlGroup, 'player')
     const romDetails = elmAttributesToObject(controlGroup) as ControlGroupDetails
-    const players = playerElements.map(element => mapPlayerElement(element, {inputsMap, controlDefault, colorRgbConfig}))
+    const players = playerElements.map(element =>
+      mapPlayerElement(element, {inputsMap, controlDefault, colorRgbConfig})
+    )
 
     // sort by player number
     players.sort((a,b)=>String(a.details.number||'').toLowerCase()>String(b.details.number||'').toLowerCase()?1:-1)
@@ -353,7 +378,7 @@ function mapEmulatorElement(
       // TODO, read LEDBlinkyMinimizedMame.xml and attempt to convert rom name into mame title (maybe just read mame directly? Maybe too intense of a file?)
       element: controlGroup,
       details: romDetails,
-      players,
+      players,      
     }
 
     if ( group.details.defaultActive ) {
@@ -415,27 +440,17 @@ export function getEmulatorsByControl(
   return mappedEmulators
 }
 
+/** reads xml looking for controlDefaults elements
+ * Example: <controlDefaults groupName="MAME" description="...">
+*/
 export function getControlDefaultsByControlXml(
   xml: Document,
   colorRgbConfig?: IniNameValuePairs
 ): ControlDefault[] {
   return getElementsByTagName(xml,'controlDefaults').map(controlDefault => {
-    const controls: PlayerControl[] = getElementsByTagName(controlDefault, 'control').map(element => {
-      const details = elmAttributesToObject(element) as PlayerControlDetails
-      const inputCodes = details.inputCodes?.replace(/(^\||\|$)/g,'').split('|') || []
-      const control: PlayerControl = {
-        element, details, inputCodes,
-        cssColor: ''
-      }
-
-      if ( details.color ) {
-        const isNumbered = details.color.includes(',')
-        const cssColor = isNumbered ? ledNumberedColorToCss(details.color) : ledColorNameToCss(details.color, colorRgbConfig)
-        control.cssColor = cssColor
-      }
-
-      return control
-    })
+    const controls: PlayerControl[] = getElementsByTagName(controlDefault, 'control').map(element =>
+      getControlByElement(element, colorRgbConfig)
+    )
     
     const result: ControlDefault = {
       element: controlDefault,
@@ -446,7 +461,7 @@ export function getControlDefaultsByControlXml(
   })
 }
 
-function mapPlayerElement(
+export function mapPlayerElement(
   element: Element,
   {controlDefault, inputsMap, colorRgbConfig}: {
     controlDefault?: ControlDefault
@@ -455,39 +470,55 @@ function mapPlayerElement(
   }
 ) {
   const controls: PlayerControl[] = getElementsByTagName(element, 'control').map((element: Element) => {
-    const details = elmAttributesToObject(element) as PlayerControlDetails
-    const isNumbered = details.color.includes(',')
-    const cssColor = isNumbered ? ledNumberedColorToCss(details.color) : ledColorNameToCss(details.color, colorRgbConfig)
-    const inputCodes: string[] = details.inputCodes?.replace(/(^\||\|$)/g,'').split('|') || []
-    const control: PlayerControl = {
-      element, details, cssColor, inputCodes,
-    }
+    const control = getControlByElement(element, colorRgbConfig)
 
     // find if we have a control default to add additional inputCodes
     if ( controlDefault ) {
-      controlDefault.controls.forEach(defaults => {
-        const matchFound = defaults.details.name === control.details.name
-        if ( matchFound ) {
-          inputCodes.push( ...defaults.inputCodes )
+      control.inputCodes$ = combineLatest([
+        control.inputCodes$,
+        control.details$,
+      ]).pipe(
+        mergeMap(([codes, controlDetails]) => {
+          return from(new Promise<string[]>(async (res, rej) => {
+            
+            const promises = controlDefault.controls.map(async defaultControl => {
+              const defaultDetails = await firstValueFrom(defaultControl.details$)
+              const matchFound = defaultDetails.name === controlDetails.name
+              if ( !matchFound ) {
+                return
+              }
+              const defaultInputCodes = await firstValueFrom(defaultControl.inputCodes$)
+              return [ ...codes, ...defaultInputCodes ]
+            }) 
+            
+            const result = (await Promise.all(promises)).find(x => x)
+            
+            res(result ?? codes)
+          }))
+        })
+      )
+    }
+  
+    // Do we have inputCode to match && did LEDBlinkyInputMap.xml exist
+    control.layoutLabel$ = control.inputCodes$.pipe(
+      map(inputCodes => {
+        if ( !inputCodes.length || !inputsMap ) {
           return
         }
         
-        //clone.inputCodes = matchFound
-      })
-    }
-    
-    // Do we have inputCode to match && did LEDBlinkyInputMap.xml exist
-    if ( inputCodes.length && inputsMap ) {
-      const matchIndex = inputsMap.inputCodes.findIndex(mapDetails => mapDetails.inputCode && inputCodes.includes(mapDetails.inputCode))
-      
-      if ( matchIndex >= 0 ) {
+        const matchIndex = inputsMap.inputCodes.findIndex(mapDetails => mapDetails.inputCode && inputCodes.includes(mapDetails.inputCode))        
+        if ( matchIndex < 0 ) {
+          return
+        }
+
         const code = inputsMap.inputCodes[ matchIndex ]
-        control.layoutLabel = code.labels[0]
-      }
-    }
-    
+        return code.labels[0]
+      })
+    )
+
     return control
   })
+
 
   return {
     element,
@@ -501,4 +532,60 @@ export function getLastLayoutFileByLightsConfig(
 ) {
   const name = configObject['LastLayoutFile']
   return getFileNameByPath(name)
+}
+
+export function castControlDetailsToCssColor(
+  details: PlayerControlDetails,
+  colorRgbConfig?: IniNameValuePairs,
+) {
+  const isNumbered = details.color.includes(',')
+  const cssColor = isNumbered ? ledNumberedColorToCss(details.color) : ledColorNameToCss(details.color, colorRgbConfig)
+  return cssColor
+}
+
+export function getControlByElement(
+  element: Element,
+  colorRgbConfig?: IniNameValuePairs,
+  details?: PlayerControlDetails
+): PlayerControl {
+  const updateToCssColor$ = new BehaviorSubject<string>('')
+
+  const details$ = combineLatest([
+    new Observable<PlayerControlDetails>(subs => 
+      subs.next(details || elmAttributesToObject(element) as PlayerControlDetails)
+    ),
+    updateToCssColor$,
+  ])
+  .pipe(
+    map(([details, cssColor]) => {
+      if ( cssColor ) {
+        const noHashValue = cssColor.replace('#','')
+        // details.color = parseInt(noHashValue, 16).toString()
+        // details.color = '48,48,48'
+        details.color = hexToRgb(noHashValue).map(x => 48 * (Math.floor((x/255)*100) / 100)).join(',')
+      }    
+
+      return details
+    }),
+    shareReplay(1)
+  )
+    
+  const cssColor$ = details$.pipe(
+    map(details => castControlDetailsToCssColor(details, colorRgbConfig))
+  )
+
+  const inputCodes$ = details$.pipe(
+    map(details => details.inputCodes?.replace(/(^\||\|$)/g,'').split('|') || [])
+  )
+  
+  const control: PlayerControl = {
+    element,
+    details$,
+    inputCodes$,
+    cssColor$,
+    updateToCssColor$,
+    layoutLabel$: of(''),
+  }
+  
+  return control
 }
