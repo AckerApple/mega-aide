@@ -1,8 +1,6 @@
 <div *ngIf="(session.launchBox.directory$ | async) as directory; else selectLaunchBox" [@fadeInOutUp]="1"
   class="flex-stacked flex-center"
->
-  <button type="button" (click)="fixPlatformSupports()">test</button>
-			
+>			
   <div>Select a platform below to reveal more insights...</div>
   <table cellPadding="4" cellSpacing="4" border="0" class="table-lines bg-dark">
     <thead>
@@ -13,9 +11,9 @@
     </thead>
     <ng-container *ngIf="(files$ | async) as files">
       <ng-container *ngFor="let file of files">
-        <tr class="hover-bg-energized"
+        <tr class="hover-bg-energized cursor-pointer"
           [ngClass] = "file.stats.size > 634303590 ? 'bg-assertive' : file.stats.size > 211434530 ? 'bg-orange text-black' : ''"
-          (click)="file.viewDetails = !file.viewDetails;scanPlatform(file)"
+          (click)="(file.viewDetails = !file.viewDetails) && scanPlatform(file)"
           [class.bg-energized]="file.viewDetails"
         >
           <td>{{ file.name }}</td>
@@ -27,9 +25,11 @@
               <div class="top-0 pos-abs animate__animated animate__heartBeat animate__infinite">Loading...</div>
             </div>
             <!-- greater than 600mb -->
-            <div *ngIf="file.stats.size > 634303590" class="bg-assertive pad">This file is extraordinarily large</div>
+            <div *ngIf="file.stats.size > 634303590" class="bg-assertive pad"
+            >This file is extraordinarily large</div>
             <!-- greater than 200mb -->
-            <div *ngIf="file.stats.size <= 634303590 && file.stats.size > 211434530" class="bg-orange pad">This file is getting fairly large</div>
+            <div *ngIf="file.stats.size <= 634303590 && file.stats.size > 211434530" class="bg-orange pad"
+            >This file is getting fairly large</div>
             <br />
             <div *ngIf="file.xmlStats" [@fadeInOutUp]="1">
               <div class="flex-wrap gap-xs">
@@ -37,13 +37,24 @@
                   <div class="text-xs">{{ item.key }}</div>
                   <div class="text-xs"><strong>{{ item.value }}</strong></div>
                 </div>
+
+                <button type="button" (click)="fixPlatformSupports(file)"
+                  [disabled]="session.loading$ | async"
+                  [class.bg-dark]="session.loading$ | async"
+                  [class.opacity-half]="session.loading$ | async"
+                >dedup</button>
+
+                <button type="button" (click)="scanPlatform(file)"
+                  [disabled]="session.loading$ | async"
+                  [class.bg-dark]="session.loading$ | async"
+                  [class.opacity-half]="session.loading$ | async"
+                >rescan</button>
               </div>
               <div *ngIf="file.xmlStats.gameControllerSupports > file.xmlStats.games"
-                class="bg-assertive"
+                class="bg-assertive pad"
               >
                 <strong>Issue detected</strong>
                 <div>You have more controller supports than games, in this platform. This is a sign of an issue</div>
-                <div>🚧 Coming soon: This app will help supply you with a fix</div>
               </div>
             </div>
           </td>

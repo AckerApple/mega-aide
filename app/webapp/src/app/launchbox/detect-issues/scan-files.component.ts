@@ -1,7 +1,7 @@
 import { Component } from '@angular/core'
 import { DmFileReader, FileStats } from 'ack-angular-components/directory-managers/DirectoryManagers'
 import { animations } from 'ack-angular-fx'
-import { combineLatest, firstValueFrom, lastValueFrom, map, mergeMap } from 'rxjs'
+import { combineLatest, firstValueFrom, lastValueFrom, map, mergeMap, Observable } from 'rxjs'
 import { SessionProvider } from 'src/app/session.provider'
 import { readFileStream, readWriteFile } from './stream-file.utils'
 
@@ -14,6 +14,7 @@ interface PlatformScan {
   xmlStats?: {
     games: number
     gameControllerSupports: number
+    supportsRemoved?: number
   }
 }
 
@@ -21,7 +22,7 @@ interface PlatformScan {
   animations,
   templateUrl: './scan-files.component.html',
 }) export class ScanFilesComponent {
-  files$ = combineLatest([
+  files$: Observable<PlatformScan[]> = combineLatest([
     this.session.launchBox.platformFiles$,
     this.session.launchBox.directory$.pipe(
       map(() => setTimeout(() => this.session.load$.next(1), 0))
@@ -46,16 +47,26 @@ interface PlatformScan {
 
   constructor(public session: SessionProvider) {}
 
-  async fixPlatformSupports() {
-    const dir = await firstValueFrom(this.session.launchBox.directory$)
-    const file = await dir.file('test.txt')
-    // const webFile = (file as any).getFile() as File
+  async fixPlatformSupports(
+    platform: PlatformScan
+  ) {
+    const xmlStats = platform.xmlStats
+    if ( !xmlStats ) {
+      return
+    }
+
+    // const dir = await firstValueFrom(this.session.launchBox.directory$)
+    // const file: DmFileReader = await dir.file('test.txt')
+    const file: DmFileReader = platform.file
     const webFileHandle = (file as any).file as FileSystemFileHandle
     
     let lastSliceLeftOvers: string | undefined
     const seenSupports: string[] = []
+    xmlStats.supportsRemoved = 0
 
-    readWriteFile(webFileHandle, (string: string, { isLast }) => {
+    this.session.load$.next(1)
+
+    await readWriteFile(webFileHandle, (string: string, { isLast }) => {
       // did we take a slice of a slice on the last stream?
       if ( lastSliceLeftOvers ) {
         string = lastSliceLeftOvers + string // add the held value to this stream
@@ -68,27 +79,45 @@ interface PlatformScan {
         string = string.slice(0, lastUnclosedTag.index)
       }
       
-      const regx = new RegExp('( *<GameControllerSupport(.|\n|\r)*?>(.|\n|\r)*?<\/GameControllerSupport>\s*)', 'gi')
-      const toRemove: {index: number, length: number}[] = []
+      // const regx = new RegExp('( *<GameControllerSupport(.|\n|\r)*?>(.|\n|\r)*?<\/GameControllerSupport>\s*)', 'gi')
+      const regx = new RegExp('( |\n|\r)*<GameControllerSupport(.|\n|\r)*?>(.|\n|\r)*?<\/GameControllerSupport>\s*', 'gi')
       let matches: any
+      const toRemove: {index: number, length: number}[] = []
+      
       while ((matches = regx.exec(string)) != null) {
-        removeFrom(matches, seenSupports, toRemove)
+        const {ControllerId, GameId, SupportLevel} = xmlToObj(matches[0])
+        const keyValue = `${ControllerId}:${GameId}:${SupportLevel}`
+        const remove = (seenSupports as any).includes(keyValue)
+      
+        if ( remove ) {
+          xmlStats.supportsRemoved = (xmlStats.supportsRemoved as number) + 1
+          toRemove.push({index: matches.index, length: matches[0].length})
+        } else {
+          seenSupports.push(keyValue)
+        }      
       }
       
       toRemove.reverse().forEach(({index, length}) => {
-        string = string.slice(0, index-1) + string.slice(index + length, string.length)
+        string = string.slice(0, index) + string.slice(index + length, string.length)
       })
-      
+            
       return string
     })
+
+    this.scanPlatform(platform)
+    this.session.load$.next(-1)
   }
 
   async scanPlatform(platform: PlatformScan) {
     this.session.load$.next(1)
     const file = (platform.file as any).file
     const realFile = await file.getFile()
+    platform.file.stats().then(stats => platform.stats = stats)
     
-    const xmlStats = platform.xmlStats = { games: 0, gameControllerSupports: 0 }
+    const xmlStats = platform.xmlStats = platform.xmlStats || { games: 0, gameControllerSupports: 0 }
+    
+    xmlStats.games = 0
+    xmlStats.gameControllerSupports = 0
 
     // review file in slices and count things
     const sub = readFileStream(realFile, 1024 * 2).pipe(
@@ -137,22 +166,4 @@ function xmlToObj(xmlString: string) {
   }
 
   return obj;
-}
-
-function removeFrom(
-  matches: RegExpExecArray,
-  seenSupports: string[],
-  toRemove: {index: number, length: number}[]
-) {
-  const {ControllerId, GameId, SupportLevel} = xmlToObj(matches[0])
-  const keyValue = `${ControllerId}:${GameId}:${SupportLevel}`
-
-  if ( (seenSupports as any).includes(keyValue) ) {
-    toRemove.push({index: matches.index, length: matches.length})
-  } else {
-    seenSupports.push(keyValue)
-    console.log('first')
-  }
-
-  return toRemove
 }
