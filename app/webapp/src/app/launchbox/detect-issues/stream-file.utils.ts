@@ -1,73 +1,128 @@
-import { Observable } from 'rxjs';
-import { map, takeWhile } from 'rxjs/operators';
+import { firstValueFrom, from, Observable, of } from 'rxjs'
+import { map, mergeMap, toArray } from 'rxjs/operators'
 
 // This function reads a file from the user's file system and returns an Observable that emits slices of the file
-export function readFileStream(file: File, chunkSize: number): Observable<string> {
-  const fileSize = file.size;
-  let offset = 0;
+export function readFileStream(
+  file: File,
+  chunkSize: number
+): Observable<string> {
+  const fileSize = file.size
+  let offset = 0
 
   return new Observable<string>((observer) => {
-    const reader = new FileReader();
+    const reader = new FileReader()
 
     reader.onload = (event) => {
       if (event.target?.result) {
-        observer.next(event.target.result as string);
-        offset += chunkSize;
+        observer.next(event.target.result as string)
+        offset += chunkSize
       }
 
       if (offset < fileSize) {
-        readSlice();
+        readSlice()
       } else {
-        observer.complete();
+        observer.complete()
       }
-    };
+    }
 
     reader.onerror = (event) => {
-      observer.error(event);
-    };
+      observer.error(event)
+    }
 
     function readSlice() {
       const slice = file.slice(offset, offset + chunkSize)
       reader.readAsText(slice)
     }
 
-    readSlice();
+    readSlice()
 
     return () => reader.abort()
   })
 }
 
-// This function logs slices of the file to the console
-export function readFileSlices(
-  file: File,
-  chunkSize: number
-) {
-  const fileStream$ = readFileStream(file, chunkSize)
-  fileStream$
-    .pipe(
-      map((slice) => {
-        console.log(slice);
-        return slice;
-      }),
-      // takeWhile((slice) => slice.length === chunkSize)
+
+
+
+
+export async function readWriteFile(
+  fileHandle: FileSystemFileHandle,
+  transformFn: (chunk: string, stats: {
+    isLast: boolean
+  }) => string,
+  chunkSize = 1024 * 1024, // 1 MB
+): Promise<void> {
+  const [file, writableStream] = await Promise.all([
+    fileHandle.getFile(),
+    fileHandle.createWritable(), // Open a writable stream for the file
+  ])
+  
+  let offset = 0
+  // Create an observable to read the file in chunks
+  const readStream$: Observable<FileSliceRead> = readFileAsStringBuffer(
+    file, offset, chunkSize
+  )
+
+  // Transform each chunk using the provided function
+  const transformedStream$: Observable<unknown> = readStream$.pipe(
+    map(chunk => {
+      const result = {
+        string: transformFn(chunk.string, {
+          isLast: (chunk.offset + chunkSize) >= file.size
+        }),
+        offset: chunk.offset,
+      }
+      return writableStream.write(result.string)
+    }),
+  )
+
+  // Wait for both streams to complete before closing the writable stream
+  await Promise.all(
+    await firstValueFrom(
+      transformedStream$.pipe( toArray() ) // bring together all observables as array of promises
     )
-    .subscribe({
-      error: (error) => {
-        console.error(error);
-      },
-      complete: () => {
-        console.log('File read complete');
-      },
-    });
+  )
+
+  // now that writing is done we can close file writing
+  await writableStream.close()
 }
 
-// Example usage:
-/*const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
+interface FileSliceRead {
+  string: string,
+  offset: number,
+}
 
-fileInput.addEventListener('change', (event) => {
-  const file = (event.target as HTMLInputElement).files?.[0];
+function readFileAsStringBuffer(
+  file: File,
+  offset: number,
+  chunkSize: number,
+): Observable<FileSliceRead> {
+  return new Observable<FileSliceRead>(subscriber => {
+    let lastOffset = offset
+    const fileReader = new FileReader();
+    fileReader.onload = (event) => {
+      const string = (event.target as any).result as string
+      
+      if ( string.length ) {
+        subscriber.next({ string, offset: lastOffset })
+      }
 
-  if (file) {
-    logFileSlices(file, 1024);
-  }
-});*/
+      lastOffset = offset
+      
+      if (offset < file.size) {
+        readChunk();
+      } else {
+        subscriber.complete();
+      }
+    }
+    
+    fileReader.onerror = (error) => subscriber.error(error);
+    
+    const readChunk = () => {
+      const slice = file.slice(offset, offset + chunkSize);
+      offset += chunkSize;
+      fileReader.readAsText(slice)
+    }
+
+    readChunk()
+  })
+}

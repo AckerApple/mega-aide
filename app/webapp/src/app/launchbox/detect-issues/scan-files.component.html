@@ -1,6 +1,8 @@
 <div *ngIf="(session.launchBox.directory$ | async) as directory; else selectLaunchBox" [@fadeInOutUp]="1"
   class="flex-stacked flex-center"
 >
+  <button type="button" (click)="fixPlatformSupports()">test</button>
+			
   <div>Select a platform below to reveal more insights...</div>
   <table cellPadding="4" cellSpacing="4" border="0" class="table-lines bg-dark">
     <thead>
