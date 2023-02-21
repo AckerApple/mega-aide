@@ -39,7 +39,7 @@ export class ContentTagReader {
   ): string {
     const toRemove: {index: number, length: number}[] = []
     
-    this.processString(string, isLast, remove => {
+    string = this.processString(string, isLast, remove => {
       const duplicatesFixed = this.duplicatesFixed$.getValue()
       this.duplicatesFixed$.next( duplicatesFixed + 1 )
       toRemove.push(remove)
@@ -56,17 +56,19 @@ export class ContentTagReader {
     string: string,
     isLast: boolean, // is this the last string being streamed?
     onDup: (remove: {index: number, length: number}) => any
-  ): void {
+  ): string {
     // did we take a slice of a slice on the last stream?
     if ( this.lastSliceLeftOvers ) {
       string = this.lastSliceLeftOvers + string // add the held value to this stream
       this.lastSliceLeftOvers = undefined
     }
 
-    const lastUnclosedTag = getLastUnclosedTagByName(string, 'GameControllerSupport')
-    if ( !isLast && lastUnclosedTag ) {
-      this.lastSliceLeftOvers = string.slice(lastUnclosedTag.index, string.length)
-      string = string.slice(0, lastUnclosedTag.index)
+    if ( !isLast ) {
+      const lastUnclosedTag = getLastUnclosedTagByName(string, 'GameControllerSupport')
+      if ( lastUnclosedTag ) {
+        this.lastSliceLeftOvers = string.slice(lastUnclosedTag.index, string.length)
+        string = string.slice(0, lastUnclosedTag.index)
+      }
     }
     
     const tagName = this.tagName
@@ -79,7 +81,9 @@ export class ContentTagReader {
       if ( remove ) {
         onDup(remove)
       }
-    }    
+    }
+    
+    return string
   }
 }
 

@@ -20,8 +20,8 @@ export function readFileStream(
         const string = event.target.result as string
         const isLast = (offset + chunkSize) >= file.size
         const percent = offset / file.size * 100
-        observer.next(string)
         callback(string, {isLast, percent})
+        observer.next(string)
         offset += chunkSize
       }
 
@@ -47,10 +47,6 @@ export function readFileStream(
   })
 }
 
-
-
-
-
 export async function readWriteFile(
   fileHandle: FileSystemFileHandle,
   transformFn: (chunk: string, stats: {
@@ -72,13 +68,16 @@ export async function readWriteFile(
   // Transform each chunk using the provided function
   const transformedStream$: Observable<unknown> = readStream$.pipe(
     map(chunk => {
+      const string = transformFn(chunk.string, {
+        isLast: (chunk.offset + chunkSize) >= file.size,
+        percent: chunk.offset / file.size * 100,
+      })
+
       const result = {
-        string: transformFn(chunk.string, {
-          isLast: (chunk.offset + chunkSize) >= file.size,
-          percent: chunk.offset / file.size * 100,
-        }),
+        string,
         offset: chunk.offset,
       }
+      
       return writableStream.write(result.string)
     }),
   )
