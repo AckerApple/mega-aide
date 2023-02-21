@@ -1,67 +1,134 @@
 <div *ngIf="(session.launchBox.directory$ | async) as directory; else selectLaunchBox" [@fadeInOutUp]="1"
   class="flex-stacked flex-center"
 >			
-  <div>Select a platform below to reveal more insights...</div>
-  <table cellPadding="4" cellSpacing="4" border="0" class="table-lines bg-dark">
-    <thead>
-      <tr class="bg-grey">
-        <th>platform name</th>
-        <th>size</th>
-      </tr>
-    </thead>
-    <ng-container *ngIf="(files$ | async) as files">
+  <ng-container *ngIf="(files$ | async) as files">
+    <div class="flex-apart flex-wrap gap flex-valign-center">
+      <div>Select a platform below to reveal more insights...</div>
+      <div *ngIf="files.length">
+        <button type="button"
+          (click)="scanPlatforms(files)"
+        >🔦 scan all</button>
+      </div>
+    </div>
+    <table cellPadding="4" cellSpacing="4" border="0" class="table-lines bg-dark">
+      <thead>
+        <tr class="bg-grey">
+          <th>platform name</th>
+          <th>size</th>
+        </tr>
+      </thead>
+
       <ng-container *ngFor="let file of files">
         <tr class="hover-bg-energized cursor-pointer"
           [ngClass] = "file.stats.size > 634303590 ? 'bg-assertive' : file.stats.size > 211434530 ? 'bg-orange text-black' : ''"
-          (click)="(file.viewDetails = !file.viewDetails) && scanPlatform(file)"
+          (click)="file.viewDetails = !file.viewDetails"
           [class.bg-energized]="file.viewDetails"
         >
-          <td>{{ file.name }}</td>
+          <td>
+            <div class="flex-apart flex-valign-center flex-wrap">
+              <span>{{ file.name }}</span>
+              <span *ngIf="file.load" [@fadeInOutUp]="1"><loading-icon show="1"></loading-icon></span>
+              <span *ngIf="file.xmlStats?.duplicatesFound$ | async" [@fadeInOutUp]="1">
+                <div class="radius-half pad-h-xs bg-assertive text-white" title="duplicate controller supports found">1</div>
+              </span>
+            </div>
+          </td>
           <td>{{ ((file.stats.size || 0) / 1000 / 1000) | number : '1.0-2' }} MB</td>
         </tr>
         <tr *ngIf="file.viewDetails" [@fadeInOutUp]="1">
           <td colspan="2" class="bg-grey">
-            <div *ngIf="!file.xmlStats" class="pos-rel" [@fadeInOutUp]="1">
-              <div class="top-0 pos-abs animate__animated animate__heartBeat animate__infinite">Loading...</div>
+            <div class="margin-bottom-xs">
+              <div class="pos-rel">
+                <div class="pos-abs bg-positive overflow-hidden top-0"
+                  [style.width.%]="file.percentRead"
+                ><div class="height-5"></div></div>
+              </div>
             </div>
+            <!--
+              <div *ngIf="!file.xmlStats" class="pos-rel" [@fadeInOutUp]="1">
+                <div class="top-0 pos-abs animate__animated animate__heartBeat animate__infinite">Loading...</div>
+              </div>
+            -->
+            
             <!-- greater than 600mb -->
-            <div *ngIf="file.stats.size > 634303590" class="bg-assertive pad"
+            <div *ngIf="file.stats.size > 634303590" class="bg-assertive pad margin-xs"
             >This file is extraordinarily large</div>
+            
             <!-- greater than 200mb -->
-            <div *ngIf="file.stats.size <= 634303590 && file.stats.size > 211434530" class="bg-orange pad"
+            <div *ngIf="file.stats.size <= 634303590 && file.stats.size > 211434530" class="bg-orange pad margin-xs"
             >This file is getting fairly large</div>
-            <br />
-            <div *ngIf="file.xmlStats" [@fadeInOutUp]="1">
+
+            <div *ngIf="file.xmlStats?.duplicatesFound$ | async" class="bg-orange pad margin-xs"
+            >
+              Some of your games have the same controller support multiple times.
+              <div class="text-xs pad">
+                If this number keeps increasing overtime, it is a sign of an issue.
+              </div>
+            </div>
+
+            <div *ngIf="file.xmlStats && file.xmlStats.gameControllerSupports > file.xmlStats.games"
+              class="bg-assertive pad margin-xs"
+            >
+              <div>You have more controller supports than games, in this platform. This is a sign of an issue</div>
+            </div>
+            
+            <div>
               <div class="flex-wrap gap-xs">
-                <div class="flex1 flex-stacked flex-center gap-xxs bg-dark" *ngFor="let item of file.xmlStats | keyvalue">
-                  <div class="text-xs">{{ item.key }}</div>
-                  <div class="text-xs"><strong>{{ item.value }}</strong></div>
+                <div *ngIf="file.xmlStats?.games as games" [@fadeInOutUp]="1"
+                  class="flex1 flex-stacked flex-center gap-xxs bg-dark"
+                >
+                  <div class="text-xs">games</div>
+                  <div class="text-xs"><strong>{{ games }}</strong></div>
                 </div>
 
-                <button type="button" (click)="fixPlatformSupports(file)"
+                <div *ngIf="file.xmlStats?.gameControllerSupports as gameControllerSupports"
+                  [@fadeInOutUp]="1"
+                  class="flex1 flex-stacked flex-center gap-xxs bg-dark"
+                >
+                  <div class="text-xs">controller supports</div>
+                  <div class="text-xs"><strong>{{ gameControllerSupports }}</strong></div>
+                </div>
+
+                <div *ngIf="(file.xmlStats?.duplicatesFound$ | async) as duplicatesFound"
+                  [@fadeInOutUp]="1"
+                  class="flex1 flex-stacked flex-center gap-xxs bg-dark"
+                >
+                  <div class="text-xs">duplicates found</div>
+                  <div class="text-xs"><strong>{{ duplicatesFound }}</strong></div>
+                </div>
+
+                <div *ngIf="(file.xmlStats?.duplicatesFixed$ | async) as duplicatesFixed"
+                  [@fadeInOutUp]="1"
+                  class="flex1 flex-stacked flex-center gap-xxs bg-dark"
+                >
+                  <div class="text-xs">duplicates fixed</div>
+                  <div class="text-xs"><strong>{{ duplicatesFixed }}</strong></div>
+                </div>
+                
+                <button *ngIf="file.xmlStats?.duplicatesFound$ | async"
+                  class="flex1"
+                  type="button" (click)="fixPlatformSupports(file)"
                   [disabled]="session.loading$ | async"
                   [class.bg-dark]="session.loading$ | async"
                   [class.opacity-half]="session.loading$ | async"
                 >dedup</button>
 
                 <button type="button" (click)="scanPlatform(file)"
-                  [disabled]="session.loading$ | async"
-                  [class.bg-dark]="session.loading$ | async"
-                  [class.opacity-half]="session.loading$ | async"
-                >rescan</button>
-              </div>
-              <div *ngIf="file.xmlStats.gameControllerSupports > file.xmlStats.games"
-                class="bg-assertive pad"
-              >
-                <strong>Issue detected</strong>
-                <div>You have more controller supports than games, in this platform. This is a sign of an issue</div>
+                  [disabled]="file.load" class="flex1"
+                  [class.bg-dark]="file.load"
+                  [class.opacity-half]="file.load"
+                >🔦 scan</button>
+                    
+                <a routerLink="../../↩" type="button" class="flex1"
+                  [queryParams]="{path:file.file.directory.path, file:file.file.name}"
+                >↩️ backups</a>
               </div>
             </div>
           </td>
         </tr>
       </ng-container>
-    </ng-container>
-  </table>
+    </table>
+  </ng-container>
 </div>
 
 <ng-template #selectLaunchBox>

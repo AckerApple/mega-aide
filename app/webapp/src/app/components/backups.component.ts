@@ -2,6 +2,7 @@
 import { Component, Input } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { DirectoryManager, DmFileReader, FileStats } from 'ack-angular-components/directory-managers/DirectoryManagers'
+import { concatMap, delay, firstValueFrom, from, map, mergeMap, Observable, of, OperatorFunction, throttleTime, toArray } from 'rxjs'
 import { SessionProvider } from '../session.provider'
 
 declare type BackupFile = FileStats & {
@@ -121,6 +122,7 @@ export class BackupsComponent {
       (folder as any).kind = 'DIRECTORY'
       return folder
     }) as (DirectoryManager | DmFileReader | FileStats)[]
+    
     this.columns.push(columnItems) // folderNames.map(name => ({name, kind: 'DIRECTORY'}))
     this.loadFilesWithBackups(dir, folderNames, columnItems)
   }
@@ -133,20 +135,29 @@ export class BackupsComponent {
     const buFolderNames = this.session.config.backupFolderNames
     this.backupsFound.push( ...buFolderNames.filter(x => folderNames.includes(x)) )
 
+    // lookup files in the current folder
     if ( this.backupsFound ) {
-      const files = await dir.getFiles()
-      const loading = files.map(async file => {
-        for (const backupFolderName of this.backupsFound) {
-          const matchFound = await findBackupInDirByName(dir, backupFolderName, file.name)
-          if ( matchFound ) {
-            const stats = await file.stats()
-            columnItems.push(stats)
-            break // don't check any other backups folders
-          }
-        }
+      dir.getFiles().then(files => {
+        // async find files with backups
+        return firstValueFrom(
+          slowArrayMapPromises(files, 10, async file => {
+            return firstValueFrom(
+              slowArrayMapPromises(this.backupsFound, 10, async backupFolderName => {
+                const matchFound = await findBackupInDirByName(dir, backupFolderName, file.name)
+                if ( matchFound ) {
+                  file.stats().then(stats => {
+                    columnItems.push(stats)
+                  })
+                  return // don't check any other backups folders
+                }
+              })
+            )
+          })
+        )
+  
+        // await Promise.all(loading)
       })
-
-      await Promise.all(loading)
+      
 
       columnItems.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
       --this.loading
@@ -186,7 +197,7 @@ export class BackupsComponent {
       return
     }
 
-    const backupFolder = await this.parent.getDirectory(stats.backupFolderName)
+    const backupFolder = await this.parent.getDirectory(stats.backupFolderName, { create: true })
     this.toRestore = {stats, backupFolder}
   }
 
@@ -251,7 +262,13 @@ export async function getFileBackupList(
   await Promise.all(
     buFolderNames.map(async buFolderName => {
       const matches = await getBackupsInDirByName(parent, buFolderName, sourceFileName)
-      const loadStats = await Promise.all( matches.map(file => file.stats()) )
+      
+      // Apply the throttle to the mapped values using the 'throttleTime' operator
+      const mappedItems$ = slowArrayMapPromises(matches, 10, file => {
+        return file.stats()
+      })
+      
+      const loadStats: FileStats[] = await firstValueFrom(mappedItems$)
       const statPromises = loadStats.map(async stat => {
         const castStat = stat as BackupFile
         castStat.backupFolderName = buFolderName
@@ -267,4 +284,21 @@ export async function getFileBackupList(
   // this.backupFiles.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
   backupFiles.sort((a,b)=>Number(b.lastModified)-Number(a.lastModified))
   return backupFiles
+}
+
+
+export function slowArrayMapPromises<T, Z>(
+  array: T[],
+  speed: number,
+  callback: (value: T, index: number) => Promise<Z>
+): Observable<Z[]> {
+  return from(array).pipe(
+    concatMap((item, index) => of(item).pipe(
+      delay(speed),
+      mergeMap(value => from(
+        callback(value, index)
+      ))
+    )),
+    toArray()
+  )
 }

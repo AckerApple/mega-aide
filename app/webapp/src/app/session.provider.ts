@@ -181,6 +181,9 @@ function fillGaps (toFill: any, fillFrom: any) {
 export interface WriteFile {
   file: DmFileReader
   string: string
+  
+  // todo: we need streams
+  // read$: Observable<string> // needs to be a read stream that closes
 }
 
 export interface AdditionalApp {

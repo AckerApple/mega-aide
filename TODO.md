@@ -1,5 +1,10 @@
 TODO: 
 
+Backups
+- Need to backup using file streaming
+- Previews need to be streamed
+  - will need to figure out scrolling (maybe do a line count before display?)
+
 Detect File size issues
 - Display all platform files in order by size and callout any that are over 400mb
 

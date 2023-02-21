@@ -1,10 +1,13 @@
 import { firstValueFrom, from, Observable, of } from 'rxjs'
 import { map, mergeMap, toArray } from 'rxjs/operators'
 
+type streamCallback = (string: string, stats: {percent: number, isLast: boolean}) => any
+
 // This function reads a file from the user's file system and returns an Observable that emits slices of the file
 export function readFileStream(
   file: File,
-  chunkSize: number
+  chunkSize: number,
+  callback: streamCallback = (string: string) => undefined
 ): Observable<string> {
   const fileSize = file.size
   let offset = 0
@@ -14,7 +17,11 @@ export function readFileStream(
 
     reader.onload = (event) => {
       if (event.target?.result) {
-        observer.next(event.target.result as string)
+        const string = event.target.result as string
+        const isLast = (offset + chunkSize) >= file.size
+        const percent = offset / file.size * 100
+        observer.next(string)
+        callback(string, {isLast, percent})
         offset += chunkSize
       }
 
@@ -47,7 +54,7 @@ export function readFileStream(
 export async function readWriteFile(
   fileHandle: FileSystemFileHandle,
   transformFn: (chunk: string, stats: {
-    isLast: boolean
+    isLast: boolean, percent: number
   }) => string,
   chunkSize = 1024 * 1024, // 1 MB
 ): Promise<void> {
@@ -67,7 +74,8 @@ export async function readWriteFile(
     map(chunk => {
       const result = {
         string: transformFn(chunk.string, {
-          isLast: (chunk.offset + chunkSize) >= file.size
+          isLast: (chunk.offset + chunkSize) >= file.size,
+          percent: chunk.offset / file.size * 100,
         }),
         offset: chunk.offset,
       }

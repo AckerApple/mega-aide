@@ -4,6 +4,7 @@ import { BehaviorSubject, combineLatest, EMPTY, firstValueFrom, from, map, merge
 import { getElementsByTagName } from "../ledblinky/LedBlinky.utils"
 import { findElementText, getGameElementId, getGameElementTitle, isPathKillXinput, isPathXinput } from "./detect-issues/detect.utils"
 import { fileTryLoadingPipes } from "../ledblinky/LedBlinky.class"
+import { slowArrayMapPromises } from "../components/backups.component"
 
 /* when done with this class you must .destroy() it */
 export class LaunchBox {
@@ -130,21 +131,21 @@ export class LaunchBox {
       const results: {name: string, file: DmFileReader}[] = []
       const result$ = new Subject<{name: string, file: DmFileReader}>()
   
-      for (let index=0; index < platformNames.length; ++index) {
-        const name = platformNames[index]
-        directory.findFileByPath(`Data/Platforms/${name}.xml`).then(file => {
-          if ( !file ) {
-            return
-          }
-          const result = {name, file}
-          results.push(result)
-          result$.next(result)
+      const slowMap = slowArrayMapPromises(platformNames, 5, async (name: string, index: number) => {
+        const file = await directory.findFileByPath(`Data/Platforms/${name}.xml`)
+        if ( !file ) {
+          return
+        }
+        const result = {name, file}
+        results.push(result)
+        result$.next(result)
 
-          if ( index === platformNames.length-1 ) {
-            result$.complete()
-          }
-        })
-      }
+        if ( index === platformNames.length-1 ) {
+          result$.complete()
+        }
+      })
+
+      firstValueFrom(slowMap)
       
       return { results, result$ }
     })
