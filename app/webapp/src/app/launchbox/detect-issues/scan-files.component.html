@@ -28,8 +28,8 @@
             <div class="flex-apart flex-valign-center flex-wrap">
               <span>{{ file.name }}</span>
               <span *ngIf="file.load" [@fadeInOutUp]="1"><loading-icon show="1"></loading-icon></span>
-              <span *ngIf="file.xmlStats?.supportDupsFound$ | async" [@fadeInOutUp]="1">
-                <div class="radius-half pad-h-xs bg-assertive text-white" title="duplicate controller supports found">1</div>
+              <span *ngIf="(file.xmlStats?.supportDupsFound$ | async) || (file.xmlStats?.altNameDupsFound$ | async)" [@fadeInOutUp]="1">
+                <div class="radius-half pad-h-xs bg-assertive text-white" title="duplicate items found in this platform">1</div>
               </span>
             </div>
           </td>
@@ -66,10 +66,10 @@
               </div>
             </div>
 
-            <div *ngIf="file.xmlStats && file.xmlStats.gameControllerSupports > file.xmlStats.games"
+            <div *ngIf="file.xmlStats && file.xmlStats.gameControllerSupports > (file.xmlStats.games * 2)"
               class="bg-assertive pad margin-xs"
             >
-              <div>You have more controller supports than games, in this platform. This is a sign of an issue</div>
+              <div>You have twice as many controller supports as you do games, in this platform. This maybe a sign of an issue</div>
             </div>
 
             <div *ngIf="file.xmlStats?.supportDupsFound$ | async" class="bg-orange pad margin-xs"
