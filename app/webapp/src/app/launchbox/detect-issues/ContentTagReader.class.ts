@@ -1,21 +1,39 @@
 import { BehaviorSubject } from "rxjs"
 
+/** 
+ * 1. reads a string, especially a stream of strings, looking for one specific tagName
+ *  1.a Use the class function examineString() to stream read
+ * 2. When found it reads the child tag names and their textContent to create an Object of key/value pairs
+ * 3. If any other matching tag is found, with the sames data points, it will register as a duplicate
+ * 4. The event duplicatesFound$ will be emitted when duplicate is found
+ * 5. Use the class function rewriteString() to stream read a string so that you can rewrite it elsewhere
+ *   5.a rewriteString() removes the duplicates of a tag that shares the same values, and returns a new string
+ * 
+*/
 export class ContentTagReader {
   seenSupports: string[] = []
   duplicatesFound$ = new BehaviorSubject(0)
   duplicatesFixed$ = new BehaviorSubject(0)
   lastSliceLeftOvers: string | undefined
 
-  constructor(public tagName: string) {}
+  constructor(
+    public tagName: string,
+    public uniqueKeys?: string[] // when not supplied all keys are used (usually ok)
+  ) {}
 
   processMatches(
     matches: RegExpExecArray
   ): {index: number, length: number} | void {
-    // todo: will need to define how to get values of an object
-    const {ControllerId, GameId, SupportLevel} = xmlToObj(matches[0])
-    const keyValue = `${ControllerId}:${GameId}:${SupportLevel}`
+    const data = xmlToObj(matches[0])
+    
+    // the original tag name comes out as a data point (remove)
+    delete data[this.tagName]
+
+    const uniqueKeys = this.uniqueKeys || Object.keys(data)
+    const keyValues: (string | null)[] = uniqueKeys.map(x => data[x])
+    
+    const keyValue = keyValues.join(':')    
     const remove = this.seenSupports.includes(keyValue)
-  
     if ( remove ) {
       return {index: matches.index, length: matches[0].length}
     } else {
@@ -64,7 +82,7 @@ export class ContentTagReader {
     }
 
     if ( !isLast ) {
-      const lastUnclosedTag = getLastUnclosedTagByName(string, 'GameControllerSupport')
+      const lastUnclosedTag = getLastUnclosedTagByName(string, this.tagName)
       if ( lastUnclosedTag ) {
         this.lastSliceLeftOvers = string.slice(lastUnclosedTag.index, string.length)
         string = string.slice(0, lastUnclosedTag.index)
@@ -114,4 +132,17 @@ function getLastUnclosedTagByName(
   }
   
   return lastGoodMatch
+}
+
+export function getMatchCount(
+  regx: RegExp,
+  string: string,
+): number {
+  let count = 0
+
+  while ((regx.exec(string)) != null) {
+    ++count
+  }
+  
+  return count
 }

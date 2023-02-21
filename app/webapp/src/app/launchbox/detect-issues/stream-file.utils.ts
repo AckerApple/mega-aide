@@ -20,8 +20,11 @@ export function readFileStream(
         const string = event.target.result as string
         const isLast = (offset + chunkSize) >= file.size
         const percent = offset / file.size * 100
+        
         callback(string, {isLast, percent})
         observer.next(string)
+        
+        // increment
         offset += chunkSize
       }
 
