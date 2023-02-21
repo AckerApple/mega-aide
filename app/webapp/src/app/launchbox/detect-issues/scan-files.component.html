@@ -89,6 +89,14 @@
                   <div class="text-xs"><strong>{{ gameControllerSupports }}</strong></div>
                 </div>
 
+                <div *ngIf="file.xmlStats?.alternateNames as alternateNames"
+                  [@fadeInOutUp]="1"
+                  class="flex1 flex-stacked flex-center gap-xxs bg-dark"
+                >
+                  <div class="text-xs">alternate names</div>
+                  <div class="text-xs"><strong>{{ alternateNames }}</strong></div>
+                </div>
+
                 <div *ngIf="(file.xmlStats?.duplicatesFound$ | async) as duplicatesFound"
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-dark"

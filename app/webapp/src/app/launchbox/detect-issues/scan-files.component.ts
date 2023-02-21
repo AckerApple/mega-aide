@@ -19,6 +19,7 @@ interface PlatformScan {
   xmlStats?: {
     games: number
     gameControllerSupports: number
+    alternateNames: number
     
     duplicatesFound$: Observable<number>
     duplicatesFixed$: Observable<number>
@@ -115,6 +116,7 @@ interface PlatformScan {
     const xmlStats = platform.xmlStats = platform.xmlStats || {
       games: 0,
       gameControllerSupports: 0,
+      alternateNames: 0,
       
       duplicatesFound$: supportReader.duplicatesFound$,
       duplicatesFixed$: supportReader.duplicatesFixed$,
@@ -140,8 +142,11 @@ interface PlatformScan {
         map(string => {
           const gameMatches = string.match(/<Game>/)
           const supportMatches = string.match(/<GameControllerSupport>/)
+          const alternateNames = string.match(/<AlternateName>/)
+
           xmlStats.games = xmlStats.games + (gameMatches?.length || 0)
           xmlStats.gameControllerSupports = xmlStats.gameControllerSupports + (supportMatches?.length || 0)
+          xmlStats.alternateNames = xmlStats.alternateNames + (alternateNames?.length || 0)
         })
       )
       .subscribe({
