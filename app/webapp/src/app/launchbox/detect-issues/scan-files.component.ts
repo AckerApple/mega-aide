@@ -20,12 +20,16 @@ interface PlatformScan {
     games: number
     gameControllerSupports: number
     alternateNames: number
+    additionalApps: number
     
     supportDupsFound$: Observable<number>
     supportDupsFixed$: Observable<number>
     
     altNameDupsFound$: Observable<number>
     altNameDupsFixed$: Observable<number>
+    
+    addAppDupsFound$: Observable<number>
+    addAppDupsFixed$: Observable<number>
   }
 }
 
@@ -89,6 +93,7 @@ interface PlatformScan {
 
     const supportReader = new ContentTagReader('GameControllerSupport')
     const nameReader = new ContentTagReader('AlternateName')
+    const addAppReader = new ContentTagReader('AdditionalApplication')
 
     xmlStats.supportDupsFixed$ = supportReader.duplicatesFixed$ // connect things found to the display
     xmlStats.supportDupsFound$ = supportReader.duplicatesFound$ // connect things found to the display
@@ -96,13 +101,22 @@ interface PlatformScan {
     xmlStats.altNameDupsFixed$ = nameReader.duplicatesFixed$ // connect things found to the display
     xmlStats.altNameDupsFound$ = nameReader.duplicatesFound$ // connect things found to the display
 
+    xmlStats.addAppDupsFixed$ = addAppReader.duplicatesFixed$ // connect things found to the display
+    xmlStats.addAppDupsFound$ = addAppReader.duplicatesFound$ // connect things found to the display
+
     this.session.load$.next(1)
     ++platform.load
 
     await readWriteFile(webFileHandle, (string: string, { isLast, percent }) => {      
       platform.percentRead = percent
+
+      // rewrite GameControllerSupport
       string = supportReader.rewriteString(string, isLast)
+      // rewrite AlternateName
       string = nameReader.rewriteString(string, isLast)
+      // rewrite AdditionalApplication
+      string = addAppReader.rewriteString(string, isLast)
+      
       return string
     })
 
@@ -120,25 +134,32 @@ interface PlatformScan {
     const file = (platform.file as any).file
     const realFile = await file.getFile()
     platform.file.stats().then(stats => platform.stats = stats)
+    
     const supportReader = new ContentTagReader('GameControllerSupport')
     const nameReader = new ContentTagReader('AlternateName')
+    const addAppReader = new ContentTagReader('AdditionalApplication')
     
     const xmlStats = platform.xmlStats = platform.xmlStats || {
       games: 0,
       gameControllerSupports: 0,
       alternateNames: 0,
+      additionalApps: 0,
       
       supportDupsFound$: supportReader.duplicatesFound$,
       supportDupsFixed$: supportReader.duplicatesFixed$,
       
       altNameDupsFound$: nameReader.duplicatesFound$,
       altNameDupsFixed$: nameReader.duplicatesFixed$,
+      
+      addAppDupsFound$: addAppReader.duplicatesFound$,
+      addAppDupsFixed$: addAppReader.duplicatesFixed$,
     }
     
     // these need to be reset before each scan
     xmlStats.games = 0
     xmlStats.gameControllerSupports = 0
     xmlStats.alternateNames = 0
+    xmlStats.additionalApps = 0
 
     // todo, need rejection handling
     return new Promise((res, _rej) => {
@@ -152,17 +173,20 @@ interface PlatformScan {
       // review file in slices and count things
       const sub = readFileStream(realFile, 1024 * 3, (string, {isLast, percent}) => {
         platform.percentRead = percent
-        supportReader.examineString(string, isLast)
-        nameReader.examineString(string, isLast)
+        supportReader.examineString(string, isLast) // GameControllerSupport
+        nameReader.examineString(string, isLast) // AlternateName
+        addAppReader.examineString(string, isLast) // AdditionalApplication
       }).pipe(
         map(string => {
           const gameMatches = getMatchCount(/<Game>/g, string)
           const supportMatches = getMatchCount(/<GameControllerSupport>/g, string)
           const alternateNames = getMatchCount(/<AlternateName>/g, string)
+          const additionalApps = getMatchCount(/<AdditionalApplication>/g, string)
 
           xmlStats.games = xmlStats.games + gameMatches
           xmlStats.gameControllerSupports = xmlStats.gameControllerSupports + supportMatches
           xmlStats.alternateNames = xmlStats.alternateNames + alternateNames
+          xmlStats.additionalApps = xmlStats.additionalApps + additionalApps
         })
       )
       .subscribe({

@@ -28,8 +28,14 @@
             <div class="flex-apart flex-valign-center flex-wrap">
               <span>{{ file.name }}</span>
               <span *ngIf="file.load" [@fadeInOutUp]="1"><loading-icon show="1"></loading-icon></span>
-              <span *ngIf="(file.xmlStats?.supportDupsFound$ | async) || (file.xmlStats?.altNameDupsFound$ | async)" [@fadeInOutUp]="1">
-                <div class="radius-half pad-h-xs bg-assertive text-white" title="duplicate items found in this platform">1</div>
+              <span *ngIf="
+                (file.xmlStats?.supportDupsFound$ | async) ||
+                (file.xmlStats?.altNameDupsFound$ | async) ||
+                (file.xmlStats?.addAppDupsFound$ | async)
+              " [@fadeInOutUp]="1">
+                <div class="radius-half pad-h-xs bg-assertive text-white"
+                  title="duplicate items found in this platform"
+                >1</div>
               </span>
             </div>
           </td>
@@ -37,11 +43,16 @@
         </tr>
         <tr *ngIf="file.viewDetails" [@fadeInOutUp]="1">
           <td colspan="2" class="bg-grey">
-            <div class="margin-bottom-xs">
+            <div *ngIf="file.percentRead" class="pad-bottom">
               <div class="pos-rel">
-                <div class="pos-abs bg-positive overflow-hidden top-0"
-                  [style.width.%]="file.percentRead"
-                ><div class="height-5"></div></div>
+                <div class="pos-abs top-0 flex width-full">
+                  <div class="flex1">
+                    <div class="bg-positive overflow-hidden border-bottom-1 border-white"
+                      [style.width.%]="file.percentRead"
+                    ><div class="height-5"></div></div>
+                  </div>
+                  <div class="text-xxs">{{ file.percentRead | number : '1.0-1' }}%</div>
+                </div>
               </div>
             </div>
             <!--
@@ -58,23 +69,28 @@
             <div *ngIf="file.stats.size <= 634303590 && file.stats.size > 211434530" class="bg-orange pad margin-xs"
             >This file is getting fairly large</div>
 
-            <div *ngIf="file.xmlStats?.supportDupsFound$ | async" class="bg-orange pad margin-xs"
-            >
-              Some of your games have the same controller support multiple times.
-              <div class="text-xs pad">
-                If this number keeps increasing overtime, it is a sign of an issue.
-              </div>
-            </div>
-
             <div *ngIf="file.xmlStats && file.xmlStats.gameControllerSupports > (file.xmlStats.games * 2)"
               class="bg-assertive pad margin-xs"
             >
               <div>You have twice as many controller supports as you do games, in this platform. This maybe a sign of an issue</div>
             </div>
 
-            <div *ngIf="file.xmlStats?.supportDupsFound$ | async" class="bg-orange pad margin-xs"
-            >
+            <div *ngIf="file.xmlStats?.supportDupsFound$ | async" class="bg-orange pad margin-xs">
+              Some of your games have the same controller support multiple times.
+              <div class="text-xs pad">
+                If this number keeps increasing overtime, it is a sign of an issue.
+              </div>
+            </div>
+
+            <div *ngIf="file.xmlStats?.altNameDupsFound$ | async" class="bg-orange pad margin-xs">
               Some of your games have the same alternate name multiple times.
+              <div class="text-xs pad">
+                If this number keeps increasing overtime, it is a sign of an issue.
+              </div>
+            </div>
+
+            <div *ngIf="file.xmlStats?.addAppDupsFound$ | async" class="bg-orange pad margin-xs">
+              Some of your games have the same additional application multiple times.
               <div class="text-xs pad">
                 If this number keeps increasing overtime, it is a sign of an issue.
               </div>
@@ -89,12 +105,43 @@
                   <div class="text-xs"><strong>{{ games }}</strong></div>
                 </div>
 
+                <!-- additional apps -->
+                <div *ngIf="file.xmlStats?.additionalApps as additionalApps"
+                  [@fadeInOutUp]="1"
+                  class="flex1 flex-stacked flex-center gap-xxs bg-dark"
+                >
+                  <div class="text-xs">additional apps</div>
+                  <div class="text-xs"><strong>{{ additionalApps }}</strong></div>
+                </div>
+
+                <div *ngIf="(file.xmlStats?.addAppDupsFound$ | async) as addAppDupsFound"
+                  [@fadeInOutUp]="1"
+                  class="flex1 flex-stacked flex-center gap-xxs bg-orange"
+                >
+                  <div class="text-xs text-center">
+                    <div>additional application</div>
+                    duplicates
+                  </div>
+                  <div class="text-xs"><strong>{{ addAppDupsFound }}</strong></div>
+                </div>
+
+                <div *ngIf="(file.xmlStats?.addAppDupsFixed$ | async) as duplicatesFixed"
+                  [@fadeInOutUp]="1"
+                  class="flex1 flex-stacked flex-center gap-xxs bg-balanced"
+                >
+                  <div class="text-xs text-center">
+                    <div>additional application</div>
+                    duplicates fixed
+                  </div>
+                  <div class="text-xs"><strong>{{ duplicatesFixed }}</strong></div>
+                </div>
+
                 <!-- alt names -->
                 <div *ngIf="file.xmlStats?.alternateNames as alternateNames"
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-dark"
                 >
-                  <div class="text-xs">alternate names</div>
+                  <div class="text-xs">alternate name</div>
                   <div class="text-xs"><strong>{{ alternateNames }}</strong></div>
                 </div>
 
@@ -102,7 +149,10 @@
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-orange"
                 >
-                  <div class="text-xs">alt name dups found</div>
+                  <div class="text-xs">
+                    <div>alternate name</div>
+                    duplicates
+                  </div>
                   <div class="text-xs"><strong>{{ altNameDupsFound }}</strong></div>
                 </div>
 
@@ -110,7 +160,10 @@
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-balanced"
                 >
-                  <div class="text-xs">alt name dups fixed</div>
+                  <div class="text-xs text-center">
+                    <div>alternate name</div>
+                    duplicates fixed
+                  </div>
                   <div class="text-xs"><strong>{{ duplicatesFixed }}</strong></div>
                 </div>
 
@@ -127,7 +180,10 @@
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-orange"
                 >
-                  <div class="text-xs">support dups found</div>
+                  <div class="text-xs text-center">
+                    <div>controller support</div>
+                    duplicates
+                  </div>
                   <div class="text-xs"><strong>{{ duplicatesFound }}</strong></div>
                 </div>
 
@@ -135,7 +191,7 @@
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-balanced"
                 >
-                  <div class="text-xs">support dups fixed</div>
+                  <div class="text-xs text-center">support dups fixed</div>
                   <div class="text-xs"><strong>{{ duplicatesFixed }}</strong></div>
                 </div>
                 

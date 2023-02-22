@@ -15,6 +15,7 @@ export const detectXinputIssues: Route = {
   }
 }
 
+// deprecated
 export const detectDupControllers: Route = {
   path: '🧰/detect-issues/controller-duplicates',
   title: 'Detect platform duplicate controller maps',

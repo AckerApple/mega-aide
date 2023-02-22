@@ -59,7 +59,9 @@ export const routeMap = {
   themeSettings, themeSettings2,
   
   scanFileSizes, detectIssues, detectIssues2, detectXinputPlatform,
-  detectXinputIssues, scanBackups, detectDupControllers,
+  detectXinputIssues, scanBackups,
+  // deprecated
+  detectDupControllers,
 
   games, games2,
   backups, backups2

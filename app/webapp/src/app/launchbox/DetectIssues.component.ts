@@ -8,7 +8,11 @@ import { detectXinputIssues, detectDupControllers, scanFileSizes } from './detec
   animations,
 })
 export class DetectIssuesComponent {  
-  routes = { detectXinputIssues, detectDupControllers, scanFileSizes }
+  routes = {
+    detectXinputIssues,
+    detectDupControllers, // deprecated
+    scanFileSizes
+  }
 
   constructor( public session: SessionProvider ) {}
 }

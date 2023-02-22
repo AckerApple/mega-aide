@@ -6,6 +6,7 @@ import { GameInsight, PlatformInsights, SessionProvider } from "src/app/session.
 import { xmlDocToString } from "src/app/xml.functions"
 import { ControllerSupport } from "../LaunchBox.class"
 
+// deprecated
 @Component({
   animations,
   templateUrl: './detect-dup-controllers.component.html',
