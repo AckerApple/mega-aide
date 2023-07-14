@@ -58,6 +58,10 @@ import { DetectXinputComponent } from './launchbox/detect-issues/detect-xinput.c
 import { DetectXInputPlatformComponent } from './launchbox/detect-issues/detect-xinput-platform.component'
 import { DetectDupControllersComponent } from './launchbox/detect-issues/detect-dup-controllers.component'
 import { ScanFilesComponent } from './launchbox/detect-issues/scan-files.component'
+import { RemapButtonsComponent } from './inputs/remap-buttons.component'
+import { NextMouseDirective } from './nextMouse.directive'
+import { InputCodeComponent } from './ledblinky/input-code-select.component'
+import { LightControlSameRomsComponent } from './ledblinky/light-control-same-roms.component'
 
 export const declarations = [
   AppComponent,
@@ -68,6 +72,8 @@ export const declarations = [
   
   FileSystemComponent,
   NextKeyDirective,
+  NextMouseDirective,
+  RemapButtonsComponent,
   NextButtonDirective,
   FinderFilesComponent,
   FinderColumnComponent,
@@ -111,7 +117,9 @@ export const declarations = [
   LEDBlinkyControlsComponent,
   LedblinkyLayoutsComponent,
   RomControlsComponent,
+  LightControlSameRomsComponent,
   InputMapsComponent,
+  InputCodeComponent,
   
   PlatformVisualFiltersComponent,
   PlatformFiltersDirective,

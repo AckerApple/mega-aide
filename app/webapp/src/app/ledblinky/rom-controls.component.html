@@ -17,12 +17,11 @@
   <div class="margin pad bg-warning text-warning">
     🚧 This section is a work in progress and many features are currently experimental. Reviewing is ok but saving information is not recommended at this time
   </div>
-
   <ng-container *ngIf="(romControl$ | async) as romControl">
-    <ng-container *ngIf="(emulator$ | async) as emulator">
+    <ng-container *ngIf="(emulatorControls$ | async) as emulator">
       <ng-container *ngTemplateOutlet="romTemplate;context:{
         $implicit: romControl,
-        emulator: emulator
+        emulator: emulator.emulator
       }"></ng-container>
     </ng-container>
   </ng-container>
@@ -35,14 +34,20 @@
 >
   <h4>{{ emulator.details.emuname }}</h4>
   <h2>{{ romControl.details.voice || romControl.details.groupName }}</h2>
+  <br />
   <div class="flex-wrap gap-xs">
-    <div *ngFor="let player of romControl.players; let playerIndex = index" class="flex1 bg-dark flex-stacked" [@fadeInOutUp]="1">
+    <ng-container *ngFor="let player of romControl.players; let playerIndex = index">
       <button type="button" (click)="player.show = !player.show"
+        class="flex1"
         [class.bg-energized]="player.show"
+        [@fadeInOutUp]="1"
       >
         <ng-container *ngTemplateOutlet="playerLabel;context: player"></ng-container>
       </button>
-    </div>
+    </ng-container>
+    <button type="button" class="flex1 bg-calm"
+      (click)="addPlayer(romControl)"
+    >👤 add player</button>
   </div>
 
   <div class="flex-wrap gap flex1">
@@ -56,50 +61,53 @@
             <div class="bg-grey pad">
               <ng-container *ngTemplateOutlet="playerLabel;context: player"></ng-container>
             </div>
-            <table cellPadding="8" cellSpacing="0" border="0" class="table-lines width-full">
-              <tbody>
-                <tr>
-                  <th>&nbsp;</th>
-                  <th>name</th>
-                  <th>voice</th>
-                  <th>color</th>
-                  <th>inputCodes</th>
-                  <th></th>
-                </tr>
-        
-                <tr *ngIf="romControl.details.defaultActive">
-                  <th></th>
-                  <th>Default_Active</th>
-                  <th></th>
-                  <th class="text-shadow-grey-blur"
-                    [style.background-color]="romControl.defaultActiveCss"
-                  >{{ romControl.details.defaultActive }}</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-
-                <tr *ngIf="romControl.details.defaultInactive">
-                  <th>&nbsp;</th>
-                  <th>Default_Active</th>
-                  <th></th>
-                  <th class="text-shadow-grey-blur"
-                    [style.background-color]="romControl.defaultInactiveCss"
-                  >{{ romControl.details.defaultInactive }}</th>
-                  <th></th>
-                  <th></th>
-                </tr>
-
-                <tr *ngFor="let control of player.controls; let controlIndex = index">
-                  <ng-container *ngTemplateOutlet="playerControlRow;context:{
-                    $implicit: control,
-                    player: player,
-                    playerIndex: playerIndex,
-                    details: control.details$ | async,
-                    controlIndex: controlIndex
-                  }"></ng-container>
-                </tr>
-              </tbody>
-            </table>
+            <div style="max-width: 100vw;overflow: auto;">
+              <table cellPadding="8" cellSpacing="0" border="0"
+                class="table-lines width-full"
+              >
+                <tbody>
+                  <tr>
+                    <th>&nbsp;</th>
+                    <th>name</th>
+                    <th>voice</th>
+                    <th>color</th>
+                    <th>inputCodes</th>
+                    <th></th>
+                  </tr>
+          
+                  <tr *ngIf="romControl.details.defaultActive">
+                    <th></th>
+                    <th>Default_Active</th>
+                    <th></th>
+                    <th class="text-shadow-grey-blur"
+                      [style.background-color]="romControl.defaultActiveCss$ | async"
+                    >{{ romControl.details.defaultActive }}</th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+  
+                  <tr *ngIf="romControl.details.defaultInactive">
+                    <th>&nbsp;</th>
+                    <th>Default_Active</th>
+                    <th></th>
+                    <th class="text-shadow-grey-blur"
+                      [style.background-color]="romControl.defaultInactiveCss$ | async"
+                    >{{ romControl.details.defaultInactive }}</th>
+                    <th></th>
+                    <th></th>
+                  </tr>
+  
+                  <tr *ngFor="let control of player.controls">
+                    <ng-container *ngTemplateOutlet="playerControlRow;context:{
+                      $implicit: control,
+                      player: player,
+                      playerIndex: playerIndex,
+                      details: control.details$ | async
+                    }"></ng-container>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
           <div class="flex-wrap">
             <button type="button" class="flex1 bg-calm radius-top-0"
@@ -115,12 +123,130 @@
   </div>
   
   <div class="margin-v-xs">
-    <ledblinky-layouts class="flex3 overflow"
+    <ledblinky-layouts #ledblinkyLayouts class="flex3 overflow"
       widthFull         = "true"
       [emulator]        = "emulator"
-      [controls]        = "this.session.ledBlinky.controls$ | async"
+      [controls]        = "session.ledBlinky.controls$ | async"
       [playersControls] = "romControl"
-    ></ledblinky-layouts>
+      (lightChanged)    = "lightChanged($event)"
+      [changeWatch]     = "changeWatch"
+      (modalOpen)       = "$event.control || prepareAddControlByLight($event.light, emulator)"
+      (modalClose)      = "addControl.step=0"
+    >
+      <ng-template #modalTemplate let-lightControl let-lightDetails="lightDetails">
+        <h3>Single light control assignment</h3>
+        <br />
+        <div *ngIf="lightControl.control;else offerAddControl" [@fadeInOutUp]="1">
+          <table cellPadding="8" cellSpacing="0" border="0"
+            class="table-lines width-full"
+          >
+            <tr>
+              <th>&nbsp;</th>
+              <th>name</th>
+              <th>voice</th>
+              <th>color</th>
+              <th>inputCodes</th>
+              <th></th>
+            </tr>
+            <tr class="bg-white">
+              <ng-container *ngTemplateOutlet="playerControlRow;context:{
+                $implicit: lightControl.control,
+                player: lightControl.player,
+                playerIndex: lightControl.playerIndex,
+                details: lightControl.control.details$ | async
+              }"></ng-container>
+            </tr>
+          </table>
+        </div>
+        <br />
+        <button type="button" class="width-full"
+          [class.bg-calm]="!lightControl.showGamesUsing"
+          [class.bg-dark]="lightControl.showGamesUsing"
+          (click)="lightControl.showGamesUsing = !lightControl.showGamesUsing"
+        >👾 SHOW ROMS USING</button>
+        <div *ngIf="lightControl.showGamesUsing" [@fadeInOutUp]="1">
+          <light-control-same-roms [lightControl]="lightControl"></light-control-same-roms>
+        </div>
+
+        <ng-template #offerAddControl>
+          <div *ngIf="addControl.step > 0" [@fadeInOutUp]="1">
+            <br />
+            <h4>Add control form</h4>
+            <div class="flex-wrap gap">
+              <div class="flex1">
+                <label for="">Player</label>
+                <div>
+                  <select [(ngModel)]="addControl.playerIndex" class="width-full">
+                    <option [value]="playerIndex" *ngFor="let item of romControl.players;let playerIndex=index"
+                    >{{playerIndex === 0 ? 'Common' : playerIndex}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="flex1">
+                <label for="">Input Code</label>
+                <div>
+                  <input-code-select
+                    class="flex flex1"
+                    [(model)]="addControl.inputCode"
+                  ></input-code-select>        
+                </div>
+              </div>
+
+              <div class="flex1">
+                <label for="">Name</label>
+                <div>
+                  <select [(ngModel)]="addControl.name">
+                    <option [value]="addControl.name">{{addControl.name}}</option>
+                    <ng-container *ngIf="(session.ledBlinky.controls$ | async) as controls">
+                      <ng-container *ngIf="controls.availMap && controls.availMap[ addControl.playerIndex ]">
+                        <option *ngFor="let code of controls.availMap[ addControl.playerIndex ]"
+                          [value]="code.name"
+                        >{{code.name}}</option>
+                      </ng-container>
+                    </ng-container>
+                  </select>
+                  <div class="pos-rel">
+                    <div class="pos-abs width-full overflow text-xxs flex gap">
+                      <a *ngIf="!addControl.recommended; else showRecommended"
+                        (click)="loadNameRecommendations()"
+                      >load recommendations</a>
+                      
+                      <!--
+                        <loading-icon [show]="addControl.load"></loading-icon>
+                      -->
+
+                      <ng-template #showRecommended>
+                        <a *ngFor="let name of addControl.names"
+                          (click)="addControl.name = name"
+                        >{{name}}</a>
+                      </ng-template>
+                    </div>
+                  </div>  
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          <br />
+          <div [ngClass]="addControl.step > 0 ? 'flex-wrap' : 'flex'">
+            <button type="button" class="flex1 radius-right-0"
+              [class.bg-positive]="addControl.step === 0"
+              [class.bg-balanced]="addControl.step > 0"
+              (click)="addControl.step > 0 && addPlayerControl(romControl.players[addControl.playerIndex], addControl)"
+            >⨁ ADD CONTROL</button>
+            <button *ngIf="addControl.step > 0" type="button" class="bg-dark flex1 radius-left-0"
+              [class.radius-right-0]="addControl.step === 0"
+              (click)="addControl.step=0"
+            >⨁ CANCEL ADD</button>
+            <div *ngIf="addControl.step > 0" class="width-full">&nbsp;</div>
+            <button type="button" class="bg-dark flex1"
+              [ngClass]="addControl.step > 0 ? 'width-full' : 'radius-left-0'"
+              (click)="ledblinkyLayouts.closeModal()"
+            >🅧 CLOSE</button>
+          </div>
+        </ng-template>
+      </ng-template>
+    </ledblinky-layouts>
   </div>
 
   <!-- bottom buttons -->
@@ -135,26 +261,28 @@
         [queryParams]="{platform: emulator.details.emuname, rom: romControl.details.groupName}"
       >🧰 LaunchBox Game</a>
 
-      <button type="button" [class.bg-energized]="emulator.viewJson" class="flex1"
-        (click)="emulator.viewJson = !emulator.viewJson"
-      >view emulator json</button>
+      <button type="button" [class.bg-energized]="debug" class="flex1"
+        (click)="debug = !debug"
+      >🐞 debug</button>
 
-      <button type="button" [class.bg-energized]="emulator.viewXml" class="flex1"
-        (click)="emulator.viewXml = !emulator.viewXml"
-      >view emulator xml</button>
+      <ng-container *ngIf="debug">
+        <button type="button" [class.bg-energized]="emulator.viewJson" class="flex1"
+          (click)="emulator.viewJson = !emulator.viewJson"
+        >view emulator json</button>
+  
+        <button type="button" [class.bg-energized]="emulator.viewXml" class="flex1"
+          (click)="emulator.viewXml = !emulator.viewXml"
+        >view emulator xml</button>
+        
+        <button type="button" [class.bg-energized]="viewJson" class="flex1"
+        (click)="viewJson = !viewJson"
+        >view json</button>
+        
+        <button type="button" [class.bg-energized]="viewXml" class="flex1"
+        (click)="viewXml = !viewXml"
+        >view xml</button>
+      </ng-container>
     </ng-container>
-
-    <button type="button" [class.bg-energized]="viewJson" class="flex1"
-      (click)="viewJson = !viewJson"
-    >view json</button>
-    
-    <button type="button" [class.bg-energized]="viewXml" class="flex1"
-      (click)="viewXml = !viewXml"
-    >view xml</button>
-
-    <button type="button" class="flex1 bg-calm"
-      (click)="addPlayer(romControl)"
-    >👤 add player</button>
   </div>
   
   <div class="flex-wrap gap">
@@ -191,11 +319,14 @@
   </div>
 </ng-template>
 
-<ng-template #playerLabel let-details="details">
+<ng-template #playerLabel let-controls="controls" let-details="details">
   <ng-container *ngIf="details.number === '0';else playerLabel">
     Common
   </ng-container>
   <ng-template #playerLabel>
+    <sup class="pull-right text-xxs opacity-80">
+      {{controls.length}}
+    </sup>
     Player {{ details.number }} 🕹 Controls
   </ng-template>
 </ng-template>
@@ -205,14 +336,15 @@
   let-player="player"
   let-playerIndex="playerIndex"
   let-details="details"
-  let-controlIndex="controlIndex"
 >
+  <!--action-->
   <td>
-    <button type="button" class="text-xxs pad-xxs"
+    <button type="button" class="text-xxs"
       [ngClass] = "control.edit ? 'bg-energized' : control.edited ? 'bg-orange' : 'bg-calm'"
       (click)="control.edit = !control.edit"
     >{{ control.edited ? 'edited' : 'edit' }}</button>
   </td>
+  <!--name-->
   <td>
     <div *ngIf="!control.edit">
       {{ details.name }}
@@ -232,6 +364,7 @@
       </select>                         
     </div>
   </td>
+  <!--voice-->
   <td>
     <!--todo need on changes-->
     <div *ngIf="!control.edit" [(contentModel)]="details.voice"
@@ -245,6 +378,7 @@
       />
     </div>
   </td>
+  <!--color-->
   <td class="text-shadow-grey-blur"
     [style.background-color]="control.cssColor$ | async"
   >
@@ -267,32 +401,54 @@
       </select>                         
     </div>
   </td>
+  <!--inputCodes-->
   <td>
-    <div *ngIf="!control.edit">
-      {{ $any(control.inputCodes$ | async)?.join('\n') }}
-    </div>
-    <div *ngIf="control.edit">
-      <!--todo need on changes-->
-      <div *ngFor="let controlCode of control.inputCodes; let codeIndex = index">
-        <select (change)="control.edited = true">
-          <option></option>
-          <option *ngFor="let inputCode of (inputsMap$ | async)?.inputCodes"
-            [value]="inputCode.inputCode"
-            [selected]="controlCode === inputCode.inputCode"
-          >{{inputCode.inputCode}}</option>
-          <optgroup label="New Input Codes">
-            <option *ngFor="let inputCode of session.ledBlinky.newInputCodes$ | async | keyvalue"
-              [value]="inputCode.key"
-              [selected]="controlCode === inputCode.key"
-            >{{inputCode.key}}</option>
-          </optgroup>
-        </select>                         
-      </div>
-    </div>
+    <ng-container *ngTemplateOutlet="controlCodes;context:{
+      control: control,
+      details: details,
+      inputCodes: control.inputCodes$ | async
+    }"></ng-container>
   </td>
   <td>
     <button *ngIf="control.edit" type="button" class="text-xs pad-xs bg-assertive"
-      (click)="player.controls.splice(controlIndex, 1)"
+      (click)="control.delete()"
     >🗑 delete</button>
   </td>
+</ng-template>
+
+<ng-template #controlCodes
+  let-details="details"
+  let-control="control"
+  let-inputCodes="inputCodes"
+>
+  <div *ngIf="!control.edit && inputCodes">
+    {{ inputCodes.join('\n') }}
+  </div>
+  <div *ngIf="control.edit">
+    <!--todo need on changes-->
+    <div *ngFor="let controlCode of inputCodes; let codeIndex = index"
+      class="flex text-xs"
+    >
+      <input-code-select class="flex flex1"
+        className="radius-right-0"
+        [model]="controlCode"
+        (modelChange)="control.edited = true;inputCodes[codeIndex]=$event;updateDetailsByCodes(control)"
+      ></input-code-select>
+            
+      <remap-buttons classes="radius-0"
+        (mouseChange)="applyMouseListen($event, details, control, inputCodes, codeIndex)"
+        (keyChange)="applyKeyListen($event, details, control, inputCodes, codeIndex)"
+      ></remap-buttons>
+
+      <button *ngIf="inputCodes.length-1 === codeIndex"
+        type="button"
+        (click)="inputCodes.push('');updateDetailsByCodes(control)"
+        class="radius-left-0 radius-right-0 bg-balanced"
+      >✚</button>
+
+      <button type="button" (click)="inputCodes.splice(codeIndex,1);updateDetailsByCodes(control)"
+        class="radius-left-0 bg-assertive"
+      >🅧</button>
+    </div>
+  </div>
 </ng-template>

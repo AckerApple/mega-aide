@@ -4,6 +4,7 @@ import { LastButtonsProvider } from './inputs/LastButtons.provider'
 @Directive({
   selector: "[nextButton]",
   providers: [ LastButtonsProvider ],
+  exportAs: 'nextButton'
 })
 export class NextButtonDirective {
   @Input() startByEvent?: 'click' | 'dblclick' | 'contextmenu'
@@ -13,12 +14,12 @@ export class NextButtonDirective {
   @Input() nextAxis?: string | number // +2 === positive axis in index 2
   @Output() nextAxisChange: EventEmitter<string> = new EventEmitter()
     
-  @Input() nextButtonListening?: boolean | number
-  @Output() nextButtonListeningChange: EventEmitter<boolean> = new EventEmitter()
+  @Input('nextButtonListening') listening?: boolean | number
+  @Output('listeningChange') listeningChange: EventEmitter<boolean> = new EventEmitter()
 
   constructor(public lastButtons: LastButtonsProvider) {
     this.lastButtons.listeningChange.subscribe(x =>
-      this.nextButtonListeningChange.emit(this.nextButtonListening = x)
+      this.listeningChange.emit(this.listening = x)
     )
 
     this.lastButtons.buttonPress.subscribe( x => {
@@ -33,8 +34,8 @@ export class NextButtonDirective {
   }
 
   ngOnChanges( changes:any ){
-    if ( changes.nextButtonListening ) {
-      if ( !this.nextButtonListening ) {
+    if ( changes.listening ) {
+      if ( !this.listening ) {
         this.lastButtons.removeListeners()
       } else {
         this.lastButtons.startListening()

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { DmFileReader } from 'ack-angular-components/directory-managers/DirectoryManagers'
+import { DmFileReader } from 'ack-angular-components/directory-managers/DmFileReader'
 import { SessionProvider, WriteFile } from '../session.provider'
 
 @Component({

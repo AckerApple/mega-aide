@@ -6,11 +6,12 @@ import gamepad from '../inputs/gamepad.json'
 import { PlatformMap } from '../platforms'
 import { LastPresses } from '../inputs/LastPresses.provider'
 import { Remap } from '../inputs/platform-control-map.component'
-import { DirectoryManager, DmFileReader } from 'ack-angular-components/directory-managers/DirectoryManagers'
+import { DirectoryManager } from 'ack-angular-components/directory-managers/DirectoryManagers'
 import { LastButtonsProvider } from '../inputs/LastButtons.provider'
 import { animations } from 'ack-angular-fx'
 import { Prompts } from 'ack-angular'
 import { firstValueFrom, Subscription } from 'rxjs'
+import { DmFileReader } from 'ack-angular-components/directory-managers/DmFileReader'
 
 interface GamePadButtons {
   [index: string]: boolean // true IF is axis

@@ -95,7 +95,7 @@ export class GamesComponent {
     if ( searchRoms?.length ) {
       if ( !this.selected && searchRoms.length === 1 ) {
         const rom = searchRoms[0]
-        this.platformName = rom.platform.name
+        this.platformName = rom.platform.fileName
         this.showGame( rom )
       }
       return // its loading one rom
@@ -269,7 +269,7 @@ export class GamesComponent {
   }
 
   sortSearchPlatform() {
-    this.searchGames.sort(({platform: platformA}, {platform: platformB})=>String(platformA.name||'').toLowerCase()>String(platformB.name||'').toLowerCase()?1:-1)
+    this.searchGames.sort(({platform: platformA}, {platform: platformB})=>String(platformA.id||'').toLowerCase()>String(platformB.id||'').toLowerCase()?1:-1)
   }
 
   sortSearchGame() {
@@ -302,7 +302,7 @@ export class GamesComponent {
       queryParams: {
         // gameId: game.game.details.id,
         title: game.game.details.title,
-        platform: game.platform.name,
+        platform: game.platform.fileName,
       }, 
       queryParamsHandling: 'merge', // remove to replace all query params by provided
     })

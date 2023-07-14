@@ -1,0 +1,15 @@
+<select class="flex1" [ngClass]="className"
+  (change)="modelChange.emit($any($event).target.value)"
+>
+<option *ngIf="model">({{model}})</option>
+<option *ngFor="let inputCode of (inputsMap$ | async)?.inputCodes"
+  [value]="inputCode.inputCode"
+  [selected]="model === inputCode.inputCode"
+>{{inputCode.inputCode}}</option>
+<optgroup label="New Input Codes">
+  <option *ngFor="let inputCode of session.ledBlinky.newInputCodes$ | async | keyvalue"
+    [value]="inputCode.key"
+    [selected]="model === inputCode.key"
+  >{{inputCode.key}}</option>
+</optgroup>
+</select>

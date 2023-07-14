@@ -12,7 +12,9 @@
         [labelType]       = "filters.labelType"
         [(lastDrag)]      = "player.lastDrag || lastDrag"
         (lastDragChange)  = "lastDragChange.emit(player.lastDrag=$event)"
+
         [(controlListen)] = "controlListen"
+        (controlListenChange) = "keyListen = controlListen"
       ></platform-control-map>
     </div>
   </div>
@@ -146,11 +148,12 @@
                 (change)="control.type='button';control.gamepadCode=control.gamepadButton"
               />
               <button type="button"
-                [class.bg-energized]="btnListen === control"
+                [class.bg-energized]="nextButton.listening"
+                #nextButton="nextButton"
                 [(nextButton)]="control.gamepadButton"
                 [nextButtonListening]="btnListen === control"
                 (nextButtonListeningChange)="controlListen = btnListen = $event ? control : undefined"
-              >{{ btnListen === control ? 'press button' : '🗺 map' }}</button>
+              >{{ nextButton.listening ? 'press button' : '🕹️ map' }}</button>
             </div>
           </ng-template>
         </div>
@@ -175,15 +178,14 @@
                 type="button" class="flex-valign-center bg-assertive radius-left-0"
                 (click)="control.keyCode=undefined;control.keyName=undefined"
               >x</button>
-
             </div>
-            <button type="button" class="flex-1"
-              [class.bg-energized]="keyListen === control"
-              [(nextKey)]="control.keyName"
-              [(nextKeyCode)]="control.keyCode"
-              [nextKeyListening]="keyListen === control"
-              (nextKeyListeningChange)="controlListen = keyListen = $event ? control : undefined"
-            >{{ keyListen ? 'press key' : '🗺 map'}}</button>
+            <remap-buttons
+              [useMouse]="false"
+              [(key)]="control.keyName"
+              [(keyCode)]="control.keyCode"
+              [keyListen]="keyListen === control"
+              (keyListenChange)="controlListen = keyListen = $event ? control : undefined"
+            ></remap-buttons>
           </div>
         </div>
       </div>

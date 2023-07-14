@@ -1,0 +1,27 @@
+<div class="overflow max-height-600">
+  <table cellPadding="8" cellSpacing="0" class="table-striped">
+    <tbody>
+      <tr>
+        <th>Emulator</th>
+        <th>Name</th>
+        <th>Voice</th>
+        <th>Players</th>
+      </tr>
+      <ng-container *ngFor="let game of lightControl.gamesUsingSame$ | async">
+        <tr>
+          <td>{{ game.emulator.details.emuname }}</td>
+          <td>
+            <a [routerLink]="'/🚦/🕹/'+game.emulator.details.emuname+'/'+game.rom.details.groupName">
+              {{ game.rom.details.groupName }}
+            </a>
+          </td>
+          <td>{{ game.rom.details.voice }}</td>
+          <td>{{ game.rom.details.numPlayers }}</td>
+        </tr>
+      </ng-container>
+    </tbody>
+    <tr *ngIf="lightControl.gamesUsingSameLoadCount">
+      <td colspan="4"><loading-icon [show]="true"></loading-icon></td>
+    </tr>
+  </table>
+</div>

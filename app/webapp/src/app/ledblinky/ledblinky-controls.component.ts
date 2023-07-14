@@ -1,8 +1,8 @@
 import { Component } from '@angular/core'
 import { animations } from 'ack-angular-fx'
 import { SessionProvider } from '../session.provider'
-import { InputsMap, Emulator, NewEmulator, ControlGroup, LedBlinkyControls } from './LedBlinky.utils'
-import { BehaviorSubject, combineLatest, from, lastValueFrom, map, mergeMap, Observable, of, shareReplay, Subject, Subscription } from 'rxjs'
+import { InputsMap, Emulator, NewEmulator, LedBlinkyControls, NewControlGroup, NewControlGroupings } from './LedBlinky.utils'
+import { BehaviorSubject, combineLatest, from, map, mergeMap, Observable, of, shareReplay } from 'rxjs'
 import { MamePortMap } from './mame.class'
 import { ActivatedRoute, Router } from '@angular/router'
 import { routeMap } from '../ledblinky.routing.module'
@@ -44,26 +44,6 @@ export class LEDBlinkyControlsComponent {
     })
   )
 
-  roms$ = combineLatest([
-    this.session.ledBlinky.emulator$,
-    this.unknownMode$,
-    this.unknownGames$,
-    this.emulators$,
-  ]).pipe(
-    map(([emulator, unknownMode, unknownGames, emulators]) => {
-      const typeEmu = emulator
-      if ( typeEmu ) {
-        if ( unknownMode ) {
-          emulator = unknownGames?.find(emu => emu.details.emuname === typeEmu.details.emuname)
-        } else {
-          emulator = emulators?.find(emu => emu.details.emuname === typeEmu.details.emuname)
-        }
-      }
-      
-      return emulator
-    })
-  )
-
   // filteredEmulators?: (NewEmulator | Emulator)[]
   filteredEmulators$: Observable<(Emulator | NewEmulator)[]> = combineLatest([
     this.search$,
@@ -86,11 +66,12 @@ export class LEDBlinkyControlsComponent {
 
       const typedEmu = emulator
       if ( typedEmu ) {
-        if ( unknownMode ) {
+        /*if ( unknownMode ) {
           emulator = unknownGames?.find(emu => emu.details.emuname === typedEmu.details.emuname)
         } else {
           emulator = emulators?.find(emu => emu.details.emuname === typedEmu.details.emuname)
-        }
+        }*/
+        emulator = (emulators as Emulator[])?.find(emu => emu.details.emuname === typedEmu.details.emuname)
 
         if ( emulator ) {
           return of([ emulator ])
@@ -108,8 +89,9 @@ export class LEDBlinkyControlsComponent {
       const filteredEmulators = emulators
         .map(x => {
           const clone: NewEmulator | Emulator = {...x}
-          const controlGroups = clone.controlGroups
-          clone.controlGroups = controlGroups.filter(x => {
+          const controlGroups = clone.controlGroups as NewControlGroupings[]
+          
+          clone.controlGroups = controlGroups.filter((x: NewControlGroupings) => {
             if ( x.voice ) {
               if ( x.voice.toLowerCase().includes(trueSearch) ) {
                 return true
@@ -120,6 +102,7 @@ export class LEDBlinkyControlsComponent {
             const matched = test.includes(search)
             return matched
           })
+
           return clone
         }) // clone
         .filter((emu, index) => {
@@ -143,6 +126,14 @@ export class LEDBlinkyControlsComponent {
       this.session.load$.next(-1)
   
       return of(filteredEmulators)
+    }), shareReplay(1)
+  )
+
+  roms$ = combineLatest([
+    this.session.ledBlinky.emulator$,
+  ]).pipe(
+    map(([emulator]) => {
+      return emulator
     })
   )
 
@@ -151,26 +142,6 @@ export class LEDBlinkyControlsComponent {
     public router: Router,
     public session: SessionProvider,
   ) {
-    /*
-    this.subs.add(
-      this.session.ledBlinky.directory$.subscribe(() =>
-        this.readDir()
-      )
-    )
-
-    this.subs.add(
-      this.session.ledBlinky.directoryChange.subscribe(() => 
-        this.readDir()
-      )
-    )
-    
-    this.subs.add(
-      this.session.launchBox.directory$.subscribe(() => {
-        this.readDir()
-      })
-    )
-    */
-
     const requestSearch = this.activatedRoute.snapshot.queryParams['search']
     if ( requestSearch ) {
       this.search$.next( requestSearch )
@@ -221,13 +192,19 @@ export class LEDBlinkyControlsComponent {
       if ( reqEmuName ) {
         const emulator = findEmulatorByName(emulators, reqEmuName)
         this.session.ledBlinky.emulator$.next( emulator )
+        this.requestedEmulatorName = reqEmuName
+      } else {
+        delete this.requestedEmulatorName
       }
     }
 
     return emulators
   }
+  requestedEmulatorName?: string
 
-  afterSearch(emus: NewEmulator[]) {
+  afterSearch(
+    emus: (Emulator | NewEmulator)[]
+  ) {
     const goto = this.goto
     delete this.goto // never goto more than once
 
@@ -250,7 +227,8 @@ export class LEDBlinkyControlsComponent {
     }
 
     const emuname = emu.details.emuname
-    const romname = emu.controlGroups[0].groupName
+    const controlGroups = emu.controlGroups as NewControlGroupings[]
+    const romname = controlGroups[0].groupName
     const url = `/${this.routes.ledblinkyControls.path}/${emuname}/${romname}`
     const unknownMode = this.unknownMode$.getValue()
 
@@ -264,7 +242,10 @@ export class LEDBlinkyControlsComponent {
 }
 
 
-export function findEmulatorByName(emulators: NewEmulator[], name: string) {
+export function findEmulatorByName(
+  emulators: (NewEmulator | Emulator)[],
+  name: string
+) {
   const emuName = name.toLowerCase().replace(/_/g,' ')
   return emulators?.find(x => x.details.emuname.toLowerCase().replace(/_/g,' ') === emuName)
 }

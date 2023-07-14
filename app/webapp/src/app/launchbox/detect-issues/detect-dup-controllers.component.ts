@@ -134,6 +134,7 @@ import { ControllerSupport } from "../LaunchBox.class"
             }
 
             sub.next( game )
+            sub.complete()
           })
       }).pipe(
         shareReplay(1)

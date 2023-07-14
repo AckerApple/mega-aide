@@ -1,5 +1,4 @@
 import { Component } from '@angular/core'
-import { DmFileReader } from 'ack-angular-components/directory-managers/DirectoryManagers'
 import { animations } from 'ack-angular-fx'
 import { Subscription } from 'rxjs'
 import { getFileBackupList } from '../components/backups.component'

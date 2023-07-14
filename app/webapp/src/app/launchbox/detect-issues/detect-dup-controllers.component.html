@@ -47,7 +47,7 @@
         class="hover-bg-calm cursor-pointer"
         [class.bg-energized]="item.showGames"
       >
-        <td>{{ item.platform.name }}</td>
+        <td>{{ item.platform.fileName }}</td>
         <td>{{ item.gamesWithDups.length }}</td>
       </tr>
       <tr *ngIf="item.showGames" [@fadeInOutUp]="1" class="bg-black">
@@ -93,7 +93,7 @@
     <loading-icon [show$]="session.loading$"></loading-icon>
     <div class="text-xs text-right">
       <div>Platfroms scanned: {{ platformsRead }}</div>
-      <div>{{ platformRead?.name }}</div>
+      <div>{{ platformRead?.fileName }}</div>
     </div>
   </div>
 </ng-template>

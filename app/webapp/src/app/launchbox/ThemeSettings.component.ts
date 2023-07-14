@@ -2,9 +2,10 @@ import { Component } from '@angular/core'
 import { SessionProvider } from '../session.provider'
 import { BigBoxFileSettings } from './BigBoxFileSettings.class'
 import { xmlDocToString } from '../xml.functions'
-import { DirectoryManager, DmFileReader } from 'ack-angular-components/directory-managers/DirectoryManagers'
+import { DirectoryManager } from 'ack-angular-components/directory-managers/DirectoryManagers'
 import { path } from 'ack-angular-components'
 import { Subscription } from 'rxjs'
+import { DmFileReader } from 'ack-angular-components/directory-managers/DmFileReader'
 
 @Component({
   templateUrl: './ThemeSettings.component.html',

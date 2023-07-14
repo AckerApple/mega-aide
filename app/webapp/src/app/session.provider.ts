@@ -1,5 +1,5 @@
 import { EventEmitter, Injectable } from '@angular/core'
-import { DirectoryManager, DmFileReader } from 'ack-angular-components/directory-managers/DirectoryManagers'
+import { DirectoryManager } from 'ack-angular-components/directory-managers/DirectoryManagers'
 import { getOs, getStorage, saveStorage } from './app.utilities'
 import { getControlGamepadCode } from './inputs/platform-player-control.component'
 import { ControllerSupport, LaunchBox } from './launchbox/LaunchBox.class'
@@ -13,6 +13,7 @@ import { Tips } from './tips.class'
 import platforms from './platform.map.json'
 import { Mame } from './ledblinky/mame.class'
 import { BehaviorSubject, map, Observable, shareReplay } from 'rxjs'
+import { DmFileReader } from 'ack-angular-components/directory-managers/DmFileReader'
 
 @Injectable()
 export class SessionProvider {
@@ -201,7 +202,8 @@ export interface AdditionalApp {
 
 export interface PlatformInsights {
   xml: Document
-  name: string
+  id: string // fileName with no extension
+  fileName: string
   file: DmFileReader
   
   games$: Observable<GameInsight[]>

@@ -55,13 +55,16 @@
 </div>
 
 <div class="content" role="main">
+  <!--
   <div *ngIf="session.config.showWarn" [@fadeInOutUp]="1" class="margin-v pos-rel">
     <span class="pos-abs right-0 top-0" style="z-index: 1;">
       <a (click)="session.config.showWarn = false;session.save()" class="cursor-pointer">🅧&nbsp;</a>
     </span>
+    
     <ng-container *ngTemplateOutlet="warnTemplate"></ng-container>
   </div>
-  
+  -->
+    
   <ng-container *ngIf="routeState.current.config && routeState.current.config.data">
     <ng-container *ngTemplateOutlet="title;context:{title:routeState.current.config.title || routeState.current.config.data['title']}"></ng-container>
     <ng-template #title let-title="title">
@@ -114,7 +117,7 @@
         <div class="opacity-half">🔗 helpful links</div>
       </div>
       <a class="text-white nowrap" target="_blank"
-        href="https://github.com/AckerApple/mega-aide/tree/main/app/dist/myapp"
+        href="https://github.com/AckerApple/mega-aide/tree/main/app/dist/mega-aide"
         (click)="openAnchor($event)"
       >📦 This apps download page</a>
 
@@ -147,17 +150,18 @@
     </div>
 
     <!-- memory usage -->
-    <div *ngIf="session.performance as stats"
-      class="flex-wrap gap flex-center pad-xxs"
-    >
-      <div class="pad-xxs bg-calm">
-        🧠 memory used {{stats.memory.usedJSHeapSize / 1000000 | number : '1.2-2'}}mb of {{stats.memory.jsHeapSizeLimit / 1000000 | number : '1.2-2'}}mb - {{(stats.memory.usedJSHeapSize / stats.memory.jsHeapSizeLimit) * 100 | number : '1.0-0'}}%
+    <!--
+      <div *ngIf="session.performance as stats"
+        class="flex-wrap gap flex-center pad-xxs"
+      >
+        <div class="pad-xxs bg-calm">
+          🧠 memory used {{stats.memory.usedJSHeapSize / 1000000 | number : '1.2-2'}}mb of {{stats.memory.jsHeapSizeLimit / 1000000 | number : '1.2-2'}}mb - {{(stats.memory.usedJSHeapSize / stats.memory.jsHeapSizeLimit) * 100 | number : '1.0-0'}}%
+        </div>
       </div>
-    </div>
+    -->
 </div>
   
-  <br />
-  <ng-container *ngTemplateOutlet="warnTemplate"></ng-container>
+  <!--<br /><ng-container *ngTemplateOutlet="warnTemplate"></ng-container>-->
 
   <br />
 
@@ -198,6 +202,7 @@
   </div>
 </ack-modal>
 
+<!--
 <ng-template #warnTemplate>
   <div class="opacity-70 pad-xs bg-warning text-warning">
     ✅ This app is in a known to be safe state. It is still recommended to perform manual backups of files BEFORE using any 💾 file saving abilities of this app.
@@ -206,6 +211,7 @@
     👉 You can test your device capabilities <a routerLink="🐞">here</a>
   </div>
 </ng-template>
+-->
 
 <ack-modal *ngIf="session.filePreview" valign="center" (close)="session.filePreview=undefined">
   <div class="bg-dark pad radius-10">

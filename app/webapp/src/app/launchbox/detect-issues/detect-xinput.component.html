@@ -148,7 +148,7 @@
       <tr class="cursor-pointer hover-bg-calm" (click)="platform.xArcadeApps.viewDetails = !platform.xArcadeApps.viewDetails"
         [class.bg-energized]="platform.xArcadeApps.viewDetails"
       >
-        <td>{{ platform.name }}</td>
+        <td>{{ platform.fileName }}</td>
         <td>{{ platform.xArcadeApps.mapped.length }}</td>
         <td>{{ platform.xArcadeApps.unmapped.length }}</td>
         <td>{{ $any(platform.games$ | async).length }}</td>

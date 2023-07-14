@@ -41,7 +41,7 @@
             <tr *ngFor="let gameInsight of searchGames" class="cursor-pointer bg-hover-positive"
               (click)="showGame(gameInsight)"
             >
-              <td class="pad-right-xs">{{gameInsight.platform.name}}</td>
+              <td class="pad-right-xs">{{gameInsight.platform.id}}</td>
               <td>
                 {{gameInsight.game.details.favorite ? '⭐️ ' : ''}}
                 {{gameInsight.game.details.title}}
@@ -57,7 +57,7 @@
   <div *ngIf="selected" [@fadeInUp]="1">
     <a class="pull-right" (click)="selected=undefined">🅧</a>
     <div>
-      {{selected.game.platform.name}}
+      {{selected.game.platform.id}}
     </div>
     <h2>
       <a (click)="toggleFavorite(selected.game)">{{selected.game.game.details.favorite ? '⭐️ ' : '✩ '}}</a>
@@ -127,7 +127,7 @@
       <div>
         platform xml path: {{selected.game.platform.file.directory.path}}/{{selected.game.platform.file.name}}
       </div>
-      <a class="no-a-style" [routerLink]="'../../' + ledBlinkRouteMap.ledblinkyControls.path + '/' + selected.game.platform.name"
+      <a class="no-a-style" [routerLink]="'../../' + ledBlinkRouteMap.ledblinkyControls.path + '/' + selected.game.platform.id.split(' ').join('_') | uppercase"
         [queryParams]="{search:selected.game.game.details.title}"
       ><u>🚦LED Blinky</u></a>
     </div>

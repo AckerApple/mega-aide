@@ -1,24 +1,35 @@
-import { Component, EventEmitter, Input, Output } from "@angular/core"
+import { Component, ContentChild, ElementRef, EventEmitter, Input, Output, SimpleChanges, TemplateRef } from "@angular/core"
 import { DirectoryManager } from "ack-angular-components/directory-managers/DirectoryManagers"
-import { BehaviorSubject, combineLatest, firstValueFrom, from, map, mergeMap, of, shareReplay } from "rxjs"
+import { BehaviorSubject, combineLatest, concatMap, finalize, firstValueFrom, from, map, mergeMap, Observable, of, shareReplay, Subject, Subscriber, switchMap, take, takeUntil, tap, toArray } from "rxjs"
 import { SessionProvider } from "../session.provider"
-import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePairs, InputsMap, LedBlinkyControls, Light, LightDetails, LightsConfig, NewControlGroup, NewEmulator } from './LedBlinky.utils'
+import { LedBlinky } from "./LedBlinky.class"
+import { castColorDetailsToCssColor, castControlDetailsToCssColor, ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePairs, InputsMap, intToHex, LedBlinkyControls, Light, LightDetails, LightsConfig, LightsControlConfig, NewControlGroup, NewEmulator, NewPlayer, Player, PlayerControl } from './LedBlinky.utils'
+import { animations } from "ack-angular-fx"
+import { delay } from "../delay"
 
 @Component({
   selector: 'ledblinky-layouts',
   templateUrl: './ledblinky-layouts.component.html',
+  animations,
+  exportAs: 'ledblinkyLayouts'
 }) export class LedblinkyLayoutsComponent {
   @Input() edit?: boolean | string
   @Input() emulator?: Emulator | NewEmulator // used for coloring non mame games
-  @Input() playersControls?: NewControlGroup | ControlGroup // used for coloring non mame games
+  @Input() playersControls?: NewControlGroup
+  @Input() changeWatch?: any // cause re-rendering
   @Input() controls?: LedBlinkyControls | null // used to color mame games
   @Input() widthFull: boolean | string = false
 
-  @Output() changed = new EventEmitter<LightsConfig>()
+  @Output() changed = new EventEmitter<LightsControlConfig>()
+  @Output() lightChanged = new EventEmitter<Light>()
+  @Output() modalOpen = new EventEmitter<LightAndControl>()
+  @Output() modalClose = new EventEmitter<void>()
+
+  @ContentChild('modalTemplate', { static: false }) modalTemplate?: TemplateRef<ElementRef>
 
   // set user changed layoutNames here
   layoutName$$ = new BehaviorSubject<string | undefined>(undefined)
-  showLightDetails$ = new BehaviorSubject<Light | undefined | void>(undefined)
+  @Output() showLightDetails$ = new BehaviorSubject<LightAndControl | undefined>(undefined)
   selectedLights: Light[] = []
   
   // lookup default or emit layoutName$$ value
@@ -37,7 +48,7 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
       }
   
       if ( !animEditorObject ) {
-        return of()
+        return of(null)
       }
       
       const name = getLastLayoutFileByLightsConfig(animEditorObject)
@@ -47,19 +58,23 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
   )
 
   layoutNames: string[] = []
-  lightConfig?: LightsConfig
+  // lightConfig?: LightsConfig
+  lightConfig?: LightsControlConfig
   
+  playersControls$$ = new BehaviorSubject<NewControlGroup | undefined>(undefined)
+
   lights$ = combineLatest([
     this.session.ledBlinky.directory$,
     this.layoutName$,
     this.session.ledBlinky.animEditorObject$,
+    this.playersControls$$,
   ]).pipe(
-    mergeMap(([dir, layoutName, animEditorObject]) => {
+    mergeMap(([dir, layoutName, animEditorObject, playersControls]) => {
       if ( !dir || !layoutName || !animEditorObject ) {
         return []
       }
 
-      const promise = this.getLightsLayout(dir, animEditorObject, layoutName)
+      const promise = this.getLightsLayout(dir, animEditorObject, layoutName, playersControls)
       return from( promise )
     }),
     shareReplay(1)
@@ -73,7 +88,8 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
       if ( !lights || !inputsMap ) {
         return of( undefined )
       }
-      const missing = getMissingLights(lights, inputsMap)
+      const lightArray = lights.map(config => config.light)
+      const missing = getMissingLights(lightArray, inputsMap)
       return from(missing)
     })
   )
@@ -90,48 +106,113 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
   
   constructor(public session: SessionProvider) {}
 
+  ngOnChanges( changes:SimpleChanges ){
+    if ( changes['changeWatch'] ) {
+      this.playersControls$$.next(this.playersControls)
+    }
+  }
+
   async getLightsLayout(
     directory: DirectoryManager,
     animEditorObject: IniNameValuePairs,
     layoutName?: string,
-  ): Promise<Light[] | undefined> {
+    playersControls?: NewControlGroup
+  ): Promise<LightAndControl[] | undefined> {
     const ledBlinky = this.session.ledBlinky
     // load available layout files
-    const files = await directory.listFiles()
+    const files: string[] = await directory.listFiles()
+    
+    const currentModal = await firstValueFrom(this.showLightDetails$)
+
     this.layoutNames = files.filter((v) => v.includes('.lay'))
     if ( layoutName ) {
-      const lightConfig = this.lightConfig = await ledBlinky.getLightLayoutByName(directory, layoutName)
+      const lightConfig = await ledBlinky.getLightLayoutByName(directory, layoutName)
       if ( !lightConfig ) {
         return
       }
-      return this.getLightConfig( lightConfig )
+
+      // look to update current modal
+      const lightControls = await this.getLightConfig(lightConfig, playersControls)
+      console.log('look to update modal', currentModal)
+      if ( currentModal ) {
+        const currentDetails = await firstValueFrom(currentModal.light.details$)
+        
+        // TODO, need a match by light.details.name
+        const lightDetailProms = lightControls.map(async lightControl => ({
+          details: await firstValueFrom(lightControl.light.details$),
+          lightControl,
+        }))
+        
+        const lightDetails = await Promise.all(lightDetailProms)
+        const updateModalTo = lightDetails.findIndex(c => c.details.name === currentDetails.name)
+        if ( updateModalTo >= 0 ) {
+          this.showLightDetails$.next(lightDetails[updateModalTo].lightControl)
+        }
+      }
+
+      this.lightConfig = {
+        lightControls: lightControls,
+        lights: lightControls.map(light => light.light),
+        settings: lightConfig.settings,
+        file: lightConfig.file,
+      }
+      return lightControls
     }
 
     const dir$ = await this.session.ledBlinky.getFxEditorByDir(
       directory, animEditorObject
     )
-    const lightConfig = this.lightConfig = dir$
+    const lightConfig = dir$
     if ( !lightConfig ) {
       return
     }
 
-    return this.getLightConfig( lightConfig )
+    const lightControls = await this.getLightConfig(lightConfig, playersControls)
+    this.lightConfig = {
+      lightControls: lightControls,
+      lights: lightControls.map(light => light.light),
+      settings: lightConfig.settings,
+      file: lightConfig.file,
+    }
+    return lightControls
   }
 
-  getLightConfig(lightConfig: LightsConfig) {
+  async getLightConfig(
+    lightConfig: LightsConfig,
+    playersControls?: NewControlGroup, // game map of lights
+  ): Promise<LightAndControl[]> {
     // loop all lights and remap the colors
-    const lights = lightConfig.lights.map(light => {
-      let clone = {...light}
-
-      if ( this.playersControls ) {
-        remapPlayerControlsToLight(this.playersControls, clone)
+    const proms = lightConfig.lights.map(async light => {
+      let clone: Light = {
+        ...light,
       }
 
-      return clone
+      if ( playersControls ) {
+        return await remapPlayerControlsToLight(
+          playersControls,
+          clone,
+          this.session.ledBlinky,
+        )
+      }
+      const lightAndControl: LightAndControl = {
+        light: clone,
+        
+        gamesUsingSameLoadCount: 0,
+        gamesUsingSame$: of(null).pipe(
+          tap(() => ++lightAndControl.gamesUsingSameLoadCount),
+          concatMap(() => getGamesUsing$(this.session.ledBlinky.controls$, light.details$)),
+          finalize(() => --lightAndControl.gamesUsingSameLoadCount)
+        ),
+      }
+
+      return lightAndControl
     })
 
-    this.applyBounds(lights)
-    return lights
+    const config = await Promise.all(proms)
+
+    this.applyBounds(config.map(x => x.light))
+    
+    return config
   }
 
   async applyBounds(lights: Light[]) {
@@ -219,17 +300,11 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
     $event: MouseEvent,
     lastLightDrag: LightDrag
   ) {
-    const { startOffsetX, startOffsetY, startX, startY } = lastLightDrag
+    const { startX, startY } = lastLightDrag
     const zoom = (this.session.ledBlinky.zoom$.getValue() || 1)
 
     const xDiff = $event.pageX - startX
     const yDiff = $event.pageY - startY
-
-    const offsetX = (startOffsetX + xDiff) / zoom
-    const offsetY = (startOffsetY + yDiff) / zoom
-    
-    // lastLightDrag.light.details.x = offsetX
-    // lastLightDrag.light.details.y = offsetY
 
     this.selectedLights.forEach(async light => {
       const details = await firstValueFrom(light.details$)
@@ -268,7 +343,7 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
 
     lights.forEach((light, index) => {
       if ( !lightConfig.lights[index] ) {
-        return lightConfig.lights[index] = light
+        return lightConfig.lights[index] = light.light
       }
       
       return Object.assign(lightConfig.lights[index], light)
@@ -277,7 +352,7 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
   }
 
   addLight(
-    lights: Light[],
+    lights: LightAndControl[],
     lightName?: string
   ) {
     if ( !lightName ) {
@@ -292,11 +367,24 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
       diameter: 20,
     }).pipe( shareReplay(1) )
     
-    lights.push({
-      cssColor$: new BehaviorSubject('#ffffff'),
-      // colorHex: '',
-      details$
-    })
+    const colorDec$ = new BehaviorSubject(0)
+    const lightAndControl: LightAndControl = {
+      gamesUsingSameLoadCount: 0,
+      gamesUsingSame$: of(null).pipe(
+        tap(() => ++lightAndControl.gamesUsingSameLoadCount),
+        concatMap(() => getGamesUsing$(this.session.ledBlinky.controls$, details$)),
+        finalize(() => --lightAndControl.gamesUsingSameLoadCount)
+      ),
+      light: {
+        // cssColor$: new BehaviorSubject('#ffffff'),
+        colorDec$,
+        cssColor$: colorDec$.pipe(
+          map(colorDec => intToHex(colorDec)),
+        ),
+        details$
+      }
+    }
+    lights.push(lightAndControl)
   }
 
   stopDrag($event: MouseEvent) {
@@ -309,36 +397,94 @@ import { ControlGroup, Emulator, getLastLayoutFileByLightsConfig, IniNameValuePa
     details: LightDetails,
     cssColor: string,
   ) {
-    light.cssColor$.next(cssColor)
     const noHashColor = cssColor.replace('#','')
     details.colorDec = parseInt(noHashColor, 16)
+    light.colorDec$.next(details.colorDec)
+    this.lightChanged.emit(light)
+  }
+
+  closeModal() {
+    this.showLightDetails$.next(undefined)
+    this.modalClose.emit()
   }
 }
 
-function remapPlayerControlsToLight(
+/** Primary function to connect which layout light belongs to which game light config */
+async function remapPlayerControlsToLight(
   playersControls: NewControlGroup | ControlGroup,
   light: Light,
-) {  
+  ledBlinky: LedBlinky, // curve$: Observable<number>
+): Promise<LightAndControl> {  
+  let control: PlayerControl | undefined
+  let playerIndex: number | undefined
+  let player: NewPlayer | undefined
   const players = playersControls.players
-  if ( !players ) {
-    return light
-  }
-
-  light.cssColor$ = new BehaviorSubject('') // first remove layout color
   
-  players.forEach(player => {
-    const controls = player.controls
-    controls.forEach(async control => {
-      const layoutLabel = await firstValueFrom(control.layoutLabel$)
-      const details = await firstValueFrom(light.details$)
+  if ( !players ) {
+    const lightAndControl: LightAndControl = {
+      light, control,
+      gamesUsingSameLoadCount: 0,
+      gamesUsingSame$: of(null).pipe(
+        tap(() => ++lightAndControl.gamesUsingSameLoadCount),
+        concatMap(() => getGamesUsing$(ledBlinky.controls$, light.details$)),
+        finalize(() => --lightAndControl.gamesUsingSameLoadCount)
+      ),
+    }
+    return lightAndControl
+  }
+  
+  const proms = players.map(async (iPlayer, iPlayerIndex) => {
+    const controls = iPlayer.controls
+    const details = await firstValueFrom(light.details$)
+    controls.forEach(async iControl => {
+      // reset all lights to blank
+      light.colorDec$.next(0) // resetting to black
+      
+      // default to change-able color
+      light.cssColor$ = combineLatest([
+        light.colorDec$,
+        ledBlinky.curve$
+      ]).pipe(
+        map(([colorDec, curve]) => castColorDetailsToCssColor(
+          intToHex(colorDec), ledBlinky.colors, curve
+        ))
+      )
+
+      // see if we match remapping
+      const layoutLabel = await firstValueFrom(iControl.layoutLabel$)
+
+      // compare getLabelByInputCodes(iControl.inputCodes$) === details.name
       if ( layoutLabel === details.name ) {
-        const color = await firstValueFrom(control.cssColor$)
-        light.cssColor$.next(color) // change the color by passed in controller
+        control = iControl
+        player = iPlayer
+        playerIndex = iPlayerIndex
+        
+        // matches need color controlled by game control layout
+        light.cssColor$ = combineLatest([
+          iControl.details$,
+          ledBlinky.curve$,
+        ]).pipe(
+          map(([details, curve]) => castControlDetailsToCssColor(
+            details, ledBlinky.colors, curve
+          ))
+        )
       }
     })
   })
 
-  return light
+  await Promise.all(proms)
+
+  const lightAndControl: LightAndControl = {
+    light, control, player, playerIndex,
+    gamesUsingSameLoadCount: 0,
+    gamesUsingSame$: of(null).pipe(
+      tap(() => ++lightAndControl.gamesUsingSameLoadCount),
+      concatMap(() => getGamesUsing$(ledBlinky.controls$, light.details$)),
+      finalize(() => --lightAndControl.gamesUsingSameLoadCount)
+    ),
+  }
+
+  return lightAndControl
 }
 
 async function getMissingLights(
@@ -363,15 +509,14 @@ async function getMissingLights(
       diameter: 10,
     })
 
-    const cssColor$ = new BehaviorSubject('')
-
-    /*const colorHex$ = details$.pipe(
-      map(details => '')
-    )*/
+    const colorDec$ = new BehaviorSubject(0)
+    const cssColor$ = colorDec$.pipe(
+      map(colorDec => intToHex(colorDec))
+    )
   
     const light: Light = {
       details$,
-      // colorHex$,
+      colorDec$,
       cssColor$,
     }
 
@@ -385,4 +530,85 @@ interface LightDrag {
   startOffsetX: number
   startX: number
   startY: number
+}
+
+export interface LightAndControl {
+  control?: PlayerControl
+  player?: Player | NewPlayer
+  playerIndex?: number
+  light: Light
+  
+  gamesUsingSame$: Observable<EmulatorRom[]>
+  gamesUsingSameLoadCount: number
+}
+
+async function emitRomsUsingSame(
+  bs: Subscriber<EmulatorRom[]>,
+  emus: Emulator[],
+  details: LightDetails,
+) {
+  const emuRoms: EmulatorRom[] = []
+  for (const emulator of emus) {
+    for (const controlGroup of emulator.controlGroups) {
+      for (const rom of controlGroup.controlGroups) {
+        await delay(0) // add time gap to allow Angular rendering
+        const romHasControl = await romHasLight(rom, details)
+
+        if ( romHasControl ) {
+          emuRoms.push({ rom, emulator })
+          bs.next(emuRoms)
+          break
+        }
+      }
+    }
+  }
+  bs.complete()
+}
+
+async function romHasLight(
+  rom: ControlGroup,
+  details:LightDetails
+) {
+  for (const player of rom.players) {
+    for (const control of player.controls) {
+      const controlLabel = await firstValueFrom(control.layoutLabel$)
+      if ( controlLabel === details.name ) {
+        return true
+      }
+    }
+  }
+  return false
+}
+
+interface EmulatorRom {
+  rom: ControlGroup
+  emulator: Emulator
+}
+
+function getGamesUsing$(
+  controls$: Observable<LedBlinkyControls | null | undefined>,
+  details$: Observable<LightDetails>,
+): Observable<EmulatorRom[]> {
+  const destroy$ = new Subject<void>(); // Notifier to complete the chain
+
+  return combineLatest([controls$, details$]).pipe(
+    takeUntil(destroy$), // Complete the chain when the source observables complete
+    switchMap(([controls, details]) => {
+      const emus = controls?.emulators;
+
+      if (!emus) {
+        return of([]);
+      }
+
+      return new Observable<EmulatorRom[]>(sub => {
+        emitRomsUsingSame(sub, emus, details);
+
+        // Cleanup function to unsubscribe and complete the notifier
+        return () => {
+          destroy$.next();
+          destroy$.complete();
+        };
+      });
+    })
+  );
 }

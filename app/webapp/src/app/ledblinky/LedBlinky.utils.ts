@@ -1,7 +1,8 @@
-import { DmFileReader } from "ack-angular-components/directory-managers/DirectoryManagers"
-import { BehaviorSubject, combineLatest, firstValueFrom, from, map, mergeMap, Observable, of, shareReplay, Subject } from "rxjs"
+import { DmFileReader } from "ack-angular-components/directory-managers/DmFileReader"
+import { BehaviorSubject, combineLatest, firstValueFrom, from, map, mergeMap, Observable, of, shareReplay } from "rxjs"
 import { hexToRgb } from "../inputs/platform.component"
 import { AvailControlsMap } from "./LedBlinky.class"
+import { LightAndControl } from "./ledblinky-layouts.component"
 
 /** 
  * Example: "P3START=189,117,65280,17" is "name=x,y,colorDec,diameter"
@@ -25,9 +26,12 @@ export async function getLightConfigByLayoutFile(
       diameter: Number(details[3]),
     }).pipe( shareReplay(1) )
 
+    const colorDec$ = new BehaviorSubject( colorDec )
     const result: Light = {
-      // colorHex: decodedColor,
-      cssColor$: new BehaviorSubject( intToHex(colorDec) ),
+      colorDec$,
+      cssColor$: colorDec$.pipe(
+        map(colorDec => intToHex(colorDec))
+      ),
       details$,
     }
     
@@ -88,7 +92,9 @@ export interface Light {
   details$: Observable<LightDetails>
   
   // computed
-  cssColor$: BehaviorSubject<string>
+  // cssColor$: BehaviorSubject<string>
+  colorDec$: BehaviorSubject<number>
+  cssColor$: Observable<string>
   // colorHex$: Observable<string>
 
   startDragX?: number
@@ -108,13 +114,20 @@ interface LightsLayoutConfig {
   [name: string]: string | number
 }
 
+export interface LightsControlConfig extends LightsConfig {
+  settings: LightsLayoutConfig // was "layout"
+  lightControls: LightAndControl[]
+  file: DmFileReader
+}
+
 export interface LightsConfig {
   settings: LightsLayoutConfig // was "layout"
   lights: Light[]
   file: DmFileReader
 }
 
-function intToHex(colorNumber: number): string {
+/** color decimal to css */
+export function intToHex(colorNumber: number): string {
   function toHex(n: any) {
     n = n.toString(16) + '';
     return n.length >= 2 ? n : new Array(2 - n.length + 1).join('0') + n;
@@ -181,6 +194,9 @@ export interface PlayerControl {
   cssColor$: Observable<string>
 
   updateToCssColor$: BehaviorSubject<string>
+  
+  delete: () => void
+  detailsChanged$: BehaviorSubject<PlayerControlDetails | undefined>
 }
 
 export interface NewControlGroup {
@@ -188,8 +204,8 @@ export interface NewControlGroup {
   element?: Element
   players: NewPlayer[]
   
-  defaultActiveCss?: string
-  defaultInactiveCss?: string
+  defaultActiveCss$: Observable<string>
+  defaultInactiveCss$: Observable<string>
 }
 
 export interface NewPlayer {
@@ -242,6 +258,7 @@ export interface NewEmulator {
 
 export interface Emulator extends NewEmulator {
   element: Element
+  controlGroups: ControlGroupings[]// ControlGroupings[] // ControlGroupings[]
 }
 
 export function getElementsByTagName(
@@ -263,6 +280,7 @@ export interface ControlDefault {
 }
 
 export interface LedBlinkyControls {
+  file: DmFileReader
   inputsMap: InputsMap
   xml: Document
   controlDefaults: ControlDefault[]
@@ -314,11 +332,12 @@ export interface LedController {
 
 function ledColorNameToCss(
   name: string,
-  colorRgbConfig?: IniNameValuePairs
+  colorRgbConfig?: IniNameValuePairs,
+  curve?: number
 ) {
   const colorNums = colorRgbConfig && colorRgbConfig[name]
   if ( colorNums ) {
-    const css = ledNumberedColorToCss(colorNums)
+    const css = ledNumberedColorToCss(colorNums, curve)
     return css
   }
 
@@ -330,16 +349,6 @@ function ledNumberedColorToCss(
   curve = .6
 ) {
   const colorPos = colorNums.split(',').map(x => Number(x)) as [number, number, number]
-  /* const colorPos = [48, 48, 48]  
-  const colorRange = 12 // LEDBlinky has a 48 scale, lets divide it to make things little brighter
-  const percents = [
-    Math.ceil((colorPos[0] / colorRange) * 100),
-    Math.ceil((colorPos[1] / colorRange) * 100),
-    Math.ceil((colorPos[2] / colorRange) * 100),
-  ]
-  const end =  `rgba(${percents[0]}%, ${percents[1]}%, ${percents[2]}%, 1)`
-  */
-
   const end = '#' + colorPos.map(num => {
     const percent = num/48
     const add = curve * (num /48)
@@ -355,6 +364,7 @@ function mapEmulatorElement(
   inputsMap: InputsMap,
   controlDefaults: ControlDefault[],
   colorRgbConfig?: IniNameValuePairs,
+  curve$?: Observable<number>,
 ): Emulator {
   const emuDetails = elmAttributesToObject(element) as EmulatorDetails
   const controlGroups: Element[] = getElementsByTagName(element, 'controlGroup')
@@ -366,32 +376,25 @@ function mapEmulatorElement(
   const mapped: ControlGroup[] = controlGroups.map(controlGroup => {
     const playerElements: Element[] = getElementsByTagName(controlGroup, 'player')
     const romDetails = elmAttributesToObject(controlGroup) as ControlGroupDetails
+    const config =  {inputsMap, controlDefault, colorRgbConfig}
     const players = playerElements.map(element =>
-      mapPlayerElement(element, {inputsMap, controlDefault, colorRgbConfig})
+      mapPlayerElement(
+        element, config, curve$
+      )
     )
 
     // sort by player number
     players.sort((a,b)=>String(a.details.number||'').toLowerCase()>String(b.details.number||'').toLowerCase()?1:-1)
-    
+
+    curve$ = curve$ || new BehaviorSubject(0)
+
     // load players (LEDBlinkyControls.xml <controlGroup> <player number> <control read-the-attrs>)
     const group: ControlGroup = {
       // TODO, read LEDBlinkyMinimizedMame.xml and attempt to convert rom name into mame title (maybe just read mame directly? Maybe too intense of a file?)
       element: controlGroup,
       details: romDetails,
-      players,      
-    }
-
-    if ( group.details.defaultActive ) {
-      const color = group.details.defaultActive
-      const isNumbered = color.includes(',')
-      const cssColor = isNumbered ? ledNumberedColorToCss(color) : ledColorNameToCss(color, colorRgbConfig)
-      group.defaultActiveCss = cssColor
-    }
-    if ( group.details.defaultInactive ) {
-      const color = group.details.defaultInactive
-      const isNumbered = color.includes(',')
-      const cssColor = isNumbered ? ledNumberedColorToCss(color) : ledColorNameToCss(color, colorRgbConfig)
-      group.defaultInactiveCss = cssColor
+      players,
+      ...getRomObservables(romDetails, curve$, colorRgbConfig)
     }
 
     return group
@@ -404,8 +407,10 @@ function mapEmulatorElement(
     return all
   }, {} as Record<string, ControlGroup[]>) 
 
-  const controlGroupsMap = Object.entries(groupObject).map(([groupName, controlGroups]) => ({
-    groupName, controlGroups, voice: controlGroups[0]?.details.voice
+  const controlGroupsMap: ControlGroupings[] = Object.entries(groupObject).map(([groupName, controlGroups]) => ({
+    groupName,
+    controlGroups,
+    voice: controlGroups[0]?.details.voice
   }))
 
   const result: Emulator = {
@@ -429,10 +434,13 @@ export function getEmulatorsByControl(
   inputsMap: InputsMap,
   controlDefaults: ControlDefault[],
   colorRgbConfig?: IniNameValuePairs,
+  curve$?: Observable<number> // curve?: number
 ): Emulator[] {
   const emulators = getElementsByTagName(xml, 'emulator')
   const mappedEmulators = emulators.map(emulator => {
-    return mapEmulatorElement(emulator, inputsMap, controlDefaults, colorRgbConfig)
+    return mapEmulatorElement(
+      emulator, inputsMap, controlDefaults, colorRgbConfig, curve$
+    )
   })
 
   mappedEmulators.sort((a,b)=>String(a.details.emuname||'').toLowerCase()>String(b.details.emuname||'').toLowerCase()?1:-1)
@@ -445,11 +453,18 @@ export function getEmulatorsByControl(
 */
 export function getControlDefaultsByControlXml(
   xml: Document,
-  colorRgbConfig?: IniNameValuePairs
+  inputsMap: InputsMap,
+  colorRgbConfig?: IniNameValuePairs,
+  curve$?: Observable<number>,
 ): ControlDefault[] {
   return getElementsByTagName(xml,'controlDefaults').map(controlDefault => {
-    const controls: PlayerControl[] = getElementsByTagName(controlDefault, 'control').map(element =>
-      getControlByElement(element, colorRgbConfig)
+    const controlElements = getElementsByTagName(controlDefault, 'control')
+    const controls: PlayerControl[] = []
+    
+    controls.push(
+      ...controlElements.map(element =>
+        getControlByElement(element, {colorRgbConfig, curve$, controls, inputsMap})
+      )
     )
     
     const result: ControlDefault = {
@@ -467,10 +482,13 @@ export function mapPlayerElement(
     controlDefault?: ControlDefault
     inputsMap?: InputsMap
     colorRgbConfig?: IniNameValuePairs
-  }
+  },
+  curve$?: Observable<number>
 ) {
-  const controls: PlayerControl[] = getElementsByTagName(element, 'control').map((element: Element) => {
-    const control = getControlByElement(element, colorRgbConfig)
+  const controls: PlayerControl[] = []
+  
+  const results = getElementsByTagName(element, 'control').map((element: Element) => {
+  const control = getControlByElement(element, {colorRgbConfig, curve$, controls, inputsMap})
 
     // find if we have a control default to add additional inputCodes
     if ( controlDefault ) {
@@ -485,7 +503,7 @@ export function mapPlayerElement(
               const defaultDetails = await firstValueFrom(defaultControl.details$)
               const matchFound = defaultDetails.name === controlDetails.name
               if ( !matchFound ) {
-                return
+                return null
               }
               const defaultInputCodes = await firstValueFrom(defaultControl.inputCodes$)
               return [ ...codes, ...defaultInputCodes ]
@@ -501,23 +519,13 @@ export function mapPlayerElement(
   
     // Do we have inputCode to match && did LEDBlinkyInputMap.xml exist
     control.layoutLabel$ = control.inputCodes$.pipe(
-      map(inputCodes => {
-        if ( !inputCodes.length || !inputsMap ) {
-          return
-        }
-        
-        const matchIndex = inputsMap.inputCodes.findIndex(mapDetails => mapDetails.inputCode && inputCodes.includes(mapDetails.inputCode))        
-        if ( matchIndex < 0 ) {
-          return
-        }
-
-        const code = inputsMap.inputCodes[ matchIndex ]
-        return code.labels[0]
-      })
+      map(inputCodes => getLabelByInputCodes(inputsMap, inputCodes))
     )
 
     return control
   })
+
+  controls.push(...results)
 
 
   return {
@@ -525,6 +533,24 @@ export function mapPlayerElement(
     details: elmAttributesToObject(element) as PlayerDetails,
     controls
   }
+}
+
+/** Typically used to figure out which layout button belongs to which game mapping */
+function getLabelByInputCodes(
+  inputsMap: InputsMap | undefined,
+  inputCodes: string[]
+): string | undefined {
+  if (!inputCodes.length || !inputsMap) {
+    return
+  }
+
+  const matchIndex = inputsMap.inputCodes.findIndex(mapDetails => mapDetails.inputCode && inputCodes.includes(mapDetails.inputCode))
+  if (matchIndex < 0) {
+    return
+  }
+
+  const code = inputsMap.inputCodes[matchIndex]
+  return code.labels[0]
 }
 
 export function getLastLayoutFileByLightsConfig(
@@ -537,45 +563,68 @@ export function getLastLayoutFileByLightsConfig(
 export function castControlDetailsToCssColor(
   details: PlayerControlDetails,
   colorRgbConfig?: IniNameValuePairs,
+  curve?: number,
 ) {
-  const isNumbered = details.color.includes(',')
-  const cssColor = isNumbered ? ledNumberedColorToCss(details.color) : ledColorNameToCss(details.color, colorRgbConfig)
-  return cssColor
+  return castColorDetailsToCssColor(details.color, colorRgbConfig, curve)
+}
+
+export function castColorDetailsToCssColor(
+  color: string,
+  colorRgbConfig?: IniNameValuePairs,
+  curve?: number,
+) {
+  const isNumbered = color.includes(',')
+  if ( isNumbered ) {
+    return ledNumberedColorToCss(color, curve)
+  }
+
+  return ledColorNameToCss(color, colorRgbConfig, curve)
 }
 
 export function getControlByElement(
   element: Element,
-  colorRgbConfig?: IniNameValuePairs,
-  details?: PlayerControlDetails
+  {inputsMap, colorRgbConfig, details, curve$, controls}: {
+    inputsMap?: InputsMap,
+    colorRgbConfig?: IniNameValuePairs,
+    details?: PlayerControlDetails,
+    curve$?: Observable<number>,
+    controls: PlayerControl[],
+  },
 ): PlayerControl {
   const updateToCssColor$ = new BehaviorSubject<string>('')
 
+  const detailsChanged$ = new BehaviorSubject(details)
   const details$ = combineLatest([
-    new Observable<PlayerControlDetails>(subs => 
+    new Observable<PlayerControlDetails>(subs => {
       subs.next(details || elmAttributesToObject(element) as PlayerControlDetails)
-    ),
+      subs.complete()
+    }),
     updateToCssColor$,
+    detailsChanged$,
   ])
   .pipe(
     map(([details, cssColor]) => {
       if ( cssColor ) {
         const noHashValue = cssColor.replace('#','')
-        // details.color = parseInt(noHashValue, 16).toString()
-        // details.color = '48,48,48'
-        details.color = hexToRgb(noHashValue).map(x => 48 * (Math.floor((x/255)*100) / 100)).join(',')
+        details.color = hexToRgb(noHashValue).map(rgbNum).join(',')
       }    
 
+      //console.log('((((details))))', details)
       return details
     }),
-    shareReplay(1)
+    shareReplay(1) // ensure changes made to details are shared
   )
     
-  const cssColor$ = details$.pipe(
-    map(details => castControlDetailsToCssColor(details, colorRgbConfig))
+  curve$ = curve$ || new BehaviorSubject(.6)
+  const cssColor$ = combineLatest([details$, curve$]).pipe(
+    map(([details, curve]) => castControlDetailsToCssColor(
+      details, colorRgbConfig, curve
+    ))
   )
 
   const inputCodes$ = details$.pipe(
-    map(details => details.inputCodes?.replace(/(^\||\|$)/g,'').split('|') || [])
+    map(details => details.inputCodes?.replace(/(^\||\|$)/g,'').split('|') || []),
+    shareReplay(1),
   )
   
   const control: PlayerControl = {
@@ -584,8 +633,58 @@ export function getControlByElement(
     inputCodes$,
     cssColor$,
     updateToCssColor$,
-    layoutLabel$: of(''),
+    detailsChanged$,
+    delete: () => {
+      const deleteIndex = controls.findIndex(iCon => iCon === control)
+      controls.splice(deleteIndex,1)
+    },
+    layoutLabel$: inputCodes$.pipe(
+      map(inputCodes => {
+        return getLabelByInputCodes(inputsMap, inputCodes)
+      })
+    ),
   }
   
   return control
+}
+
+function rgbNum(x: number) {
+  return Math.floor(48 * (Math.floor((x/255)*100) / 100))
+}
+
+
+export function getRomObservables(
+  romDetails: ControlGroupDetails,
+  curve$: Observable<number>,
+  colorRgbConfig?: IniNameValuePairs,
+) {
+  return  {
+    defaultActiveCss$: curve$.pipe(
+      map(curve => {
+        if ( !romDetails.defaultActive ) {
+          return ''
+        }
+
+        const isNumbered = romDetails.defaultActive.includes(',')
+        if ( isNumbered ) {
+          return ledNumberedColorToCss(romDetails.defaultActive, curve)
+        }
+        
+        return ledColorNameToCss(romDetails.defaultActive, colorRgbConfig)
+      })
+    ),
+
+    defaultInactiveCss$: curve$.pipe(
+      map(curve => {
+        if ( !romDetails.defaultInactive ) {
+          return ''
+        }
+
+        const color = romDetails.defaultInactive
+        const isNumbered = romDetails.defaultInactive.includes(',')
+        const cssColor = isNumbered ? ledNumberedColorToCss(romDetails.defaultInactive, curve) : ledColorNameToCss(color, colorRgbConfig)
+        return cssColor
+      })
+    ),
+  }
 }

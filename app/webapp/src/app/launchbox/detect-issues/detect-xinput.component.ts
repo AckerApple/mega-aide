@@ -177,14 +177,14 @@ import { changePlatformGameCommandMappings } from "../changePlatformGameCommandM
       }
 
       if ( this.count % 5 ) {
-        platformGames.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
-        this.noCommandPlatforms.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
+        platformGames.sort((a,b)=>String(a.id||'').toLowerCase()>String(b.id||'').toLowerCase()?1:-1)
+        this.noCommandPlatforms.sort((a,b)=>String(a.id||'').toLowerCase()>String(b.id||'').toLowerCase()?1:-1)
       }
     })
     --this.scanning
 
-    platformGames.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
-    this.noCommandPlatforms.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
+    platformGames.sort((a,b)=>String(a.id||'').toLowerCase()>String(b.id||'').toLowerCase()?1:-1)
+    this.noCommandPlatforms.sort((a,b)=>String(a.id||'').toLowerCase()>String(b.id||'').toLowerCase()?1:-1)
 
     return platformGames
   }  

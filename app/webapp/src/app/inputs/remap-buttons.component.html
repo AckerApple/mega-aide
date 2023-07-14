@@ -1,0 +1,38 @@
+<div class="flex-1 flex">
+  <button type="button" class="flex-1" [ngClass]="classes"
+    [class.bg-energized]="nextKey.listening"
+    [class.radius-right-0]="nextKey.listening"
+  
+    #nextKey="nextKey"
+    [(nextKey)]="key"
+    (nextKeyChange)="keyChange.emit(key)"
+    [(nextKeyCode)]="keyCode"
+    (nextKeyCodeChange)="keyCodeChange.emit(keyCode)"
+    [(nextKeyListening)]="keyListen"
+    (nextKeyListeningChange)="keyListenChange.emit(keyListen)"
+  >{{ keyListen ? 'press key' : '⌨️ map'}}</button>
+  
+  <ng-container *ngIf="useMouse">
+    <button
+      type="button" class="flex-1" [ngClass]="classes"
+      [class.bg-energized]="nextMouse.listening"
+      [class.radius-right-0]="nextMouse.listening"
+    
+      #nextMouse="nextMouse"
+      [(nextMouse)]="mouse"
+      (nextMouseChange)="mouseChange.emit(mouse)"
+      [(nextMouseListening)]="mouseListen"
+      (nextMouseListeningChange)="mouseListenChange.emit(mouseListen)"
+    >{{ mouseListen ? 'press mouse' : '🖱️ map'}}</button>
+    
+    <button *ngIf="nextMouse.listening" [@fadeInOutUp]="1"
+      type="button" class="flex-1 bg-grey radius-left-0"
+      (click)="nextMouse.stop()"
+    >any key cancels</button>
+  </ng-container>
+
+  <button *ngIf="nextKey.listening" [@fadeInOutUp]="1"
+    type="button" class="flex-1 bg-grey radius-left-0"
+    (click)="nextKey.stop()"
+  >cancel</button>
+</div>

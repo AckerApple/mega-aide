@@ -1,8 +1,8 @@
 
 import { Component, Input } from '@angular/core'
-import { ActivatedRoute } from '@angular/router'
-import { DirectoryManager, DmFileReader, FileStats } from 'ack-angular-components/directory-managers/DirectoryManagers'
-import { concatMap, delay, firstValueFrom, from, map, mergeMap, Observable, of, OperatorFunction, throttleTime, toArray } from 'rxjs'
+import { DirectoryManager, FileStats } from 'ack-angular-components/directory-managers/DirectoryManagers'
+import { DmFileReader } from 'ack-angular-components/directory-managers/DmFileReader'
+import { concatMap, delay, firstValueFrom, from, mergeMap, Observable, of, toArray } from 'rxjs'
 import { SessionProvider } from '../session.provider'
 
 declare type BackupFile = FileStats & {
@@ -38,11 +38,16 @@ export class BackupsComponent {
 
     const path = this.path || ''
 
+    // incase this is a native like app and full paths are used everywhere
+    const correctedPath = path.replace(this.directory.path,'')
+
     // no await
-    this.loadByPath(path, this.directory)
+    this.loadByPath(correctedPath, this.directory)
     
-    const otherDir = await this.directory.getDirectory( path )
-    await this.preloadFile(otherDir)
+    const otherDir = await this.directory.findDirectory( correctedPath )
+    if ( otherDir ) {
+      await this.preloadFile(otherDir)
+    }
   }
 
   async preloadFile(dir: DirectoryManager) {
@@ -68,17 +73,20 @@ export class BackupsComponent {
 
     const pathSplit = path.split('/')
     const firstPath = pathSplit.shift() as string
-    const dir = await parent.getDirectory(firstPath)
+    const dir = await parent.findDirectory(firstPath)
 
-    if ( dir ) {
-      try {
-        await this.loadFolders(dir)
-      } catch (err) {
-        console.error('#loadByParent',err);
-      }
+    if ( !dir ) {
+      return parent
+    }
+
+    try {
+      await this.loadFolders(dir)
+    } catch (err) {
+      console.error('#loadByParent',err);
     }
     
-    return this.loadByParent(pathSplit.join('/'), dir)
+    const tryNext = pathSplit.join('/')
+    return this.loadByParent(tryNext, dir)
   }
   
   async loadByPath(
@@ -111,12 +119,14 @@ export class BackupsComponent {
     --this.loading
   }
 
-  async loadFolders(dir: DirectoryManager) {
+  async loadFolders(
+    dir: DirectoryManager
+  ) {
     ++this.loading
     this.parent = dir
     this.backupsFound.length = 0
     
-    const folders = await dir.getFolders()
+    const folders: DirectoryManager[] = await dir.getFolders()
     const folderNames = folders.map(folder => folder.name)
     const columnItems = folders.map(folder => {
       (folder as any).kind = 'DIRECTORY'
@@ -133,19 +143,20 @@ export class BackupsComponent {
     columnItems: (DirectoryManager | DmFileReader | FileStats)[],
   ) {
     const buFolderNames = this.session.config.backupFolderNames
-    this.backupsFound.push( ...buFolderNames.filter(x => folderNames.includes(x)) )
+    const backupsFound = buFolderNames.filter(x => folderNames.includes(x))
+    this.backupsFound.push( ...backupsFound )
 
     // lookup files in the current folder
-    if ( this.backupsFound ) {
-      dir.getFiles().then(files => {
+    if ( backupsFound ) {
+      dir.getFiles().then((files: DmFileReader[]) => {
         // async find files with backups
         return firstValueFrom(
           slowArrayMapPromises(files, 10, async file => {
             return firstValueFrom(
-              slowArrayMapPromises(this.backupsFound, 10, async backupFolderName => {
+              slowArrayMapPromises(backupsFound, 10, async backupFolderName => {
                 const matchFound = await findBackupInDirByName(dir, backupFolderName, file.name)
                 if ( matchFound ) {
-                  file.stats().then(stats => {
+                  file.stats().then((stats: FileStats) => {
                     columnItems.push(stats)
                   })
                   return // don't check any other backups folders
@@ -188,7 +199,7 @@ export class BackupsComponent {
     parentPathSplit.pop()
     const parentPath = parentPathSplit.join('/')
     if ( parentPath ) {
-      this.parent = await this.directory?.getDirectory(parentPath)
+      this.parent = await this.directory?.findDirectory(parentPath)
     }
   }
 

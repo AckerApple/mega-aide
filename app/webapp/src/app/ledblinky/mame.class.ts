@@ -1,4 +1,5 @@
-import { DirectoryManager, DmFileReader } from "ack-angular-components/directory-managers/DirectoryManagers"
+import { DirectoryManager } from "ack-angular-components/directory-managers/DirectoryManagers"
+import { DmFileReader } from "ack-angular-components/directory-managers/DmFileReader"
 import { SessionProvider } from "../session.provider"
 import { elmAttributesToObject, getElementsByTagName } from "./LedBlinky.utils"
 
@@ -10,7 +11,9 @@ export class Mame {
   constructor(public session: SessionProvider) {}
 
   /** list cfg/*.cfg files */
-  async getGameConfigFiles(): Promise<{files: DmFileReader[], default?: DmFileReader} | undefined> {
+  async getGameConfigFiles(): Promise<
+    {files: DmFileReader[], default?: DmFileReader} | undefined
+  > {
     if ( !this.directory ) {
       return
     }

@@ -24,7 +24,7 @@ select, textarea, button, input, [type=button] {
 [type=button].bg-grey-4x { @extend .bg-grey-4x }
 
 button, [type=button] {
-  @extend .bg-positive, .text-white, .pad-smx, .text-center, .no-a-style;
+  @extend .bg-positive, .text-white, .text-center, .no-a-style;
   border-color: rgba(255, 255, 255, 0.5) rgba(255, 255, 255, 0.5) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1);
   border-width: .075rem;
   border-style: solid;

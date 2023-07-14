@@ -33,6 +33,7 @@
   
       startByEvent="contextmenu"
       [(nextKey)]="control.keyName"
+      [nextKeyListening]="controlListen === control"
       (nextKeyListeningChange)="controlListenChange.emit(controlListen=$event ? control : undefined)"
   
       [(nextButton)]="control.gamepadButton"

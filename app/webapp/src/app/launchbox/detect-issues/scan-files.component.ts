@@ -1,11 +1,11 @@
 import { Component } from '@angular/core'
 import { Prompts } from 'ack-angular'
-import { DmFileReader, FileStats } from 'ack-angular-components/directory-managers/DirectoryManagers'
+import { FileStats } from 'ack-angular-components/directory-managers/DirectoryManagers'
+import { DmFileReader } from 'ack-angular-components/directory-managers/DmFileReader'
 import { animations } from 'ack-angular-fx'
 import { combineLatest, firstValueFrom, lastValueFrom, map, mergeMap, Observable } from 'rxjs'
 import { SessionProvider } from 'src/app/session.provider'
 import { ContentTagReader, getMatchCount } from './ContentTagReader.class'
-import { readFileStream, readWriteFile } from './stream-file.utils'
 
 interface PlatformScan {
   file: DmFileReader,
@@ -37,6 +37,8 @@ interface PlatformScan {
   animations,
   templateUrl: './scan-files.component.html',
 }) export class ScanFilesComponent {
+  chunkSize: number = 1024 * 18 // too low will cause issues
+
   // raw file names and sizes array
   files$: Observable<PlatformScan[]> = combineLatest([
     this.session.launchBox.platformFiles$,
@@ -52,8 +54,8 @@ interface PlatformScan {
       lastValueFrom( result$ ).then(() => this.session.load$.next(-1))
       
       return result$.pipe(
-        map(result => {
-          result.file.stats().then(async stats => {
+        map((result) => {
+          result.file.stats().then(async (stats: FileStats) => {
             const newResult = { ...result, stats, load: 0, percentRead: 0 }
             newArray.push(newResult)
           })
@@ -86,10 +88,7 @@ interface PlatformScan {
       return
     }
 
-    // const dir = await firstValueFrom(this.session.launchBox.directory$)
-    // const file: DmFileReader = await dir.file('test.txt')
     const file: DmFileReader = platform.file
-    const webFileHandle = (file as any).file as FileSystemFileHandle
 
     const supportReader = new ContentTagReader('GameControllerSupport')
     const nameReader = new ContentTagReader('AlternateName')
@@ -107,7 +106,7 @@ interface PlatformScan {
     this.session.load$.next(1)
     ++platform.load
 
-    await readWriteFile(webFileHandle, (string: string, { isLast, percent }) => {      
+    await file.readWriteTextStream((string: string, { isLast, percent }) => {      
       platform.percentRead = percent
 
       // rewrite GameControllerSupport
@@ -118,7 +117,7 @@ interface PlatformScan {
       string = addAppReader.rewriteString(string, isLast)
       
       return string
-    })
+    }, this.chunkSize)
 
     this.scanPlatform(platform)
     this.session.load$.next(-1)
@@ -128,11 +127,11 @@ interface PlatformScan {
   // readonly
   async scanPlatform(
     platform: PlatformScan
-  ) {
+  ): Promise<void> {
     this.session.load$.next(1)
     ++platform.load
-    const file = (platform.file as any).file
-    const realFile = await file.getFile()
+    // const file = (platform.file as any).file
+    // const realFile = await file.getFile()
     platform.file.stats().then(stats => platform.stats = stats)
     
     const supportReader = new ContentTagReader('GameControllerSupport')
@@ -161,39 +160,25 @@ interface PlatformScan {
     xmlStats.alternateNames = 0
     xmlStats.additionalApps = 0
 
-    // todo, need rejection handling
-    return new Promise((res, _rej) => {
-      const close = () => {
-        --platform.load
-        this.session.load$.next(-1)
-        sub.unsubscribe()
-        res( platform )
-      }
-  
-      // review file in slices and count things
-      const sub = readFileStream(realFile, 1024 * 3, (string, {isLast, percent}) => {
-        platform.percentRead = percent
-        supportReader.examineString(string, isLast) // GameControllerSupport
-        nameReader.examineString(string, isLast) // AlternateName
-        addAppReader.examineString(string, isLast) // AdditionalApplication
-      }).pipe(
-        map(string => {
-          const gameMatches = getMatchCount(/<Game>/g, string)
-          const supportMatches = getMatchCount(/<GameControllerSupport>/g, string)
-          const alternateNames = getMatchCount(/<AlternateName>/g, string)
-          const additionalApps = getMatchCount(/<AdditionalApplication>/g, string)
+    await platform.file.readTextStream((string, {isLast, percent}) => {
+      platform.percentRead = percent
+      supportReader.examineString(string, isLast) // GameControllerSupport
+      nameReader.examineString(string, isLast) // AlternateName
+      addAppReader.examineString(string, isLast) // AdditionalApplication
 
-          xmlStats.games = xmlStats.games + gameMatches
-          xmlStats.gameControllerSupports = xmlStats.gameControllerSupports + supportMatches
-          xmlStats.alternateNames = xmlStats.alternateNames + alternateNames
-          xmlStats.additionalApps = xmlStats.additionalApps + additionalApps
-        })
-      )
-      .subscribe({
-        error: close,
-        complete: close,
-      })
-    })
+      const gameMatches = getMatchCount(/<Game>/g, string)
+      const supportMatches = getMatchCount(/<GameControllerSupport>/g, string)
+      const alternateNames = getMatchCount(/<AlternateName>/g, string)
+      const additionalApps = getMatchCount(/<AdditionalApplication>/g, string)
+
+      xmlStats.games = xmlStats.games + gameMatches
+      xmlStats.gameControllerSupports = xmlStats.gameControllerSupports + supportMatches
+      xmlStats.alternateNames = xmlStats.alternateNames + alternateNames
+      xmlStats.additionalApps = xmlStats.additionalApps + additionalApps
+    }, Number(this.chunkSize))
+
+    --platform.load
+    this.session.load$.next(-1)
   }
 
   async scanPlatforms(platforms: PlatformScan[]) {

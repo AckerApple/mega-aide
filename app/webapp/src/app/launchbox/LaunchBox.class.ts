@@ -1,10 +1,11 @@
-import { DirectoryManager, DmFileReader } from "ack-angular-components/directory-managers/DirectoryManagers"
+import { DirectoryManager } from "ack-angular-components/directory-managers/DirectoryManagers"
 import { AdditionalApp, AdditionalAppDetails, AdditionalAppType, GameDetails, GameInsight, PlatformInsights, SessionProvider } from "../session.provider"
 import { BehaviorSubject, combineLatest, EMPTY, firstValueFrom, from, map, mergeMap, Observable, of, shareReplay, Subject, Subscription, switchMap } from "rxjs"
 import { getElementsByTagName } from "../ledblinky/LedBlinky.utils"
 import { findElementText, getGameElementId, getGameElementTitle, isPathKillXinput, isPathXinput } from "./detect-issues/detect.utils"
 import { fileTryLoadingPipes } from "../ledblinky/LedBlinky.class"
 import { slowArrayMapPromises } from "../components/backups.component"
+import { DmFileReader } from "ack-angular-components/directory-managers/DmFileReader"
 
 /* when done with this class you must .destroy() it */
 export class LaunchBox {
@@ -28,6 +29,7 @@ export class LaunchBox {
             this.findOtherDirs(dir)
 
             subscriber.next(dir)
+            subscriber.complete()
           })
       })
     }), // continue if directory defined otherwise cancel pipe
@@ -216,7 +218,7 @@ export class LaunchBox {
   }
   
   async getPlatformFileDetails(
-    name: string,
+    fileName: string,
     file: DmFileReader
   ): Promise<PlatformInsights> {
     const xml = await file.readAsXml()
@@ -226,6 +228,7 @@ export class LaunchBox {
         .map(elm => mapControllerSupport(elm)
       )
       subscriber.next(control)
+      subscriber.complete()
     })/*.pipe(
       shareReplay(1)
     ) as unknown as Observable<ControllerSupport[]>*/
@@ -243,11 +246,13 @@ export class LaunchBox {
             const supports: ControllerSupport[] = mapped
               .filter(support => support.details.gameId === details.id)
             subscriber.next(supports)
+            subscriber.complete()
           })
         }
         return gameInsights
       })
       subscriber.next(games)
+      subscriber.complete()
     }).pipe(
       shareReplay(1)
     ) as unknown as Observable<GameInsight[]>
@@ -256,6 +261,7 @@ export class LaunchBox {
       const apps: AdditionalApp[] = getElementsByTagName(xml, 'AdditionalApplication')
         .map(elm => mapAdditionalApp(elm))
       subscriber.next(apps)
+      subscriber.complete()
     })
 
     const getGameById = async (
@@ -264,9 +270,15 @@ export class LaunchBox {
       return (await firstValueFrom(games$)).find(game => game.details.id === gameId)
     }
 
+    const fileNameSplit = fileName.split('.')
+    if ( fileName.length > 1 ) {
+      fileNameSplit.pop()
+    }
+    const id = fileNameSplit.join('.')
+
     return {
-      xml, name, file,
-      
+      xml, id, fileName, file,
+
       games$,
 
       getGameById,

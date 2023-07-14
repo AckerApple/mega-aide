@@ -1,7 +1,8 @@
-import { Directive, EventEmitter, HostListener, Input, Output } from '@angular/core'
+import { Directive, EventEmitter, HostListener, Input, Output, SimpleChanges } from '@angular/core'
 
 @Directive({
-  selector: "[nextKey]"
+  selector: "[nextKey]",
+  exportAs: "nextKey"
 })
 export class NextKeyDirective {
   @Input() startByEvent?: 'click' | 'dblclick' | 'contextmenu'
@@ -11,8 +12,8 @@ export class NextKeyDirective {
   @Input() nextKeyCode?: number
   @Output() nextKeyCodeChange: EventEmitter<number> = new EventEmitter()
   
-  @Input() nextKeyListening?: boolean | number
-  @Output() nextKeyListeningChange: EventEmitter<boolean> = new EventEmitter()
+  @Input('nextKeyListening') listening: boolean | number | undefined
+  @Output('nextKeyListeningChange') listeningChange: EventEmitter<boolean> = new EventEmitter()
 
   onKeyDownHandler: (event: KeyboardEvent) => any
 
@@ -20,31 +21,38 @@ export class NextKeyDirective {
     this.onKeyDownHandler = (event) => this.onKeyDown(event)
   }
 
-  ngOnChanges( changes:any ){
-    if ( changes.nextKeyListening ) {
-      if ( !this.nextKeyListening ) {
-        this.removeListeners()
+  ngOnChanges( changes: SimpleChanges ){
+    if ( changes['listening'] ) {
+      const wasListening = changes['listening'].previousValue
+      const changed = !!wasListening && !!this.listening
+
+      if ( !changed ) {
+        return // its not different than it is
+      }
+
+      if ( !this.listening ) {
+        this.stop()
       } else {
-        this.startListening()
+        this.start()
       }
     }
   }
 
   ngOnDestroy(){
-    this.removeListeners()
+    this.stop()
   }
 
   toggleListen() {
-    if ( this.nextKeyListening ) {
-      this.removeListeners()
+    if ( this.listening ) {
+      this.stop()
     } else {
-      this.startListening()
+      this.start()
     }
   }
 
-  startListening() {
+  start() {
     window.addEventListener('keydown', this.onKeyDownHandler)
-    this.nextKeyListeningChange.emit(this.nextKeyListening=true)
+    this.listeningChange.emit(this.listening=true)
   }
 
   @HostListener('click') onClick() {
@@ -70,14 +78,14 @@ export class NextKeyDirective {
     this.toggleListen()
   }
 
-  removeListeners() {
+  stop() {
     window.removeEventListener('keydown', this.onKeyDownHandler)
-    this.nextKeyListeningChange.emit(this.nextKeyListening=false)
+    this.listeningChange.emit(this.listening = false)
   }
 
   onKeyDown(event: KeyboardEvent) {
     event.preventDefault()
-    this.removeListeners()
+    this.stop()
     let keyCode = event.keyCode
 
     switch (keyCode) {
