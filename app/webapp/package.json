@@ -1,6 +1,6 @@
 {
   "name": "Mega-aide",
-  "version": "0.2.20",
+  "version": "0.2.21",
   "scripts": {
     "ng": "ng",
     "clear": "rm -rf .angular/cache",
@@ -34,7 +34,7 @@
     "@types/jasmine": "~4.0.0",
     "@types/wicg-file-system-access": "^2020.9.5",
     "ack-angular": "^4.1.7",
-    "ack-angular-components": "file:../../../../../web/angular/ack-angular-components/src/dist",
+    "ack-angular-components": "^4.1.29",
     "ack-css-boot": "^3.0.11",
     "jasmine-core": "~4.3.0",
     "karma": "~6.4.0",

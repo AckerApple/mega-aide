@@ -78,6 +78,11 @@ interface EmulatorControls {
       if ( emulator ) {
         romControl = findRomByName(romName, emulator.controlGroups)
       }
+
+      const isNewMode = this.getNewMode()
+      if ( isNewMode ) {
+        romControl = this.newRom(romName, colors)
+      }
       
       const unknownMode = this.unknownMode && unknownGames && !romControl
       console.log('unknownMode', unknownMode, emulator)
@@ -91,11 +96,12 @@ interface EmulatorControls {
 
         romControl = findRomByName(romName, unknownEmulator.controlGroups as any) || this.newRom(romName, colors)
         
-        if ( romControl ) {
-          const players = emulator.controlGroups.find(emu => emu.groupName === 'DEFAULT')?.controlGroups[0].players
-          if ( players ) {
-            romControl.players = players
-          }
+      }
+
+      if ( (isNewMode || unknownMode) && romControl ) {
+        const players = emulator.controlGroups.find(emu => emu.groupName === 'DEFAULT')?.controlGroups[0].players
+        if ( players ) {
+          romControl.players = players
         }
       }
       
@@ -140,11 +146,19 @@ interface EmulatorControls {
     return emu
   }
 
+  getNewMode() {
+    return this.activatedRoute.snapshot.queryParams['new'] // || this.unknownMode
+  }
+
+  getUnknownMode() {
+    return this.activatedRoute.snapshot.queryParams['unknownMode'] || this.unknownMode
+  }
+
   async getEmulatorsByControls(
     controls: LedBlinkyControls | undefined,
     unknownGames?: NewEmulator[]
   ): Promise<(NewEmulator | Emulator)[] | undefined> {
-    const unknownMode = this.activatedRoute.snapshot.queryParams['unknownMode']
+    const unknownMode = this.getUnknownMode()
     this.unknownMode = unknownMode ? JSON.parse(unknownMode) : false
     // always load known emulators, may need to match with an unknown
     const knownEmulators = controls?.emulators
