@@ -6,6 +6,7 @@
         <th>Name</th>
         <th>Voice</th>
         <th>Players</th>
+        <th>Color</th>
       </tr>
       <ng-container *ngFor="let game of lightControl.gamesUsingSame$ | async">
         <tr>
@@ -17,6 +18,12 @@
           </td>
           <td>{{ game.rom.details.voice }}</td>
           <td>{{ game.rom.details.numPlayers }}</td>
+          <td>
+            <div class="radius-half width-30 height-30"
+              [style.background-color] = "game.playerControl.cssColor$ | async"
+              style="box-shadow: .04em .04em .04em .04em rgba(255, 255, 255, 0.3);"
+            ></div>
+          </td>
         </tr>
       </ng-container>
     </tbody>

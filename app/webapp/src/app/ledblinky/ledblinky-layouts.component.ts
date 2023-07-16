@@ -133,7 +133,7 @@ import { delay } from "../delay"
 
       // look to update current modal
       const lightControls = await this.getLightConfig(lightConfig, playersControls)
-      console.log('look to update modal', currentModal)
+      console.log('lightControls',lightControls)
       if ( currentModal ) {
         const currentDetails = await firstValueFrom(currentModal.light.details$)
         
@@ -156,6 +156,7 @@ import { delay } from "../delay"
         settings: lightConfig.settings,
         file: lightConfig.file,
       }
+
       return lightControls
     }
 
@@ -187,13 +188,17 @@ import { delay } from "../delay"
         ...light,
       }
 
+      // if we are provided a different set of lighting, lets override
       if ( playersControls ) {
+        clone.colorDec$.next(0) // ensure every light starts black
+
         return await remapPlayerControlsToLight(
           playersControls,
           clone,
           this.session.ledBlinky,
         )
       }
+
       const lightAndControl: LightAndControl = {
         light: clone,
         
@@ -420,6 +425,7 @@ async function remapPlayerControlsToLight(
   let player: NewPlayer | undefined
   const players = playersControls.players
   
+  // create players defaults
   if ( !players ) {
     const lightAndControl: LightAndControl = {
       light, control,
@@ -552,10 +558,10 @@ async function emitRomsUsingSame(
     for (const controlGroup of emulator.controlGroups) {
       for (const rom of controlGroup.controlGroups) {
         await delay(0) // add time gap to allow Angular rendering
-        const romHasControl = await romHasLight(rom, details)
+        const playerControl = await romHasLight(rom, details)
 
-        if ( romHasControl ) {
-          emuRoms.push({ rom, emulator })
+        if ( playerControl ) {
+          emuRoms.push({ rom, emulator, playerControl })
           bs.next(emuRoms)
           break
         }
@@ -573,16 +579,18 @@ async function romHasLight(
     for (const control of player.controls) {
       const controlLabel = await firstValueFrom(control.layoutLabel$)
       if ( controlLabel === details.name ) {
-        return true
+        return control
       }
     }
   }
-  return false
+  
+  return
 }
 
 interface EmulatorRom {
   rom: ControlGroup
   emulator: Emulator
+  playerControl: PlayerControl
 }
 
 function getGamesUsing$(

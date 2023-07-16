@@ -85,7 +85,6 @@ interface EmulatorControls {
       }
       
       const unknownMode = this.unknownMode && unknownGames && !romControl
-      console.log('unknownMode', unknownMode, emulator)
       if ( unknownMode ) {
         let unknownEmulator = unknownGames.find(unknown => unknown.details.emuname === emulator.details.emuname)
 
@@ -99,7 +98,13 @@ interface EmulatorControls {
       }
 
       if ( (isNewMode || unknownMode) && romControl ) {
-        const players = emulator.controlGroups.find(emu => emu.groupName === 'DEFAULT')?.controlGroups[0].players
+        const defaultEmu = emulator.controlGroups.find(emu => emu.groupName === 'DEFAULT')
+
+        if ( defaultEmu ) {
+          console.warn('🚦 Emulator\'s default button layout has been loaded')
+        }
+
+        const players = defaultEmu?.controlGroups[0].players
         if ( players ) {
           romControl.players = players
         }
