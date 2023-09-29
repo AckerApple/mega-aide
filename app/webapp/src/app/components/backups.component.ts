@@ -2,13 +2,9 @@
 import { Component, Input } from '@angular/core'
 import { DirectoryManager, FileStats } from 'ack-angular-components/directory-managers/DirectoryManagers'
 import { DmFileReader } from 'ack-angular-components/directory-managers/DmFileReader'
-import { concatMap, delay, firstValueFrom, from, mergeMap, Observable, of, toArray } from 'rxjs'
+import { firstValueFrom } from 'rxjs'
 import { SessionProvider } from '../session.provider'
-
-declare type BackupFile = FileStats & {
-  backupFolderName: string
-  backupFolder: DirectoryManager
-}
+import { BackupFile, findBackupInDirByName, getFileBackupList, slowArrayMapPromises } from './backups.utils'
 
 export const loadingText = '⏱ Loading...'
 
@@ -82,7 +78,7 @@ export class BackupsComponent {
     try {
       await this.loadFolders(dir)
     } catch (err) {
-      console.error('#loadByParent',err);
+      this.session.error('#loadByParent',err);
     }
     
     const tryNext = pathSplit.join('/')
@@ -110,6 +106,12 @@ export class BackupsComponent {
     }
     
     ++this.loading
+
+    // is this a filestat?
+    if ( !(item as any).directory ) {
+      item = await parent.file(item.name)
+    }
+
     // load backups for a file
     this.sourceFile = item as DmFileReader
     const sourceFileName = item.name
@@ -141,23 +143,28 @@ export class BackupsComponent {
     dir: DirectoryManager,
     folderNames: string[],
     columnItems: (DirectoryManager | DmFileReader | FileStats)[],
-  ) {
+  ): Promise<string[]> {
     const buFolderNames = this.session.config.backupFolderNames
     const backupsFound = buFolderNames.filter(x => folderNames.includes(x))
     this.backupsFound.push( ...backupsFound )
 
     // lookup files in the current folder
     if ( backupsFound ) {
-      dir.getFiles().then((files: DmFileReader[]) => {
+      const promise = dir.getFiles().then((files: DmFileReader[]) => {
         // async find files with backups
         return firstValueFrom(
-          slowArrayMapPromises(files, 10, async file => {
+          slowArrayMapPromises(files, 0, async file => {
             return firstValueFrom(
-              slowArrayMapPromises(backupsFound, 10, async backupFolderName => {
+              slowArrayMapPromises(backupsFound, 0, async backupFolderName => {
                 const matchFound = await findBackupInDirByName(dir, backupFolderName, file.name)
                 if ( matchFound ) {
                   file.stats().then((stats: FileStats) => {
+                    if ( columnItems.find(column => column.name === stats.name) ) {
+                      return // we already know we have a backup for this file
+                    }
+
                     columnItems.push(stats)
+                    columnItems.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
                   })
                   return // don't check any other backups folders
                 }
@@ -169,20 +176,25 @@ export class BackupsComponent {
         // await Promise.all(loading)
       })
       
-
-      columnItems.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
+      await promise
+      // columnItems.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
       --this.loading
     }
+
+    return this.backupsFound
   }
 
   async restore() {
     if ( !this.parent || !this.toRestore || !this.sourceFile ) {
+      this.session.error('missing requirements to restore file')
       return
     }
 
-    const confirmFile = await this.toRestore.backupFolder.file(this.toRestore.stats.name)
+    const confirmFile: DmFileReader = await this.toRestore.backupFolder.file(this.toRestore.stats.name)
     const backupText = await confirmFile.readAsText()
+    
     delete this.toRestore
+    
     this.session.toSaveFiles.push({
       file: this.sourceFile,
       string: backupText,
@@ -220,96 +232,4 @@ export class BackupsComponent {
     }
     --this.loading
   }
-}
-
-async function getBackupsInDirByName(
-  dir: DirectoryManager,
-  backupFolderName: string,
-  fileName: string
-): Promise<DmFileReader[]> {
-  const backupDir = await dir.findDirectory(backupFolderName)
-
-  if ( !backupDir ) {
-    return []
-  }
-
-  const backupFiles = await backupDir.listFiles()
-  const buFileNames = filterNameInBackupFiles(fileName, backupFiles)
-  const promises = buFileNames.map(fileName => backupDir.file(fileName))
-  const fileLoads = Promise.all(promises)
-  return fileLoads
-}
-
-async function findBackupInDirByName(
-  dir: DirectoryManager,
-  backupFolderName: string,
-  fileName: string
-) {
-  const backupDir = await dir.getDirectory(backupFolderName)
-  const backupFiles = await backupDir.listFiles()
-  return findNameInBackupFiles(fileName, backupFiles)
-}
-
-function findNameInBackupFiles(name: string, backupFiles: string[]) {
-  const splitName = name.split('.')
-  splitName.pop() // remove extension
-  const searchName = splitName.join('.').toLowerCase()
-  return backupFiles.find(buFile => buFile.toLowerCase().includes(searchName))
-}
-
-function filterNameInBackupFiles(name: string, backupFiles: string[]) {
-  const splitName = name.split('.')
-  splitName.pop()
-  const searchName = splitName.join('.').toLowerCase()
-  return backupFiles.filter(buFile => buFile.toLowerCase().includes(searchName))
-}
-
-export async function getFileBackupList(
-  sourceFileName: string,
-  parent: DirectoryManager,
-  buFolderNames: string[],
-): Promise<BackupFile[]> {
-  const backupFiles: BackupFile[] = []
-  await Promise.all(
-    buFolderNames.map(async buFolderName => {
-      const matches = await getBackupsInDirByName(parent, buFolderName, sourceFileName)
-      
-      // Apply the throttle to the mapped values using the 'throttleTime' operator
-      const mappedItems$ = slowArrayMapPromises(matches, 10, file => {
-        return file.stats()
-      })
-      
-      const loadStats: FileStats[] = await firstValueFrom(mappedItems$)
-      const statPromises = loadStats.map(async stat => {
-        const castStat = stat as BackupFile
-        castStat.backupFolderName = buFolderName
-        castStat.backupFolder = await parent.getDirectory(buFolderName)
-        return stat as BackupFile
-      })
-      const stats = await Promise.all(statPromises)
-      backupFiles.push(...stats)
-      return
-    })
-  )
-
-  // this.backupFiles.sort((a,b)=>String(a.name||'').toLowerCase()>String(b.name||'').toLowerCase()?1:-1)
-  backupFiles.sort((a,b)=>Number(b.lastModified)-Number(a.lastModified))
-  return backupFiles
-}
-
-
-export function slowArrayMapPromises<T, Z>(
-  array: T[],
-  speed: number,
-  callback: (value: T, index: number) => Promise<Z>
-): Observable<Z[]> {
-  return from(array).pipe(
-    concatMap((item, index) => of(item).pipe(
-      delay(speed),
-      mergeMap(value => from(
-        callback(value, index)
-      ))
-    )),
-    toArray()
-  )
 }

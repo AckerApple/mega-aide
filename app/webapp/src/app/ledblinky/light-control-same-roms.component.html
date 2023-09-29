@@ -1,33 +1,52 @@
 <div class="overflow max-height-600">
-  <table cellPadding="8" cellSpacing="0" class="table-striped">
-    <tbody>
-      <tr>
-        <th>Emulator</th>
-        <th>Name</th>
+  <table cellPadding="8" cellSpacing="0" class="table-striped width-full">
+    <thead style="position: sticky;top: 0;">
+      <tr class="bg-dark color-white">
+        <th>Emulator ROM</th>
+        <th>Button Config</th>
         <th>Voice</th>
-        <th>Players</th>
+        <th>Player</th>
         <th>Color</th>
+        <th>&nbsp;</th>
       </tr>
+    </thead>
+    <tbody>
       <ng-container *ngFor="let game of lightControl.gamesUsingSame$ | async">
         <tr>
-          <td>{{ game.emulator.details.emuname }}</td>
           <td>
-            <a [routerLink]="'/🚦/🕹/'+game.emulator.details.emuname+'/'+game.rom.details.groupName">
-              {{ game.rom.details.groupName }}
+            <div>
+              <small class="text-xxs">{{ game.emulator.xml.details.emuname }}</small>
+            </div>
+            <a [routerLink]="'/🚦/🕹/' + game.emulator.xml.details.emuname + '/' + game.rom.xml.details.groupName">
+              {{ game.rom.xml.details.groupName }}
             </a>
           </td>
-          <td>{{ game.rom.details.voice }}</td>
-          <td>{{ game.rom.details.numPlayers }}</td>
+          <td>
+            <div>
+              <small class="text-xxs">name: {{game.playerControl.xml.details.name}}</small>
+            </div>
+            <div>
+              <small class="text-xxs">inputCodes: {{game.playerControl.xml.details.inputCodes}}</small>
+            </div>
+          </td>
+          <td>
+            <!--{{ game.rom.details.voice }}-->
+            {{ game.playerControl.xml.details.voice }}
+          </td>
+          <td>{{ game.playerIndex }} of {{ game.rom.xml.details.numPlayers }}</td>
           <td>
             <div class="radius-half width-30 height-30"
               [style.background-color] = "game.playerControl.cssColor$ | async"
               style="box-shadow: .04em .04em .04em .04em rgba(255, 255, 255, 0.3);"
             ></div>
           </td>
+          <td>
+            <button type="button" (click)="use(game)">use</button>
+          </td>
         </tr>
       </ng-container>
     </tbody>
-    <tr *ngIf="lightControl.gamesUsingSameLoadCount">
+    <tr *ngIf="lightControl.control?.loadCount$ | async">
       <td colspan="4"><loading-icon [show]="true"></loading-icon></td>
     </tr>
   </table>

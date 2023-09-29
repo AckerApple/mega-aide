@@ -2,66 +2,129 @@
 
 <br />
 
-<div class="flex-wrap gap">
-  <a *ngFor="let inputMap of (session.ledBlinky.inputsMap$ | async)?.ledControllers"
-    class="flex-wrap gap bg-dark pad hover-bg-energized flex1"
-    (click)="selectedController = selectedController === inputMap ? undefined : inputMap"
-    [class.bg-energized]="selectedController === inputMap"
-  >
-    <div>
-      <strong>name</strong>
+<ng-container *ngIf="(session.ledBlinky.inputsMap$ | async) as inputsMap">
+  <div class="flex-wrap gap">
+    <a *ngFor="let inputMap of inputsMap.ledControllers"
+      class="flex-wrap gap pad hover-bg-energized flex1"
+      (click)="selectedController = selectedController === inputMap ? undefined : inputMap"
+      [class.bg-energized]="selectedController === inputMap"
+      [class.bg-dark]="selectedController !== inputMap"
+    >
       <div>
-        {{inputMap.details.name}}
+        <strong>name</strong>
+        <div>
+          {{inputMap.details.name}}
+        </div>
       </div>
-    </div>
-    
-    <div>
-      <strong>ports</strong>
+      
       <div>
-        {{inputMap.ports.length}}
+        <strong>ports</strong>
+        <div>
+          {{inputMap.ports.length}}
+        </div>
       </div>
-    </div>
-    
-    <div>
-      <strong>id</strong>
+      
       <div>
-        {{inputMap.details.id}}
+        <strong>id</strong>
+        <div>
+          {{inputMap.details.id}}
+        </div>
       </div>
-    </div>
-    
-    <div>
-      <strong>type</strong>
+      
       <div>
-        {{inputMap.details.type}}
+        <strong>type</strong>
+        <div>
+          {{inputMap.details.type}}
+        </div>
       </div>
-    </div>
-  </a>
-</div>
+    </a>
+  </div>
+  
+  <div *ngIf="selectedController" [@fadeInOutUp]="1">
+    <br />
+    <h3>{{selectedController.ports.length}} Ports</h3>  
+    <div style="max-height: 800px;overflow: scroll;">
+      <table cellPadding="5" cellSpacing="0" border="0"
+        class="width-full bg-dark table-flex-lt-sm pad"
+      >
+        <thead class="hide-lt-sm pos-sticky top-0">
+          <tr class="bg-grey">
+            <th>number</th>
+            <th>label</th>
+            <th>type</th>
+            <th>input codes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let port of selectedController.ports; let index=index" class="gap">
+            <td *ngIf="index > 0" class="hide-gt-sm width-full">
+              <hr [class.margin-v-3x]="index > 0" class="width-full" />
+            </td>
+            <td class="flex1">
+              <strong class="hide-gt-sm">number</strong>
+              <input type="number" [(ngModel)]="port.details.number" class="width-full min-width-60"
+                (ngModelChange)="updatePort(port, inputsMap)"
+              />
+            </td>
+            <td class="flex1">
+              <strong class="hide-gt-sm">label</strong>
+              <input type="text" [(ngModel)]="port.details.label" class="width-full min-width-200"
+                (ngModelChange)="updatePort(port, inputsMap)"
+              />
+            </td>
+            <td class="flex1">
+              <strong class="hide-gt-sm">type</strong>
+              <select [(ngModel)]="port.details.type" class="width-full min-width-100"
+                (ngModelChange)="updatePort(port, inputsMap)"
+              >
+                <option></option>
+                <option value="R">RGB-Red</option>
+                <option value="G">RGB-Green</option>
+                <option value="B">RGB-Blue</option>
+              </select>
+              <!--
+                <input type="text" [(ngModel)]="port.details.type" class="width-full min-width-50"
+                  (ngModelChange)="updatePort(port, inputsMap)"
+                />
+              -->
+            </td>
+            <td class="flex1">
+              <strong class="hide-gt-sm">input codes</strong>
+              <!--
+                <input type="text" [(ngModel)]="port.details.inputCodes" class="width-full"
+                (ngModelChange)="updatePort(port, inputsMap)"
+                />
+              -->
 
-<div *ngIf="selectedController" [@fadeInOutUp]="1">
+              <input-code-select class="flex flex1"
+                [model]="port.details.inputCodes"
+              ></input-code-select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <button class="width-full" type="button"
+      [class.bg-energized]="selectedController.debug"
+      (click)="selectedController.debug = !selectedController.debug"
+    >🐞 debug</button>
+    <div *ngIf="selectedController.debug">
+      <textarea class="width-full" rows="22" wrap="off" readonly>{{selectedController.ports | json}}</textarea>
+    </div>
+  </div>
   <br />
-  <h3>Ports</h3>
-  <table cellPadding="5" cellSpacing="0" border="0"
-    class="table-lines width-full bg-dark"
-  >
-    <thead>
-      <tr class="bg-grey">
-        <td>number</td>
-        <td>label</td>
-        <td>type</td>
-        <td>inputCodes</td>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let port of selectedController.ports">
-        <td>{{ port.details.number }}</td>
-        <td>{{ port.details.label }}</td>
-        <td>{{ port.details.type }}</td>
-        <td>{{ port.details.inputCodes }}</td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-<!--
-  {{ session.ledBlinky.inputsMap$ | json }}
--->
+  <div class="bg-orange pad-xs">
+    <p>⚠️ Proceed with caution when editing and saving.</p>
+    <p>At this time, you should be using the official LEDBlinky native app to perform input mapping changes. For safety, this app does NOT auto save anything so you can play around and just not save.</p>
+    <p>If you modifying anything AND SAVE, on this page, it's because you know what you are doing.</p>
+  </div>
+  <br />
+  <ul class="opacity-half text-xs">
+    <li>Above functionality is driven by LEDBlinkyInputMap.xml</li>
+    <li>
+      <a href="https://www.youtube.com/watch?v=opu6NofnyWg" target="_blank"
+        class="no-a-style"
+      >📺 Watch to learn more about <u>original LEDBlinky</u> input mapping</a>
+    </li>
+  </ul>
+</ng-container>

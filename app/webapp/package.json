@@ -1,6 +1,6 @@
 {
   "name": "Mega-aide",
-  "version": "0.2.24",
+  "version": "0.3.3",
   "scripts": {
     "ng": "ng",
     "clear": "rm -rf .angular/cache",
@@ -10,7 +10,8 @@
     "build:copy": "rm -rf ../resources/webapp && cp -r ./dist/webapp ../resources/webapp",
     "build:watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "patch:version": "npm --no-git-tag-version version patch"
+    "patch:version": "npm --no-git-tag-version version patch",
+    "detect:cyclic": "npx madge --circular --extensions ts ./"
   },
   "private": true,
   "dependencies": {
@@ -35,7 +36,7 @@
     "@types/wicg-file-system-access": "^2020.9.5",
     "ack-angular": "^4.1.7",
     "ack-angular-components": "^4.1.29",
-    "ack-css-boot": "^3.0.11",
+    "ack-css-boot": "^3.0.13",
     "jasmine-core": "~4.3.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.1.0",

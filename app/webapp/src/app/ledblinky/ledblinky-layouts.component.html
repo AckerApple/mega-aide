@@ -1,21 +1,38 @@
-<!-- show single light details -->
-<div *ngIf="(showLightDetails$ | async) as light" class="flex-center"
-  [@fadeInOutUp]="1"
+<!-- TODO: This entire file is used by both <ledblinky-layouts> and <ledblinky-controls-layouts> and should not -->
+
+<!-- show single light details modal -->
+<dialog
+  [id]="'showLightDetailsModal_'+uid"
+  style="max-width:95vw;padding:0;position: absolute;" draggable="true"
+  onclick="var r = this.getBoundingClientRect();(r.top<=event.clientY&&event.clientY<=r.top+r.height&&r.left<=event.clientX&&event.clientX<=r.left+r.width) || this.close()"
+  ondragstart="const {e,dt,t} = {t:this,e:event,dt:event.dataTransfer};const d=t.drag=t.drag||{x:0,y:0};d.initX=d.x;d.startX=event.clientX-t.offsetLeft;d.startY=event.clientY-t.offsetTop;t.ondragover=e.target.ondragover=(e)=>e.preventDefault();dt.effectAllowed='move';dt.dropEffect='move'"
+  ondrag="const {t,e,dt,d}={e:event,dt:event.dataTransfer,d:this.drag}; if(e.clientX===0) return;d.x = d.x + e.offsetX - d.startX; d.y = d.y + e.offsetY - d.startY; this.style.left = `${d.x}px`; this.style.top = `${d.y}px`;"
+  ondragend="const {t,e,d}={t:this,e:event,d:this.drag};if (d.initX === d.x) {d.x=d.x+e.offsetX-(d.startX-d.x);d.y=d.y+e.offsetY-(d.startY-d.y);this.style.transform=`translate3d(${d.x}px, ${d.y}px, 0)`};this.draggable=false"
 >
-  <div class="pos-abs width-full height-full flex-center flex-valign-center bg-dark opacity-half"
-    (click)="showLightDetails$.next(undefined)"
-    style="z-index:2"
-  ></div>
-  <!-- single light editor modal-->
-  <div class="pos-abs pad" style="z-index:3">
-    <ng-container *ngTemplateOutlet="singleLightDetails;context:{
-      $implicit: light.light,
-      lightControl: light,
-      details: $any(light.light).details$ | async,
-      zoom: session.ledBlinky.zoom$ | async
-    }"></ng-container>
+  <div style="padding:.5em" class="bg-dark text-white pos-rel"
+    onmousedown="this.parentNode.draggable=true"
+  >
+    <a class="pos-abs pad-xxs text-2x"
+      style="right:0;top:0"
+      (click)="closeModal()"
+    >🅧</a>
+
+    <h3>Single light editor</h3>
   </div>
-</div>
+  <div *ngIf="(showLightDetails$ | async) as light" class="flex-center"
+    [@fadeInOutUp]="1"
+  >
+    <!-- single light editor modal-->
+    <div>
+      <ng-container *ngTemplateOutlet="singleLightDetails;context:{
+        $implicit: light.light,
+        lightControl: light,
+        details: light.light.details,
+        zoom: session.ledBlinky.zoom$ | async
+      }"></ng-container>
+    </div>
+  </div>
+</dialog>
 
 <ng-container *ngTemplateOutlet="stage;context: {
   zoom: session.ledBlinky.zoom$ | async,
@@ -23,7 +40,9 @@
 }"></ng-container>
 
 <ng-template #stage let-zoom="zoom" let-lights="lights">
-  <ng-container *ngTemplateOutlet="toolsStage;context:{zoom: zoom, lights:lights}"></ng-container>
+  <ng-container *ngIf="interactive">
+    <ng-container *ngTemplateOutlet="toolsStage;context:{zoom: zoom, lights:lights}"></ng-container>
+  </ng-container>
   <ng-container *ngTemplateOutlet="lightStage;context:{zoom: zoom}"></ng-container>
 </ng-template>
 
@@ -45,8 +64,13 @@
 
     <div class="flex1">
       <div>🖌 layout</div>
-      <select class="width-full" [ngModel]="layoutName$ | async" (ngModelChange)="layoutName$$.next($event)">
-        <option [value]="name" *ngFor="let name of layoutNames">{{name}}</option>
+      <select class="width-full"
+        [ngModel]="session.ledBlinky.layoutName$ | async"
+        (ngModelChange)="session.ledBlinky.layoutName$$.next($event)"
+      >
+        <option *ngFor="let name of session.ledBlinky.layoutNames$ | async"
+          [value]="name"
+        >{{name}}</option>
       </select>
     </div>
 
@@ -57,14 +81,15 @@
         <a (click)="session.ledBlinky.curve$.getValue() <= .1 || session.ledBlinky.curve$.next(session.ledBlinky.curve$.getValue() - .1)">⊖</a>
         <input type="range" id="curve" min="0" max="1"
           [ngModel]="session.ledBlinky.curve$ | async" step=".1"
-          (ngModelChange) = "session.ledBlinky.curve$.next($event)"
+          (ngModelChange) = "session.ledBlinky.curveChange$.next($event)"
           class="flex1"
         />
-        <a (click)="session.ledBlinky.curve$.getValue() > .9 || session.ledBlinky.curve$.next(session.ledBlinky.curve$.getValue() + .1)">⊕</a>
+        <a (click)="session.ledBlinky.curve$.getValue() > .9 || session.ledBlinky.curve$.next(session.ledBlinky.curve$.getValue() + .1)"
+        >⊕</a>
       </div>
     </div>
 
-    <div class="flex1">
+    <div class="flex1" *ngIf="edit">
       <div>&nbsp;</div>
       <button type="button" (click)="previewSelectedLayoutFile()"
         class="width-full"
@@ -72,13 +97,18 @@
     </div>
 
     <div *ngIf="edit" class="flex1">
-      <div>add button</div>
+      <div>⨁ add unused light</div>
       <select (change)="addLight(lights, $any($event.target).value)" class="width-full">
-        <option>-- CHOOSE A BUTTON --</option>
-        <ng-container *ngFor="let missing of (missingLights$ | async)">
-          <ng-container *ngTemplateOutlet="missingOption;context:{
-            $implicit: missing.details$ | async
-          }"></ng-container>
+        <ng-container *ngIf="(missingLights$ | async) as missingLights">
+          
+          <option *ngIf="missingLights.length">-- CHOOSE A BUTTON --</option>
+          <option *ngIf="!missingLights.length">-- ✅ ALL LIGHTS USED --</option>
+
+          <ng-container *ngFor="let missing of missingLights">
+            <ng-container *ngTemplateOutlet="missingOption;context:{
+              $implicit: missing.details$ | async
+            }"></ng-container>
+          </ng-container>
         </ng-container>
       </select>
     </div>
@@ -111,15 +141,20 @@
           (dragstart)="setLightDrag($event, light.light)"
           (drag)="updateLightDrag($event, light.light)"
           [draggable]="edit"
-          (click)="showLightDetails$.next(light);modalOpen.emit(light)"
+          (click)="showLight(light)"
       
           #dragSelectorTarget="dragSelectorTarget"
           [drag-selector-target]="light.light"
+
+          [title]="'player: ' + $any(light).player?.playerIndex + ' - color:' + ($any(light).control?.cssColor$ | async)"
         >
           <ng-container *ngTemplateOutlet="lightTemplate;context:{
             $implicit: light.light,
             details: details,
+            control: $any(light).control,
             zoom:zoomVar,
+            cssColor: ($any(light).control ? ($any(light).control.cssColor$ | async) : (light.light.cssColor$ | async)),
+            rgbArray: ($any(light).control ? ($any(light).control.rgbArray$ | async) : (light.light.rgbArray$ | async)),
             dragSelectorTarget:dragSelectorTarget
           }"></ng-container>
         </div>    
@@ -134,23 +169,24 @@
   let-zoom="zoom"
 >
   <div>
-    <div class="text-black pad pos-rel border-4"
+    <div class="text-black pad border-4"
       style="background-color:rgba(255,255,255,.9);border-color:rgba(255,255,255,.8);min-width:35vw"
     >
-      <a class="pos-abs pad-xxs text-2x"
-        style="right:-5px;top:-5px"
-        (click)="showLightDetails$.next(undefined)"
-      >🅧</a>
-
       <!-- single light sample -->
       <div class="flex gap">
         <div class="bg-grey-3x flex-1"></div>
         <div class="flex-center flex-stacked">
           <ng-container *ngTemplateOutlet="lightTemplate;context:{
             $implicit: light,
-            details: light.details$ | async,
+            details: details,
+            control: lightControl.control,
+            cssColor: (lightControl.control ? (lightControl.control.cssColor$ | async) : (light.light?.cssColor$ | async)),
+            rgbArray: (lightControl.control ? (lightControl.control.rgbArray$ | async) : (light.light?.rgbArray$ | async)),
             zoom: zoom
-          }"></ng-container>
+          }"></ng-container>          
+          <div>
+            <small class="text-xxs opacity-80">{{details.colorDec}}</small>
+          </div>        
         </div>
         <div class="bg-grey-3x flex-1"></div>
       </div>
@@ -173,14 +209,22 @@
           <div class="flex-wrap gap child-bg-grey-5x child-pad-xxs">
             <ng-container *ngTemplateOutlet="lightForm;context:{$implicit:light, details:details}"></ng-container>
           </div>
-          <button type="button" class="width-full"
-            [class.bg-calm]="!lightControl.showGamesUsing"
-            [class.bg-dark]="lightControl.showGamesUsing"
-            (click)="lightControl.showGamesUsing = !lightControl.showGamesUsing"
-          >👾 SHOW ROMS USING</button>
-          <div *ngIf="lightControl.showGamesUsing" [@fadeInOutUp]="1">
-            <light-control-same-roms [lightControl]="lightControl"></light-control-same-roms>
-          </div>
+
+          <ng-container *ngIf="lightControl.control">
+            <button type="button" class="width-full"
+              [class.bg-calm]="lightControl.showGamesUsing"
+              [class.bg-dark]="!lightControl.showGamesUsing"
+              (click)="lightControl.showGamesUsing = !lightControl.showGamesUsing"
+            >👾 SHOW ROMS USING</button>
+            
+            <!-- similar roms-->
+            <div *ngIf="lightControl.showGamesUsing" [@fadeInOutUp]="1"  class="margin-top-xxs">
+              <light-control-same-roms
+                [lightControl]="lightControl"
+                (useChange)="lightControl.showGamesUsing = false"
+              ></light-control-same-roms>
+            </div>
+          </ng-container>
         </ng-container>
 
         <div *ngIf="!edit" class="flex-wrap gap">
@@ -191,17 +235,21 @@
   </div>
 </ng-template>
 
+<!-- sample of light + name -->
 <ng-template #lightTemplate let-light
   let-details="details"
+  let-control="control"
   let-zoom="zoom"
+  let-cssColor="cssColor"
+  let-rgbArray="rgbArray"
   let-dragSelectorTarget="dragSelectorTarget"
 >
   <div class="radius-half"
     [style.width.px] = "details.diameter * zoom"
     [style.height.px] = "details.diameter * zoom"
-    [style.background-color] = "light.cssColor$ | async"
+    [style.background-color] = "cssColor || '#000'"
     [ngClass] = "dragSelectorTarget?.selected ? 'border-2 border-white' : ''"
-    style="box-shadow: .04em .04em .04em .04em rgba(255, 255, 255, 0.3);"
+    [style.box-shadow] = "control && control.xml.element.parentNode?.parentNode && rgbArray ? '0 0 .5em .2em rgba('+rgbArray[0]+','+rgbArray[1]+','+rgbArray[2]+', .8)' : '.04em .04em .04em .04em rgba(255, 255, 255, 0.3)'"
   ></div>
   <div [style.font-size.px]="($any(lightConfig?.settings?.LEDLabelFontSize | number) || 12) * zoom"
   >{{details.name}}</div>
@@ -242,17 +290,21 @@
   
   <div class="flex1">
     <div>colorDec</div>
-    <div class="flex-wrap">
-      <input type="color"
-        [ngModel]="light.cssColor$ | async"
-        (ngModelChange)="updateLightColor(light, details, $event)"
-        [style.background-color]="light.cssColor$ | async"
-      />
-      <div class="flex1">
-        <input type="number" class="width-full"
-          [(ngModel)]="details.colorDec"
-        />
-      </div>
+    <div>
+      <!--
+      <color-inputs
+        [allowNameSelect] = "false"
+        [cssColor] = "light.cssColor$ | async"
+        [color]="details.colorDec"
+        (colorNameChange) = "light.updateToColor($event);lightChanged.emit(light)"
+        (modelChange) = "light.updateToColor($event);lightChanged.emit(light)"
+        (paste) = "light.updateToColor($event);lightChanged.emit(light)"
+      ></color-inputs>
+      {{light.details.colorDec}}
+      -->
+      <light-color-input class="flex-wrap" [light]="light"
+        (changed)="lightChanged.emit($event)"
+      ></light-color-input>
     </div>
   </div>
 </ng-template>

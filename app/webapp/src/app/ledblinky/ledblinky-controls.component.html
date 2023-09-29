@@ -6,8 +6,11 @@
   <div class="flex-wrap gap">
     <div class="flex-valign-center pos-rel flex1">
       <span class="pad-xs">🔎</span>
-      <input type="text" [ngModel]="search$ | async" (ngModelChange)="newSearch($event)" class="width-full"
-        placeholder="Search emulators and roms" [focusOn]="1" />
+      <input type="text"
+        [ngModel]="search$ | async"
+        (ngModelChange)="newSearch($event)" class="width-full"
+        placeholder="Search emulators and roms" [focusOn]="1"
+      />
       <div *ngIf="search$ | async" [@fadeInOutUp]="1" class="pos-abs right-0 pad-right-xxs">
         <a (click)="newSearch('')" class="text-black text-2x">🅧</a>
       </div>
@@ -21,12 +24,15 @@
     </div>
   </div>
 
+  <ng-template #loadingIcon>
+    <loading-icon class="pos-abs" show="1"></loading-icon>
+  </ng-template>
   <br />
 
   <div>
     <!-- select emulator -->
-    <div class="pad-xs" [class.bg-dark]="session.ledBlinky.emulator$ | async">
-      <div *ngIf="(session.ledBlinky.emulator$ | async) as emulator" [@fadeInOutUp]="1">
+    <div class="pad-h-xs" [class.bg-dark]="emulator$ | async">
+      <div *ngIf="(emulator$ | async) as emulator" [@fadeInOutUp]="1">
         <div><strong>Emulator</strong></div>
         <!-- show selected emulator -->
         <div class="flex-wrap flex-1">
@@ -34,17 +40,16 @@
         </div>
       </div>
 
-      <div *ngIf="!(session.ledBlinky.emulator$ | async)" [@fadeInOutUp]="1">
-        
-        <!-- show list of emulators -->
-        <ng-container *ngIf="(filteredEmulators$ | async) as emus">
+      <!-- MAIN LOOP: list of emulators -->
+      <div *ngIf="!(emulator$ | async)" [@fadeInOutUp]="1">
+        <ng-container *ngIf="(filteredEmulators$ | async) as emus; else loadingIcon">
           <div>
             <strong>{{emus.length}} Emulators</strong>
           </div>
 
           <div *ngIf="emus.length"
             [@fadeInOutUp]="1"
-            class="gap child-pad-xs pad-top overflow flex-wrap flex1"
+            class="gap-xxs child-pad-xs pad-top overflow flex-wrap flex1"
             [style.max-height.vh]="80"
           >
             <ng-container *ngFor="let emu of emus">
@@ -57,6 +62,14 @@
             <div class="bg-orange pad-xs width-full">
               🤷‍♂️ No emulators found matching search
             </div>
+          </div>
+          
+          <br />
+          
+          <div class="flex-right">
+            <a type="button" class="hover-bg-calm bg-balanced"
+              onclick="newEmulatorModal.showModal()"
+            >+ new emulator</a>
           </div>
         </ng-container>
 
@@ -74,35 +87,163 @@
           <ng-container *ngFor="let item of emulator.controlGroups">
             <ng-container *ngTemplateOutlet="romLink;context:{rom:item, emu: emulator}"></ng-container>
           </ng-container>
+          <button type="button"
+            onclick="createRomDialog.showModal()"
+          >+ Create ROM</button>
         </div>
       </div>
     </div>
 
-    <ng-container *ngIf="(search$ | async) as search">
-      <br />
-      <a [routerLink]="requestedEmulatorName + '/' + search.toUpperCase().split(' ').join('_')" [queryParams]="{new:true}" class="no-a-style">
-        <button type="button">
-          Add "{{ search }}" as a new ROM
-        </button>                        
-      </a>
-    </ng-container>
+    <ng-container *ngIf="(emulator$ | async) as emulator">
+      <ng-container *ngIf="(search$ | async) as search">
+        <br />
+        <a class="no-a-style"
+          (click)="showConfirmNewRom=true"
+        >
+          <button type="button">
+            ✚ Add "{{ search }}" as a new ROM
+          </button>
+        </a>
 
+        <ack-modal [(showModel)]="showConfirmNewRom" valign="center">
+          <div class="bg-white radius-10 pad text-black">
+            <p>🤔 Please confirm to add a new ROM configuration for:</p>
+            <p><strong>Emulator:</strong> {{emulator.xml.details.emuname}}</p>
+            <p><strong>ROM:</strong> {{search}}</p>
+            <br />
+            <div class="flex">
+              <a type="button" class="no-a-style flex1 bg-dark"
+                (click)="showConfirmNewRom=false"
+              >
+                CANCEL
+              </a>
+      
+              <a type="button" class="no-a-style flex1 bg-balanced"
+                [routerLink]="emulator.xml.details.emuname + '/' + search.toUpperCase().split(' ').join('_')"
+                [queryParams]="{new:true}"
+              >
+                CONFIRM
+              </a>
+            </div>
+          </div>
+        </ack-modal>
+      </ng-container>
+    </ng-container>
   </div>
 </div>
 
+<br />
+<ul class="opacity-half text-xs">
+  <li>Above functionality is driven by LEDBlinkyControls.xml</li>
+  <li>
+    <a href="https://www.youtube.com/watch?v=29QG7Bd9mKw&t=1s" target="_blank"
+      class="no-a-style"
+    >📺 Watch to learn more about <u>original LEDBlinky</u> control editing</a>
+  </li>
+  <li>When video for this software is produced, we will link here</li>
+</ul>
+
+
 <ng-template #romLink let-rom="rom" let-emu="emu">
   <a class="no-a-style border hover-bg-calm flex1 bg-black" [@fadeInOutUp]="1"
-    [routerLink]="emu.details.emuname + '/' + rom.groupName" [queryParams]="{unknownMode: unknownMode$ | async}">{{
+    [routerLink]="emu.xml.details.emuname + '/' + rom.groupName" [queryParams]="{unknownMode: unknownMode$ | async}">{{
     rom.voice || rom.groupName }}</a>
 </ng-template>
 
 <ng-template #emulatorButton let-emu let-selected="selected">
   <a class="border hover-bg-calm pos-rel flex2 pad-xs pad-right no-a-style"
-    [routerLink]="selected ? './' : emu.details.emuname" [class.flex1]="selected"
+    [routerLink]="selected ? './' : emu.xml.details.emuname" [class.flex1]="selected"
     [ngClass]="selected ? 'bg-energized' : 'bg-black'"
-    (click)="session.ledBlinky.emulator$.next( selected ? undefined : emu )">
-    {{ emu.details.emuname }}
+    (click)="emulator$.next( selected ? undefined : emu )">
+    {{ emu.xml.details.emuname }}
     <sup *ngIf="emu.controlGroups.length > 1" class="opacity-80 pad-xxs pos-abs top-0 right-0">{{
       emu.controlGroups.length }}</sup>
   </a>
 </ng-template>
+
+<dialog id="newEmulatorModal" style="padding:0"
+  onclick="var r = this.getBoundingClientRect();(r.top<=event.clientY&&event.clientY<=r.top+r.height&&r.left<=event.clientX&&event.clientX<=r.left+r.width) || this.close()"
+  ondragstart="const {e,dt,t} = {t:this,e:event,dt:event.dataTransfer};const d=t.drag=t.drag||{x:0,y:0};d.initX=d.x;d.startX=event.clientX-t.offsetLeft;d.startY=event.clientY-t.offsetTop;t.ondragover=e.target.ondragover=(e)=>e.preventDefault();dt.effectAllowed='move';dt.dropEffect='move'"
+  ondrag="const {t,e,dt,d}={e:event,dt:event.dataTransfer,d:this.drag}; if(e.clientX===0) return;d.x = d.x + e.offsetX - d.startX; d.y = d.y + e.offsetY - d.startY; this.style.left = `${d.x}px`; this.style.top = `${d.y}px`;"
+  ondragend="const {t,e,d}={t:this,e:event,d:this.drag};if (d.initX === d.x) {d.x=d.x+e.offsetX-(d.startX-d.x);d.y=d.y+e.offsetY-(d.startY-d.y);this.style.transform=`translate3d(${d.x}px, ${d.y}px, 0)`};this.draggable=false"
+>
+  <div style="min-width: 40vw;"></div>
+  <div style="padding:.25em" onmousedown="this.parentNode.draggable=true" class="bg-dark text-white"
+  ><h2>Create New Emulator</h2></div>
+  
+  <div class="flex-wrap gap pad">
+    <div class="flex1">
+      <div>
+        <strong>Emulator Name</strong>
+      </div>
+      <input type="text" class="width-full"
+        [(ngModel)]="newEmulater.emuname"
+        (ngModelChange)="newEmulater.emuname = newEmulater.emuname.replace(' ', '_')"
+        maxlength="80"
+      />
+    </div>
+    <div class="flex1">
+      <div>
+        <strong>Description</strong>
+      </div>
+      <input type="text" class="width-full"
+        [(ngModel)]="newEmulater.emuDesc" maxlength="200"
+      />
+    </div>
+  </div>
+
+  <br />
+  
+  <div class="flex-wrap gap-xxs">
+    <button *ngIf="newEmulater.emuname" [@fadeInOutUp]="1" class="flex1 bg-balanced" type="button"
+      (click)="createNewEmulator()"
+    >🆕 create</button>
+
+    <button class="flex1 bg-dark" type="button"
+      onclick="newEmulatorModal.close()"
+    >🅧 close</button>    
+  </div>
+</dialog>
+
+<dialog id="createRomDialog"
+  onclick="var r = this.getBoundingClientRect();(r.top<=event.clientY&&event.clientY<=r.top+r.height&&r.left<=event.clientX&&event.clientX<=r.left+r.width) || this.close()"
+>
+  <ng-container *ngIf="emulator$ | async as emulator">
+    <div style="min-width: 40vw;"></div>
+    <h2>Create New {{ emulator.xml.details.emuname }} ROM</h2>
+
+    <div class="flex-wrap gap">
+      <div class="flex1">
+        <div>
+          <strong>Control Group / ROM Name</strong>
+        </div>
+        <input type="text" class="width-full"
+          [(ngModel)]="newRom.groupName"
+          (ngModelChange)="newRom.groupName = newRom.groupName.replace(' ', '_')"
+          maxlength="80"
+        />
+        <div>
+          <input type="checkbox" name="useDefault" id="useDefault" [checked]="newRom.groupName==='DEFAULT'"
+            (click)="newRom.groupName = newRom.groupName === 'DEFAULT' ? '' : 'DEFAULT'"
+          />
+          <label for="useDefault"
+            title="When checked, this new ROM will be the Emulator base light configuration for games that do not have light configurations"
+          >DEFAULT</label>
+        </div>
+      </div>
+    </div>
+
+    <br />
+
+    <div class="flex-wrap gap-xxs">
+      <a type="button" *ngIf="newRom.groupName" [@fadeInOutUp]="1" class="flex1 bg-balanced" type="button"
+        [routerLink]="emulator.xml.details.emuname + '/' + newRom.groupName"
+        [queryParams]="{new:true}"
+      >🆕 create</a>
+
+      <button class="flex1 bg-dark" type="button"
+        onclick="createRomDialog.close()"
+      >🅧 close</button>    
+    </div>
+  </ng-container>
+</dialog>

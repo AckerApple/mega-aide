@@ -16,6 +16,7 @@ import { launchBoxRoutes } from './launchbox/launchbox.routing.module'
 import { XinputBackupsComponent } from './xarcade-xinput/xinput-backups.component'
 import { ChangelogComponent } from './components/changelog.component'
 import { routes as ledblinkyRoutes } from './ledblinky.routing.module'
+import { AppBackupsComponent } from './app-backups.component'
 
 export const debugReport: Route = {
   path: '🐞',
@@ -165,8 +166,19 @@ const platformEdit2: Route = {
   component: PlatformComponent,
 }
 
+export const backups: Route = {
+  path: '↩',
+  title: 'Backups',
+  component: AppBackupsComponent,
+  data: {
+    emoji: '↩',
+    description: 'Folder navigator for restoring files backed up in subfolders',
+    wrapClass: 'bg-black radius-25 pad-2x'
+  }
+}
+
 export const menu: Route[] = [
-  exit,
+  exit, backups,
   
   ...ledblinkyRoutes,
   ...launchBoxRoutes,

@@ -1,7 +1,8 @@
 import { Component } from "@angular/core"
 import { ActivatedRoute } from "@angular/router"
 import { firstValueFrom, from, mergeMap, shareReplay } from "rxjs"
-import { GameInsight, SessionProvider } from "src/app/session.provider"
+import { SessionProvider } from "src/app/session.provider"
+import { GameInsight } from "src/app/session.utils"
 import { xmlDocToString } from "src/app/xml.functions"
 import { MapStats, PlatformGameApp, readPlatformFile, regMapXarcadeOnto, updatePlatformByGame } from "./detect.utils"
 

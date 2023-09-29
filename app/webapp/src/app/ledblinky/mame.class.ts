@@ -1,7 +1,7 @@
 import { DirectoryManager } from "ack-angular-components/directory-managers/DirectoryManagers"
 import { DmFileReader } from "ack-angular-components/directory-managers/DmFileReader"
 import { SessionProvider } from "../session.provider"
-import { elmAttributesToObject, getElementsByTagName } from "./LedBlinky.utils"
+import { elmAttributesToObject, getElementsByTagName } from "./element.utils"
 
 export class Mame {
   directory?: DirectoryManager

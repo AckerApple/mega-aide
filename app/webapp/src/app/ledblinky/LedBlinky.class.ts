@@ -4,50 +4,54 @@ import {
   BehaviorSubject,
   bufferCount,
   combineLatest,
-  combineLatestAll,
-  concatAll,
   concatMap,
   EMPTY,
   firstValueFrom,
   from,
-  interval,
-  lastValueFrom,
   map,
   mergeMap,
   Observable,
   of,
   shareReplay,
+  Subject,
+  Subscription,
   switchMap,
   take,
-  takeLast,
-  timeout,
-  timer,
   toArray,
 } from 'rxjs';
 import { SessionProvider } from '../session.provider';
 import {
   InputsMap,
-  ControlDefault,
-  elmAttributesToObject,
-  Emulator,
   getControlDefaultsByControlXml,
-  getElementsByTagName,
   getEmulatorsByControl,
   getLastLayoutFileByLightsConfig,
   getLightConfigByLayoutFile,
   IniNameValuePairs,
   iniToObject,
   LedBlinkyControls,
-  NewControlGroupings,
-  NewEmulator,
-  Port,
-  PortDetails,
   UniqueInputCode,
   UniqueInputLabel,
-  LedController,
   LedControllerDetails,
-  PlayerControl,
+  LightsConfig,
+  marryPlayerControlsToLights,
+  fileTryLoadingPipes,
+  addMissingControlsToLightControls,
+  getNameAveragesByControls$,
+  getAvailControlsMap,
+  registerPorts,
+  mapPortElm,
 } from './LedBlinky.utils';
+import { PlayerControl } from './PlayerControl.class';
+import { xmlDocToString } from '../xml.functions';
+import { createElement } from '../launchbox/games.utils';
+import { LedController } from './LEDController.class';
+import { Port } from './LedPort.class';
+import { NgZone } from '@angular/core';
+import {  NewControlGroup } from './ControlGroup.class';
+import { LightAndControl } from './LightAndControl.interface';
+import { NewPlayer, PlayerDetails } from './Player.class';
+import { Emulator, EmulatorDetails, NewEmulator } from './Emulator.class';
+import { elmAttributesToObject, getElementsByTagName } from './element.utils';
 
 enum LEDBlinkyFiles {
   UnknownGames = 'UnknownGames.dat',
@@ -72,7 +76,29 @@ const displaySizes: Size[] = [
 ];
 
 export class LedBlinky {
-  curve$ = new BehaviorSubject(0.6);
+  constructor(
+    public session: SessionProvider,
+    private ngZone: NgZone,
+  ) {
+    // when config is loaded or changes, lets set the curve
+    this.subs.add(
+      this.session.config$.subscribe(config => 
+        this.curve$.next( config.ledBlinky.curve || 0.6 )
+      )
+    )
+
+    // when our curve changes, lets save to storage
+    this.subs.add(
+      this.curveChange$.subscribe(curve => {
+        this.curve$.next( curve )
+        this.session.config.ledBlinky.curve = curve
+        session.saveStorage()
+      })
+    )
+  }
+
+  curve$ = new BehaviorSubject<number>(0.6)
+  curveChange$ = new Subject<number>()
 
   // directory?: DirectoryManager
   directoryChange = new BehaviorSubject<DirectoryManager | undefined>(
@@ -80,24 +106,19 @@ export class LedBlinky {
   );
   directory$ = this.directoryChange.pipe(
     switchMap((c) => (c ? of(c) : EMPTY)), // cancel pipe if directory is not defined
-    shareReplay(1)
+    shareReplay(1),
+    take(1), // make sure Observable appears as closed (TODO: find out if this gets in the way of choosing a new directory)
   );
 
   displaySize?: Size;
   pickerId = 'ledBlinkyPicker';
-  controls?: LedBlinkyControls; // TODO: memory intensive to leave this hanging around
-
-  // emulator?: Emulator | NewEmulator
-  emulator$ = new BehaviorSubject<NewEmulator | Emulator | undefined>(
-    undefined
-  );
 
   // custom to this app
   zoom: number = 2;
   zoom$ = new BehaviorSubject<number>(this.zoom);
 
   colors?: IniNameValuePairs;
-  colors$ = this.directoryChange.pipe(
+  colors$: Observable<IniNameValuePairs> = this.directoryChange.pipe(
     mergeMap((directory) => {
       if (!directory) {
         return from(Promise.resolve({}));
@@ -130,42 +151,174 @@ export class LedBlinky {
   newInputCodesFile$ = this.getFileTryLoader(LEDBlinkyFiles.NewInputCodes);
   newInputCodes$ = this.newInputCodesFile$.pipe(
     mergeMap((file) => from(this.getNewInputCodes(file))),
-    shareReplay(1)
+    shareReplay(1),
   );
 
   animEditorObjectFile$ = this.getFileTryLoader(
     LEDBlinkyFiles.LEDBlinkyAnimationEditor
   );
   animEditorObject$ = this.animEditorObjectFile$.pipe(
-    mergeMap((file) => this.getAnimEditorObject(file))
-  );
+    mergeMap((file) => this.getAnimEditorObject(file)),
+    shareReplay(1)
+  )
 
-  controlsFile$ = this.getFileTryLoader(LEDBlinkyFiles.LEDBlinkyControls);
-  inputsMapFile$ = this.getFileTryLoader(LEDBlinkyFiles.LEDBlinkyInputMap);
+  controlsFile$ = this.getFileTryLoader(LEDBlinkyFiles.LEDBlinkyControls)
+  inputsMapFile$ = this.getFileTryLoader(LEDBlinkyFiles.LEDBlinkyInputMap)
   inputsMap$: Observable<InputsMap> = this.inputsMapFile$.pipe(
     mergeMap((file) => from(this.getInputsMapByDir(file))),
-    shareReplay(1)
+    shareReplay(1),
   );
 
-  controls$: Observable<LedBlinkyControls | null | undefined> = combineLatest([
+  controls$: Observable<LedBlinkyControls> = combineLatest([
     this.inputsMap$,
     this.controlsFile$, // LEDBlinkyControls.xml
   ]).pipe(
     mergeMap(([inputsMap, controlsFile]) => {
       if (!inputsMap) {
-        return of(null);
+        throw new Error('💾 Cannot load inputs map file')
+        // return of(null);
       }
-      return from(this.getControlsByDir(inputsMap, controlsFile));
-    })
-  );
+      return from(this.getControlsByDir(inputsMap, controlsFile))
+    }),
+    map(controls => {
+      if ( !controls ) {
+        throw new Error('💾 Cannot load LEDBlinkyControls.xml file. No controls found')
+      }
 
-  unknownGamesFile$ = this.getFileTryLoader(LEDBlinkyFiles.UnknownGames);
+      return controls
+    }),
+    shareReplay(1), // this cache may not be good for changes?
+  )
+
+  unknownGamesFile$ = this.getFileTryLoader(LEDBlinkyFiles.UnknownGames)
   unknownGames$: Observable<NewEmulator[] | undefined> =
     this.unknownGamesFile$.pipe(
-      mergeMap((datFile) => from(this.getUnknownGamesByDat(datFile)))
-    );
+      mergeMap((datFile) => {
+        return from(this.getUnknownGamesByDat(datFile).then(dat => {
+          return dat
+        }).catch((err: Error) => {
+          this.session.error('Error in LedBlinky.class.ts@unknownGames$',err)
+          throw err
+        }))
+      }),
+      shareReplay(1),
+      take(1),
+    )
 
-  constructor(public session: SessionProvider) {}
+    
+  // storage of last chosen layout name
+  layoutName$$ = new BehaviorSubject<string | undefined>(undefined)
+
+  layoutNames$: Observable<string[]> = this.directory$.pipe(
+    mergeMap(directory => 
+      from(
+        directory.listFiles()
+          .then(files => files.filter((v) => v.includes('.lay')))
+      )
+    )
+  )
+
+  // use chosen layoutName$$ layout OR lookup default
+  layoutName$ = combineLatest([
+    this.directory$,
+    this.layoutName$$,
+    this.animEditorObject$,
+  ]).pipe(
+    mergeMap(([dir, layoutName, animEditorObject]) => {
+      if ( layoutName || !dir ) {
+        return of( layoutName )
+      }
+      
+      if ( layoutName ) {
+        return of(layoutName) // no default needed
+      }
+  
+      if ( !animEditorObject ) {
+        return of(null)
+      }
+      
+      const name = getLastLayoutFileByLightsConfig(animEditorObject)
+      return of(name)
+    }),
+    shareReplay(1)
+  )
+
+  subs = new Subscription()
+
+  /** brings LEDBlinkyControls.xml.<controlGroup> and a *.layout file together */
+  marryControlsToLights$(
+    controlGroup: NewControlGroup, // game map of lights  
+  ): Observable<LightAndControl[]> {
+    return combineLatest([
+      this.lightLayout$,
+      this.layoutName$, // when the layout name changes, lets redraw
+    ]).pipe(
+      mergeMap(([
+        lightLayoutConfig,
+      ]) => {
+        const promise = (async () => {      
+          if ( !lightLayoutConfig ) {
+            return []
+          }
+      
+          const lightAndControls: LightAndControl[] = []
+          const proms = controlGroup.players.map(async (player) => {
+            const lightControls = await marryPlayerControlsToLights(
+              player, lightLayoutConfig as LightsConfig, this
+            )
+      
+            lightAndControls.push(...lightControls)
+          })
+      
+          await Promise.all(proms)
+      
+          // add lights that could not be matched
+          const lightProms = lightLayoutConfig.lights.map(light => {
+            const found = lightAndControls.find(lightControl => lightControl.light.details.name === light.details.name)
+      
+            if ( found ) {
+              return
+            }
+      
+            // fall back when light could not be matched to a control
+            const playerDetails: PlayerDetails = {} as PlayerDetails
+            const player = new NewPlayer(
+              playerDetails,
+              controlGroup,
+              [],
+              0,
+              createElement('player'),
+              this
+            )
+            // ??? TODO: it maybe possible that we need to controlGroup.xml.element.appendChild( player.xml.element )
+            const control = new PlayerControl(this, [], player)
+            control.edit = true // start off in edit mode
+            lightAndControls.push(
+              new LightAndControl(light, control, this)
+            )
+          })
+      
+          await Promise.all(lightProms)
+          
+          // add missing controls
+          controlGroup.players.forEach(player => {
+            addMissingControlsToLightControls(player, lightAndControls, this)
+          })
+      
+          return lightAndControls  
+        })()
+        
+        return from(promise)
+      })
+    )    
+  }
+
+  async saveControls(
+    controls?: LedBlinkyControls // when not supplied we look at existing cache in memory
+  ) {
+    controls = controls || await firstValueFrom(this.controls$)
+    this.session.saveFileXml(controls.file, controls.xml)
+  }
 
   getEmulatorPlayerControls(
     emulator: Emulator,
@@ -208,7 +361,6 @@ export class LedBlinky {
     return this.controls$.pipe(
       switchMap(emuControls => {
         if (!emuControls) {
-          console.log('abort')
           //results$.next([])
           //results$.complete()
           //return EMPTY
@@ -231,7 +383,6 @@ export class LedBlinky {
             getNameAveragesByControls$(batch, inputCode)
           ),
           map(stats => {
-            //console.log('stats for ', index, stats, all)
             Object.entries(stats).forEach(([key, count]) => {
               all[key] = all[key] || 0
               all[key] = all[key] + count
@@ -246,12 +397,6 @@ export class LedBlinky {
         )
 
         return controlRead
-      }),
-      map(x => {
-        //update()
-        //results$.complete()
-        console.log('xxxxxxxx', x)
-        return x
       }),
       take(1),
       map(() => {
@@ -296,26 +441,55 @@ export class LedBlinky {
     return configObject;
   }
 
-  /*lightLayoutByName$ = (name: string) => this.directory$.pipe(
-    mergeMap(directory => from(this.getLightLayoutByName(directory, name)))
-  )*/
+  lightLayout$: Observable<LightsConfig | undefined> = combineLatest([
+    this.layoutName$,
+    this.directory$,
+  ]).pipe(
+    mergeMap(([layoutName, directory]) => {
+      if (!layoutName) {
+        this.session.warn(
+          `No default layout defined in LEDBlinky path ${directory.path}`
+        );
+        
+        return of(undefined)
+      }
+
+      return from(this.getLayoutInDirectory(layoutName, directory))
+    }),
+    shareReplay(1),
+  )
 
   async getLightLayoutByName(
     directory: DirectoryManager,
-    relativeFileName: string
+    layoutName?: string // will look up current set or default
   ) {
-    const layoutFile = await directory.findFileByPath(relativeFileName);
+    // possibly lookup default layout name
+    if ( !layoutName ) {
+      return await firstValueFrom(this.lightLayout$)
+    }
+
+    return this.getLayoutInDirectory(layoutName, directory)
+  }
+
+  async getLayoutInDirectory(
+    layoutName: string, // *.lay
+    directory: DirectoryManager
+  ) {
+    const layoutFile = await directory.findFileByPath(layoutName as string);
 
     if (!layoutFile) {
       this.session.warn(
-        `Cannot load #loadLightLayoutByName ${directory.path} ${relativeFileName}`
+        `Cannot load #loadLightLayoutByName ${directory.path} ${layoutName}`
       );
       return;
     }
 
-    const layoutConfig = await getLightConfigByLayoutFile(layoutFile);
-    this.session.debug('🗺 ⚙️ Loaded layoutConfig', layoutConfig);
-    return layoutConfig;
+    const layoutConfig = await getLightConfigByLayoutFile(layoutFile)
+    this.session.debug(`🗺 ⚙️ Loaded layoutConfig ${layoutName}`, {
+      lights: layoutConfig.lights.length,
+      settings: layoutConfig.settings,
+    })
+    return layoutConfig  
   }
 
   getFxEditorByDir(
@@ -332,31 +506,23 @@ export class LedBlinky {
     return fileTryLoadingPipes(file, this.directory$);
   }
 
-  async getControlsByDir(inputsMap: InputsMap, controlsFile: DmFileReader) {
+  async getControlsByDir(
+    inputsMap: InputsMap,
+    controlsFile: DmFileReader
+  ): Promise<LedBlinkyControls | undefined> {
     const [xml] = await Promise.all([controlsFile.readAsXml()]);
 
     if (!inputsMap) {
       return; // a log warning was already fired
     }
 
-    const [colorRgbConfig, colors] = await Promise.all([
-      firstValueFrom(this.colors$),
-      firstValueFrom(this.colors$),
-    ]);
-    const controlDefaults = getControlDefaultsByControlXml(
-      xml,
-      inputsMap,
-      colorRgbConfig
-    );
+    const controlDefaults = getControlDefaultsByControlXml(xml, this)
+    
     const emulators = getEmulatorsByControl(
-      xml,
-      inputsMap,
-      controlDefaults,
-      colors,
-      this.curve$
-    );
+      xml, controlDefaults, this
+    )
 
-    this.controls = {
+    const controls: LedBlinkyControls = {
       file: controlsFile,
       inputsMap,
       xml,
@@ -366,29 +532,25 @@ export class LedBlinky {
 
     const mame = controlDefaults.find((x) => x.details.groupName === 'MAME');
     if (mame) {
-      this.controls.availMap = await getAvailControlsMap(inputsMap, mame);
+      controls.availMap = await getAvailControlsMap(inputsMap, mame);
     }
 
-    return this.controls;
+    return controls;
   }
 
   async getInputsMapByDir(inputsMapFile: DmFileReader): Promise<InputsMap> {
     const labels: UniqueInputLabel[] = [];
     const inputCodes: UniqueInputCode[] = [];
 
-    const xml = await inputsMapFile.readAsXml();
+    const xml = await inputsMapFile.readAsXml() as any
     const ledControllers = getElementsByTagName(xml, 'ledController').map(
       (element) => {
-        const ports: Port[] = getElementsByTagName(element, 'port').map(
-          mapPortElm
-        );
+        const ports: Port[] = getElementsByTagName(element, 'port').map(mapPortElm)
         ports.forEach((port) => registerPorts(port, labels, inputCodes));
         const details = elmAttributesToObject(element) as LedControllerDetails;
-        const control: LedController = {
-          element,
-          ports,
-          details,
-        };
+        const control = new LedController(
+          element, details, ports,
+        )
         return control;
       }
     );
@@ -397,231 +559,41 @@ export class LedBlinky {
       labels,
       inputCodes,
       ledControllers,
+      file: inputsMapFile,
+      xml,
     };
 
     return result;
   }
 
   async getUnknownGamesByDat(datFile: DmFileReader): Promise<NewEmulator[]> {
-    const text: string = await datFile.readAsText();
-    const lines = text.split(/\n|\r/);
-    return lines.reduce((all, line) => {
+    const text: string = await datFile.readAsText()
+    const lines = text.split(/\n|\r/)
+    const results = lines.reduce((all, line) => {
       if (!line.includes('|')) {
         return all;
       }
 
-      const [emuname, gameName] = line.split('|');
-      let emuIndex = all.findIndex((one) => one.details.emuname === emuname);
+      const [emuname, gameName] = line.split('|')
+      let emuIndex = all.findIndex((one) => one.xml.details.emuname === emuname)
 
       if (emuIndex < 0) {
-        const newEmu: NewEmulator = {
-          details: { emuname },
-          controlGroups: [],
-        };
-        emuIndex = all.length;
-        all.push(newEmu);
+        const emuDetails: EmulatorDetails = { emuname }
+        const newEmu = new NewEmulator(this.session.ledBlinky, emuDetails)
+        newEmu.controlGroups = []
+        emuIndex = all.length
+        all.push(newEmu)
       }
 
-      const game: NewControlGroupings = {
-        // groupName: emuname,
+      const emulator = all[emuIndex]
+      
+      emulator.createControlGroupByDetails({
         groupName: gameName,
-        controlGroups: [
-          {
-            details: {
-              groupName: gameName,
-            },
-            players: [],
-            defaultActiveCss$: new BehaviorSubject(''),
-            defaultInactiveCss$: new BehaviorSubject(''),
-          },
-        ],
-      };
-      all[emuIndex].controlGroups.push(game);
+      })
 
       return all;
-    }, [] as NewEmulator[]);
+    }, [] as NewEmulator[])
+        
+    return results
   }
-}
-
-interface ConfigWiz {
-  [name: string]: IniNameValuePairs;
-}
-
-export interface AvailControlsMap {
-  [playerIndex: string]: {
-    name: string;
-    inputCode: string;
-  }[];
-}
-
-async function getAvailControlsMap(
-  inputsMap: InputsMap,
-  controlDefaults: ControlDefault
-) {
-  const uniqueNames: {
-    [player: string]: {
-      [name: string]: string[];
-    };
-  } = {};
-
-  const promises = controlDefaults.controls.map(async (x) => {
-    const details = await firstValueFrom(x.details$);
-    const name = details.name;
-    const inputCodes = await firstValueFrom(x.inputCodes$);
-
-    if (!inputCodes || name.charAt(0) === '_') {
-      return;
-    }
-
-    const playerIndex = details.allowConfigPlayerNum;
-    if (!playerIndex) {
-      return;
-    }
-
-    const uniquePlayer = (uniqueNames[playerIndex] =
-      uniqueNames[playerIndex] || {});
-    const keyCodes = (uniquePlayer[name] = uniquePlayer[name] || []);
-    const newCodes = inputCodes.filter((x: string) => !keyCodes.includes(x));
-    keyCodes.push(...newCodes);
-  });
-
-  await Promise.all(promises);
-
-  const all: AvailControlsMap = {};
-
-  Object.entries(uniqueNames).forEach(([playerIndex, controls]) => {
-    all[playerIndex] = [];
-    Object.entries(controls).forEach(([name, inputCodes]) => {
-      const isNameMatch =
-        name.slice(0, 2) === 'P' + playerIndex ||
-        name.charAt(name.length - 1) === playerIndex;
-
-      let found: UniqueInputCode | undefined = inputsMap.inputCodes.find(
-        (x) => {
-          const isPlayerMatch = x.labels.find(
-            (label) =>
-              label.slice(0, 2) === 'P' + playerIndex ||
-              label === 'JOYSTICK' + playerIndex
-          );
-
-          // const codeMatch = x.inputCode && inputCodes.find(code => code === x.inputCode)
-
-          if (isPlayerMatch && isNameMatch) {
-            return x;
-          }
-
-          const isCommon = playerIndex === '0'; // && !isPlayerMatch
-          if (isCommon) {
-            return x;
-          }
-
-          return;
-        }
-      );
-
-      if (!found) {
-        return;
-      }
-
-      const match = inputsMap.inputCodes.find(
-        (code) => code.inputCode && inputCodes.includes(code.inputCode)
-      );
-      let inputCode = '';
-      if (match) {
-        found = match;
-        inputCode = found.inputCode;
-      }
-
-      all[playerIndex].push({ name, inputCode: inputCode });
-    });
-  });
-
-  return all;
-}
-
-function mapPortElm(element: Element) {
-  const details = elmAttributesToObject(element) as PortDetails;
-
-  return {
-    element,
-    details,
-  };
-}
-
-function registerPorts(
-  port: Port,
-  labels: UniqueInputLabel[],
-  inputCodes: UniqueInputCode[]
-) {
-  let labelIndex = labels.findIndex((x) => x.label === port.details.label);
-  if (labelIndex < 0) {
-    labels.push({ label: port.details.label, inputCodes: [] });
-    labelIndex = labels.length - 1;
-  }
-
-  if (!labels[labelIndex].inputCodes.includes(port.details.inputCodes)) {
-    labels[labelIndex].inputCodes.push(port.details.inputCodes);
-  }
-
-  let codeIndex = inputCodes.findIndex(
-    (x) => x.inputCode === port.details.inputCodes
-  );
-  if (codeIndex < 0) {
-    inputCodes.push({ inputCode: port.details.inputCodes, labels: [] });
-    codeIndex = inputCodes.length - 1;
-  }
-
-  if (!inputCodes[codeIndex].labels.includes(port.details.label)) {
-    inputCodes[codeIndex].labels.push(port.details.label);
-  }
-}
-
-export function fileTryLoadingPipes(
-  file: string,
-  directory$: Observable<DirectoryManager>
-) {
-  return directory$.pipe(
-    mergeMap((dir) => from(loadFileByDir(file, dir))),
-    switchMap((result) => {
-      if (!result.file) {
-        const directory = result.dir;
-        // this.session.warn(`cannot find file ${directory.path} ${file}`)
-        console.warn(`cannot find file ${directory.path} ${file}`);
-        return EMPTY; // cancel the pipe
-      }
-
-      return of(result.file);
-    })
-  );
-}
-
-async function loadFileByDir(fileName: string, dir: DirectoryManager) {
-  const file = await dir.findFileByPath(fileName);
-  return { dir, file };
-}
-
-
-function getNameAveragesByControls$(
-  controls: PlayerControl[],
-  inputCode: string
-) {
-  const all = {} as { [name: string]: number };
-    
-  return from(controls).pipe(
-    mergeMap(control => control.inputCodes$),
-    mergeMap((codes, index) => 
-      codes.includes(inputCode) ? controls[index].details$ : of(null)
-    ),
-    map(details => {
-      if ( !details ) {
-        return null
-      }
-      
-      all[details.name] = all[details.name] || 0
-      all[details.name] = all[details.name] + 1
-      return null
-    }),
-    take(controls.length),
-    map(() => all),
-  )
 }

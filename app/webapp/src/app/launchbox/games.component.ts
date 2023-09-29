@@ -2,12 +2,13 @@ import { Component } from '@angular/core'
 import { Prompts } from 'ack-angular'
 import { animations } from 'ack-angular-fx'
 import { firstValueFrom, map, Observable, Subscription } from 'rxjs'
-import { AdditionalApp, AdditionalAppType, GameInsight, PlatformInsights, SessionProvider } from '../session.provider'
+import { AdditionalApp, AdditionalAppType, GameInsight, PlatformInsights } from '../session.utils'
 import { xmlDocToString } from '../xml.functions'
 import { ActivatedRoute, Router } from '@angular/router'
 import { routeMap as ledBlinkRouteMap } from '../ledblinky.routing.module'
-import { getElementsByTagName } from '../ledblinky/LedBlinky.utils'
-import { addAppToPlatform, addXInputToGame, getNewApp } from './games.utils'
+import { addAppToPlatform, addXInputToGame, createElement, getNewApp } from './games.utils'
+import { SessionProvider } from '../session.provider'
+import { getElementsByTagName } from '../ledblinky/element.utils'
 
 interface GamePlatform {
   game: GameInsight
@@ -171,7 +172,7 @@ export class GamesComponent {
     game.details.favorite = !game.details.favorite
     
     const favorites = getElementsByTagName(game.element, 'Favorite')
-    const favElm = favorites[0] || document.createElement('Favorite')
+    const favElm = favorites[0] || createElement('Favorite')
 
     if ( !favorites[0] ) {
       game.element.appendChild(favElm) // attach element to game

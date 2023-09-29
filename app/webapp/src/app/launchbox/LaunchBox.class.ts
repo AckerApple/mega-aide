@@ -1,11 +1,14 @@
 import { DirectoryManager } from "ack-angular-components/directory-managers/DirectoryManagers"
-import { AdditionalApp, AdditionalAppDetails, AdditionalAppType, GameDetails, GameInsight, PlatformInsights, SessionProvider } from "../session.provider"
-import { BehaviorSubject, combineLatest, EMPTY, firstValueFrom, from, map, mergeMap, Observable, of, shareReplay, Subject, Subscription, switchMap } from "rxjs"
-import { getElementsByTagName } from "../ledblinky/LedBlinky.utils"
-import { findElementText, getGameElementId, getGameElementTitle, isPathKillXinput, isPathXinput } from "./detect-issues/detect.utils"
-import { fileTryLoadingPipes } from "../ledblinky/LedBlinky.class"
-import { slowArrayMapPromises } from "../components/backups.component"
+import { SessionProvider } from "../session.provider"
+import { AdditionalApp, AdditionalAppDetails, AdditionalAppType, GameDetails, GameInsight, PlatformInsights } from "../session.utils"
+import { BehaviorSubject, combineLatest, EMPTY, firstValueFrom, from, map, mergeMap, Observable, shareReplay, Subject, Subscription, switchMap } from "rxjs"
+import { fileTryLoadingPipes } from "../ledblinky/LedBlinky.utils"
 import { DmFileReader } from "ack-angular-components/directory-managers/DmFileReader"
+import { slowArrayMapPromises } from "../components/backups.utils"
+import { findElementText, getElementsByTagName } from "../ledblinky/element.utils"
+import { getGameElementId, getGameElementTitle } from "./detect-issues/game.utils"
+import { isPathKillXinput, isPathXinput } from "./detect-issues/xinput.utils"
+import { ControllerSupport, ControllerSupportDetails } from "./ControllerSupport.interface"
 
 /* when done with this class you must .destroy() it */
 export class LaunchBox {
@@ -408,20 +411,6 @@ export function elementToGameDetails(
   return details
 }
 
-interface ControllerSupportDetails {
-  controllerId: string
-  gameId: string
-  supportLevel?: string
-}
-
-export interface ControllerSupport {
-  element: Element
-  details: ControllerSupportDetails
-  
-  controllerIdElement: Element
-  gameIdElement: Element
-  supportLevelElement?: Element
-}
 
 export function mapControllerSupport(
   element: Element

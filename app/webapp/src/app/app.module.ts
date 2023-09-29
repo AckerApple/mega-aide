@@ -12,7 +12,6 @@ import declarations from './app.declarations'
 import { AckComponentsModule } from "ack-angular-components"
 import { XArcadeXInputProvider } from "./xarcade-xinput/XArcadeXInput.provider"
 import { AckFxModule } from "ack-angular-fx"
-import { InputCodeComponent } from "./ledblinky/input-code-select.component"
 
 @NgModule({
   declarations,

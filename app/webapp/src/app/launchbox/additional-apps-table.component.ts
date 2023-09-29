@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
-import { AdditionalApp, AdditionalAppDetails, GameInsight, PlatformInsights, SessionProvider } from "../session.provider";
+import { SessionProvider } from "../session.provider";
+import { AdditionalApp, AdditionalAppDetails, GameInsight, PlatformInsights } from "../session.utils"
 import { firstValueFrom } from 'rxjs'
 import { removeAppFromApps } from './LaunchBox.class'
 import { Prompts } from "ack-angular";

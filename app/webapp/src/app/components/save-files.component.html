@@ -3,7 +3,15 @@
 <ol class="child-pad-xs child-margin-xxs">
   <li *ngFor="let item of toWrite">
     📄 {{ item.file.name }} <a (click)="session.filePreview=item">🔎</a>
-    <div class="text-xxs opacity-60">{{item.file.directory.path}}</div>
+    <div class="text-xxs opacity-60"
+    >
+      <ng-container *ngIf="item.file;else noFileDefined">
+        {{ item.file.directory.path === '' ? '/' : (item.file.directory.path ? item.file.directory.path : '🔴 Error no file path') }}
+      </ng-container>
+      <ng-template #noFileDefined>
+        🔴 Error no file defined
+      </ng-template>
+    </div>
   </li>
 </ol>
 
@@ -24,7 +32,7 @@
       (click)="save()"
     >save</button>
     <button type="button" class="width-full bg-dark text-white"
-      (click)="save()"
+      (click)="canceled.emit()"
     >cancel</button>
   </div>
 

@@ -1,0 +1,141 @@
+<ng-container *ngIf="session.ledBlinky.directory$ | async; else selectDirectory">
+  <ng-container *ngTemplateOutlet="main"></ng-container>
+</ng-container>
+
+<ng-template #selectDirectory>
+  <div class="text-right">
+    <select-ledblinky-directory></select-ledblinky-directory>
+  </div>
+  <div class="flex-center">
+    <div>
+      <div class="margin-top bg-royal pad-3x">
+        You most likely landed on this page because someone is trying to share software configurations for a software called LEDBlinky.
+        <br /><br />
+        Too continue, please use the button above, to select the 📂 folder on your computer that contains your LEDBlinky files
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #main>
+  <ng-container *ngIf="importRom.controlGroup && importRom.emulator">
+    <!--
+      <ledblinky-controls-layouts #ledblinkyLayouts class="flex3 overflow"
+        widthFull         = "true"
+    
+        [controlGroup] = "importRom.controlGroup"
+        [romControlLights$] = "importRom.controlGroup.romControlLights$"
+        >
+      </ledblinky-controls-layouts>
+    -->
+
+    <!--
+      (changed) = "saveEmulatorControls(emulator)"
+      (changedControl) = "updateDetailsByCodes($any($event), emulator)"
+    -->
+    <div class="flex-wrap gap-xs">
+      <div class="flex1 min-width-600">
+        <h2>⬇️ Import Config</h2>
+        <rom-display
+          urlRelativeToLedBlinkyRoot='../../'
+          [romControl] = "importRom.controlGroup"
+          [romControlLights$] = "importRom.controlGroup.romControlLights$"
+          
+          [emulator] = "importRom.emulator"
+          [allControls] = "session.ledBlinky.controls$ | async"
+          [(debug)]="debug"
+          [layoutOnly]="layoutOnly"
+          [romExists]="false"
+          [externalFeatures]="false"
+        ></rom-display>
+      </div>
+  
+      <div *ngIf="importRom.comparable" class="flex1 min-width-600">
+        <h2>💾 Your Existing Config</h2>
+        <rom-display
+          urlRelativeToLedBlinkyRoot='../../'
+          [romControl] = "importRom.comparable.controlGroup"
+          [romControlLights$] = "importRom.comparable.controlGroup.romControlLights$"
+          
+          [emulator] = "importRom.comparable.emulator"
+          [allControls] = "session.ledBlinky.controls$ | async"
+          [(debug)]="debug"
+          [layoutOnly]="layoutOnly"
+          [externalFeatures]="false"
+          (changed) = "session.ledBlinky.saveControls()"
+        ></rom-display>
+      </div>
+    </div>
+  </ng-container>
+
+  <br />
+
+  <div class="flex-wrap gap flex-center">
+    <button type="button" class="flex1"
+      [class.bg-energized]="!layoutOnly"
+      (click)="layoutOnly = !layoutOnly"
+    >⚒️ Editor Tools</button>
+
+    <ng-container *ngIf="importRom.comparable; else newImportButtons">
+      <button type="button" class="bg-orange flex1"
+        onclick="importDialog.showModal()"
+        (click)="mode='overwrite'"
+        >💨 Overwrite Existing</button>
+      
+      <button type="button" class="bg-royal flex1"
+        onclick="importDialog.showModal()"
+        (click)="mode='merge-over'"
+        title="The control lights you are importing will import and any matches will be overwritten by the import"
+      >⛙ Merge over Existing</button>
+
+      <!--
+        <button type="button" class="bg-royal flex1"
+          title="The control lights you are importing will import and any matches will use your configuration"
+        >⛙ Merge under Existing</button>
+      -->
+    </ng-container>
+
+    <ng-template #newImportButtons>
+      <button type="button" class="bg-orange flex1"
+        onclick="importDialog.showModal()"
+        (click)="mode='new'"
+      >🆕 Import Shared Config</button>
+    </ng-template>
+  </div>
+
+  <div class="flex-wrap" *ngIf="debug" [@fadeInOutUp]="1">
+    <div class="flex1">
+      <h3>decodedData</h3>
+      <textarea wrap="off" class="width-full min-height-400">{{importRom.decodedData | json}}</textarea>
+    </div>
+  </div>
+</ng-template>
+
+<dialog id="importDialog" style="padding:0"
+  onmousedown="var r = this.getBoundingClientRect();(r.top<=event.clientY&&event.clientY<=r.top+r.height&&r.left<=event.clientX&&event.clientX<=r.left+r.width) || this.close()"
+  ondragstart="const {e,dt,t} = {t:this,e:event,dt:event.dataTransfer};const d=t.drag=t.drag||{x:0,y:0};d.initX=d.x;d.startX=event.clientX-t.offsetLeft;d.startY=event.clientY-t.offsetTop;t.ondragover=e.target.ondragover=(e)=>e.preventDefault();dt.effectAllowed='move';dt.dropEffect='move'"
+  ondrag="const {t,e,dt,d}={e:event,dt:event.dataTransfer,d:this.drag}; if(e.clientX===0) return;d.x = d.x + e.offsetX - d.startX; d.y = d.y + e.offsetY - d.startY; this.style.left = `${d.x}px`; this.style.top = `${d.y}px`;"
+  ondragend="const {t,e,d}={t:this,e:event,d:this.drag};if (d.initX === d.x) {d.x=d.x+e.offsetX-(d.startX-d.x);d.y=d.y+e.offsetY-(d.startY-d.y);this.style.transform=`translate3d(${d.x}px, ${d.y}px, 0)`};this.draggable=false"
+>
+  <div class="pad-xs bg-dark text-white" onmousedown="this.parentNode.draggable=true">
+    <h2>🤔 Import confirmation</h2>
+  </div>
+  <div class="pad max-width-900">
+    <p>The software you are using here, was crafted as a hobby gone wild. As good as this software is, it's not written by the original author of LEDBlinky.</p>
+    <p>It is possible that importing someone elses light configurations may come with unsupported control definitions. No extensive harm should ever occur. No import logic is executed so no hacking concerns either.</p>
+    <p>This software never automatically saves, <u>you will still have to tap a save button after import</u>. This software offers you backups. You are safe to proceed.</p>
+    <br />
+    <p *ngIf="mode === 'new'">👉 Continue new import by tapping "⬇️ import" button below.</p>
+    <p *ngIf="mode === 'overwrite'">👉 Continue replacing your existing control config by tapping "⬇️ overwrite" button below.</p>
+    <p *ngIf="mode === 'merge-over'">👉 Continue to merge import over top of any existing controls by tapping "⬇️ merge" button below.</p>
+  </div>
+  <div class="pad-top flex-wrap">
+    <button class="flex1 radius-0 bg-dark" type="button"
+      onclick="importDialog.close()"
+    >🅧 cancel</button>
+    <button class="flex1 radius-0" type="button"
+      (click)="runImportProcess()"
+      onclick="importDialog.close()"
+    >⬇️ {{mode === 'new' && 'import' || mode === 'merge-over' && 'merge' || mode }}</button>
+  </div>
+</dialog>

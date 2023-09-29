@@ -1,6 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core'
-import { DmFileReader } from 'ack-angular-components/directory-managers/DmFileReader'
-import { SessionProvider, WriteFile } from '../session.provider'
+import { SessionProvider } from '../session.provider'
+import { WriteFile } from '../session.utils'
+import { createBackupOfFile } from './backups.utils'
 
 @Component({
   selector: 'save-files',
@@ -10,6 +11,7 @@ import { SessionProvider, WriteFile } from '../session.provider'
   @Input() toWrite: WriteFile[] = []
   @Output() toWriteChange = new EventEmitter<WriteFile[]>()
   @Output() saved = new EventEmitter<WriteFile[]>()
+  @Output() canceled = new EventEmitter<void>()
   saving: number = 0
   saveWithBackupFolder = true
 
@@ -58,26 +60,4 @@ import { SessionProvider, WriteFile } from '../session.provider'
     this.toWrite.length = 0
     this.toWriteChange.emit(this.toWrite)
   }
-}
-
-export async function createBackupOfFile(
-  file: DmFileReader,
-  backupFolderNames: string[]
-): Promise<DmFileReader> {
-  const backupFolderName  = backupFolderNames[0]
-  let backupFolder = await file.directory.findDirectory(backupFolderName)
-  if ( !backupFolder ) {
-    // this.session.warn(`📁 creating folder ${file.directory.path}/${backupFolderName}`)
-    backupFolder = await file.directory.createDirectory(backupFolderName)
-  }
-
-  const nameSplit = file.name.split('.')
-  const frontName = nameSplit.splice(0, nameSplit.length-1).join('.')
-  const ext = nameSplit.pop()
-  const newFileName = frontName + '-BU' + Date.now() + '.' + ext
-  
-  const backupFile = await backupFolder.file(newFileName, { create: true })
-  const toWrite = await file.readAsText()
-  await backupFile.write(toWrite)
-  return backupFile
 }

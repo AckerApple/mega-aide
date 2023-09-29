@@ -29,7 +29,7 @@ export class SelectLaunchBoxComponent {
     // await launchbox.onDirectory()
     
     this.change.emit(directoryManager)
-    this.session.save()
+    this.session.saveStorage()
     this.session.load$.next(-1)
   }  
 }

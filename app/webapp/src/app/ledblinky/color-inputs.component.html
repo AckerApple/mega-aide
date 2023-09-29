@@ -1,0 +1,40 @@
+<div class="flex">
+  <input type="color" [ngModel]="cssColor"
+    (ngModelChange)="debounceModelChange($event)"
+    (change)="debounceModelChange($any($event.target).value)"
+    style="height:auto"
+  />
+
+  <select *ngIf="!view && allowNameSelect" [(ngModel)]="color"
+    (change)="colorNameChange.emit($any($event.target).value)"
+    class="flex-1"
+  >
+    <option>{{color}}</option>
+    <option *ngFor="let color of session.ledBlinky.colors | keyvalue"
+      [value]="color.key"
+    >{{color.key}}</option>
+  </select>
+
+  <div *ngIf="view==='numbers' || !allowNameSelect" class="flex1 flex">
+    <input type="number" min="0" max="48" class="flex1"
+      [value]="colorNums[0]"
+      (change)="updateColorNumber($any($event.target).parentNode.getElementsByTagName('INPUT'))"
+    />
+    <input type="number" min="0" max="48" class="flex1"
+      [value]="colorNums[1]"
+      (change)="updateColorNumber($any($event.target).parentNode.getElementsByTagName('INPUT'))"
+    />
+    <input type="number" min="0" max="48" class="flex1"
+      [value]="colorNums[2]"
+      (change)="updateColorNumber($any($event.target).parentNode.getElementsByTagName('INPUT'))"
+    />
+  </div>
+
+  <div class="flex-valign-center">
+    <a (click)="view = view === 'numbers' ? '' : 'numbers'">🔃</a>
+  </div>
+        
+</div>
+<copy-paste [(model)]="color"
+  (modelChange)="paste.emit($event)"
+></copy-paste>

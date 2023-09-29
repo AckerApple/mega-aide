@@ -43,14 +43,17 @@ import { XinputBackupsComponent } from './xarcade-xinput/xinput-backups.componen
 import { LEDBlinkyComponent } from './ledblinky/ledblinky.component'
 import { LEDBlinkyControlsComponent } from './ledblinky/ledblinky-controls.component'
 import { LedblinkyLayoutsComponent } from './ledblinky/ledblinky-layouts.component'
+import { LedblinkyControlsLayoutsComponent } from './ledblinky/ledblinky-controls-layouts.component'
 import { RomControlsComponent } from './ledblinky/rom-controls.component'
+import { PlayerControlRowComponent } from './ledblinky/player-control-row.component'
 import { LayoutsComponent } from './ledblinky/layouts.component'
-import { ScanBackupsComponent } from './launchbox/ScanBackups.component'
-
+import { LedBlinkyBackupsComponent } from './ledblinky/backups.component'
 import { DragSelectorDirective } from './ledblinky/drag-selector.directive'
 import { DragSelectorTargetDirective } from './ledblinky/drag-selector-target.directive'
 import { InputMapsComponent } from './ledblinky/input-maps.component'
 import { SelectLedblinkyDirectoryComponent } from './ledblinky/select-ledblinky-directory.component'
+
+import { ScanBackupsComponent } from './launchbox/ScanBackups.component'
 import { LaunchBoxComponent } from './launchbox/launchbox.component'
 import { AdditionalAppsTableComponent } from './launchbox/additional-apps-table.component'
 import { XinputGamesTableComponent } from './launchbox/xinput-games-table.component'
@@ -62,14 +65,23 @@ import { RemapButtonsComponent } from './inputs/remap-buttons.component'
 import { NextMouseDirective } from './nextMouse.directive'
 import { InputCodeComponent } from './ledblinky/input-code-select.component'
 import { LightControlSameRomsComponent } from './ledblinky/light-control-same-roms.component'
+import { LightColorInputComponent } from './ledblinky/light-color-input.component'
+import { LightControlColorSelectComponent } from './ledblinky/light-control-color-select.component'
+import { AppBackupsComponent } from './app-backups.component'
+import { CopyPasteComponent } from './ledblinky/copy-paste.component'
+import { RomDisplayComponent } from './ledblinky/rom-display.component'
+import { ImportRomComponent } from './ledblinky/ImportRom.component'
+import { ColorInputsComponent } from './ledblinky/color-inputs.component'
 
 export const declarations = [
   AppComponent,
   ChangelogComponent,
+  AppBackupsComponent,
 
   DragSelectorDirective,
   DragSelectorTargetDirective,
   
+  CopyPasteComponent,
   FileSystemComponent,
   NextKeyDirective,
   NextMouseDirective,
@@ -113,13 +125,21 @@ export const declarations = [
 
   SelectLedblinkyDirectoryComponent,
   LEDBlinkyComponent,
+  RomDisplayComponent,
   LayoutsComponent,
   LEDBlinkyControlsComponent,
   LedblinkyLayoutsComponent,
+  LedblinkyControlsLayoutsComponent,
+  LedBlinkyBackupsComponent,
   RomControlsComponent,
+  PlayerControlRowComponent,
   LightControlSameRomsComponent,
   InputMapsComponent,
   InputCodeComponent,
+  LightColorInputComponent,
+  LightControlColorSelectComponent,
+  ImportRomComponent,
+  ColorInputsComponent,
   
   PlatformVisualFiltersComponent,
   PlatformFiltersDirective,

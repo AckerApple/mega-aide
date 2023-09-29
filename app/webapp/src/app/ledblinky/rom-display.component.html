@@ -1,0 +1,767 @@
+<div class="flex-wrap gap flex-valign-center">
+  <h4>{{ emulator.xml.details.emuname }}</h4>
+  <h2>{{ romControl.xml.details.voice || romControl.xml.details.groupName }}</h2>
+</div>
+
+<div *ngIf="romControl.xml.deleted" [@fadeInOutUp]="1" class="flex-wrap flex-apart bg-assertive text-white pad-xxs">
+  <h2>🗑️ DELETED</h2>
+  <button type="button" class="bg-orange pad-xs" (click)="romControl.xml.restore()">↩️ restore</button>
+</div>
+
+
+<br />
+
+<div [class.opacity-40] = "romControl.xml.deleted">
+  <!-- players -->
+  <div *ngIf="!layoutOnly" [@fadeInOutUp]="1"
+    class="flex-wrap gap-xs"
+  >
+    <ng-container *ngFor="let player of romControl.players; let playerIndex = index">
+      <button type="button" (click)="player.show = !player.show"
+        class="flex1"
+        [class.bg-energized]="player.show"
+        [@fadeInOutUp]="1"
+      >
+        <ng-container *ngTemplateOutlet="playerLabel;context: player"></ng-container>
+      </button>
+    </ng-container>
+  
+    <button type="button" class="flex1 bg-calm"
+      (click)="addPlayer(romControl)"
+    >👤 add player</button>
+  </div>
+  
+  <!-- visual layout display -->
+  <div class="flex-wrap gap flex1">
+    <div class="flex-wrap gap flex1" [@childStag]="romControl.players">
+      <!-- player loop -->
+      <ng-container *ngFor="let player of romControl.players; let playerIndex = index">
+        <div *ngIf="player.show" class="flex2 bg-dark flex-stacked"
+          [@fadeInOutUp]="1"
+        >
+          <div class="flex2">
+            <div class="bg-grey pad">
+              <ng-container *ngTemplateOutlet="playerLabel;context: player"></ng-container>
+            </div>
+            
+            <div style="max-width: 100vw;max-height: 100vh;overflow: auto;">
+              <table cellPadding="8" cellSpacing="0" border="0"
+                class="width-full table-flex-lt-md table-striped-grey-2x"
+              >
+                <thead style="position: sticky;top: 0;" class="hide-lt-md">
+                  <tr class="bg-dark text-white">
+                    <th>🕹️ 🎮 control</th>
+                    <th>🔊 voice</th>
+                    <th>🎨 color</th>
+                    <th>inputCodes</th>
+                    <th></th>
+                    <th>&nbsp;</th>
+                  </tr>
+                </thead>        
+                <tbody>            
+                  <ng-container *ngIf="player.playerIndex===0">
+
+                    <!-- common defaults for player 0 -->
+                    <tr>
+                      <th>Default_Active</th>
+                      <th></th>
+                      <th class="text-shadow-grey-blur">
+                        <color-inputs
+                          [cssColor] = "romControl.defaultActiveCss$ | async"
+                          [color]="romControl.xml.details.defaultActive"
+                          (colorNameChange) = "romControl.setDefaultActiveToColor($event)"
+                          (modelChange) = "romControl.setDefaultActiveToCssColor($event)"
+                          (paste) = "romControl.xml.addDetails({defaultActive: $event})"
+                        ></color-inputs>
+                        <!--{{ romControl.xml.details.defaultActive }}-->
+                      </th>
+                      <th></th>
+                      <th></th>
+                      <th></th>
+                    </tr>
+    
+                    <tr>
+                      <th>Default_Active</th>
+                      <th></th>
+                      <th class="text-shadow-grey-blur">
+                        <color-inputs
+                          [cssColor] = "romControl.defaultInactiveCss$ | async"
+                          [color]="romControl.xml.details.defaultInactive"
+                          (colorNameChange) = "romControl.setDefaultInactiveToColor($event)"
+                          (modelChange) = "romControl.setDefaultInactiveToCssColor($event)"
+                          (paste) = "romControl.xml.addDetails({defaultInactive: $event})"
+                        ></color-inputs>
+                        <!--{{ romControl.xml.details.defaultInactive }}-->
+                      </th>
+                      <th></th>
+                      <th></th>
+                      <th>&nbsp;</th>
+                    </tr>
+                  </ng-container>
+                  <!-- all others -->
+                  <ng-container *ngFor="let controlLight of player.realControlLights$ | async">
+
+                    <tr
+                      player-control-row class="gap"
+                      [control] = "controlLight.control"
+                      [player] = "player"
+                      [playerIndex] = "playerIndex"
+                      [details] = "controlLight.control.xml.details"
+                      (updated) = "changedControl.emit(controlLight.control);lightControlChanged(controlLight, romControl)"
+                    ></tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="flex-wrap child-margin-xxs">
+            <button type="button" class="flex1 bg-calm"
+              (click)="addPlayerControl(player)"
+            >⨁ add control</button>
+            
+            <button *ngIf="playerIndex > 0" type="button" class="flex1 bg-orange"
+              (click)="getCopyPlayerElm().showModal();copyPlayerBy(player)"
+            >👥 copy player {{playerIndex}}</button>
+            
+            <button type="button" class="flex1 bg-assertive"
+              (click)="removePlayerControl(player, romControl)"
+            >🗑 remove player {{playerIndex}}</button>
+            
+            <button type="button" class="flex1 bg-energized"
+              (click)="player.debug = !player.debug"
+              [style.outline]="player.debug && 'inset'"
+            >🐞 debug</button>
+          </div>
+          <div *ngIf="player.debug" [@fadeInOutUp]="1">
+            <div>json</div>
+            <textarea class="width-full min-height-300" wrap="off"
+              (change) = "player.xml.setDetailsEval( $any($event.target).value )"
+            >{{ player.xml.details | json }}</textarea>  
+
+            <div>element</div>
+            <textarea readonly class="width-full min-height-200" wrap="off"
+            >{{ player.xml.element.outerHTML }}</textarea>  
+            <div>element</div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+  
+  <div class="margin-v-xs">
+    <!-- 🎨 main layout display of visual reference -->
+    <!--[changeWatch]     = "changeWatch"-->   
+    <ledblinky-controls-layouts #ledblinkyLayouts class="flex3 overflow"
+      widthFull         = "true"
+      (lightChanged)    = "lightChanged($event)"
+      
+      (modalOpen)       = "$event.control || prepareAddControlByLight($event.light)"
+      (modalClose)      = "guessNameLightControl=undefined;addControl.step=0;$event.control.edit=false"
+      
+      [controlGroup] = "romControl"
+      [romControlLights$] = "romControlLights$"
+      (lightControlChanged)  = "lightControlChanged($event, romControl)"
+    >
+      <!-- modal display control. TODO: Move this into <ledblinky-controls-layouts> -->
+      <ng-template #modalTemplate let-lightControl let-lightDetails="lightDetails">
+        <!--
+          <h2>Single control editor</h2>
+          <br />
+        -->
+        <div>
+          👤 Player&nbsp;
+          <select [ngModel]="lightControl.player?.playerIndex" (ngModelChange)="lightControl.player.playerIndex = $event">
+            <option *ngFor="let player of romControl.players; let index=index" [value]="index"
+            >{{index}}</option>
+          </select>
+          &nbsp;
+          <button type="button" class="flex1 bg-calm"
+            (click)="addPlayer(romControl)"
+          >add 👤</button>
+        </div>
+        <br />
+        <div *ngIf="lightControl.control;else offerAddControl" [@fadeInOutUp]="1"
+          style="max-height: 400px;overflow-y: scroll;"
+        >
+          <table cellPadding="8" cellSpacing="0" border="0"
+            class="width-full table-flex-lt-md table-striped-grey-2x"
+          >
+            <thead style="position: sticky;" class="hide-lt-md top-0">
+              <tr class="bg-dark text-white">
+                <th>🕹️ 🎮 control</th>
+                <th>🔊 voice</th>
+                <th>🎨 color</th>
+                <th>🤖 input codes</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="bg-white gap" player-control-row
+                [showEdit] = "false"
+                [control]="lightControl.control"
+                [lightControl]="lightControl"
+                [player]="lightControl.player"
+                [playerIndex]="lightControl.player?.playerIndex"
+                [details]="lightControl.control.xml.details"
+                (updated) = "changedControl.emit(lightControl.control)"
+                (deleted) = "ledblinkyLayouts.closeModal()"
+              ></tr>
+              <ng-container *ngIf="guessNameLightControl">
+                <ng-container *ngIf="$any(lightControl.bestGuesses$ | async) as guesses">
+                  <tr>
+                    <td colspan="5" class="bg-dark color-white pad-top-xxs width-full">
+                      <div class="flex-wrap flex-apart">
+                        <div>
+                          {{guesses.length}} suggested settings
+                        </div>
+                        <loading-icon [show]="lightControl.load"></loading-icon>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr *ngFor="let bestGuess of guesses;let guessIndex = index"  class="text-center gap" [@fadeInOutUp]="1"
+                    [class.bg-grey-3x] = "guessIndex % 2"
+                    [class.bg-grey-6x] = "!(guessIndex % 2)"
+                  >
+                    <td class="flex1">
+                      <div class="hide-gt-md"><strong>🕹️ 🎮 control</strong></div>
+
+                      {{bestGuess.name}}
+                      <div>
+                        <a class="text-xxs underline"
+                          (click)="
+                            lightControl.player = romControl.paramPlayerByIndex(bestGuess.playerIndex);
+                            lightControl.control.xml.addDetails({name: bestGuess.name});
+                          "
+                        >use</a>
+                      </div>
+                    </td>
+                    <td class="flex1">
+                      👤 Player {{bestGuess.playerIndex}}
+                    </td>
+                    <td class="flex1">
+                      <div class="hide-gt-md"><strong>🎨 color</strong></div>
+                      {{bestGuess.color}}
+                      <div>
+                        <a class="text-xxs underline"
+                          (click)="
+                            lightControl.player = romControl.paramPlayerByIndex(bestGuess.playerIndex);
+                            lightControl.control.xml.addDetails({color: bestGuess.color});
+                          "
+                        >use</a>
+                      </div>
+                    </td>
+                    <td class="flex1">
+                      <div class="hide-gt-md"><strong>🤖 input codes</strong></div>
+
+                      {{bestGuess.inputCodes}}
+                      <div>
+                        <a class="text-xxs underline"
+                          (click)="
+                            lightControl.player = romControl.paramPlayerByIndex(bestGuess.playerIndex);
+                            lightControl.control.xml.addDetails({inputCodes: bestGuess.inputCodes});
+                          "
+                        >use</a>
+                      </div>
+                    </td>
+                    <td class="flex1">
+                      <div class="hide-gt-md"><strong>&nbsp;</strong></div>
+                      <button type="button" (click)="
+                        applyLightControlGuess(lightControl, bestGuess)
+                      ">use</button>   
+                      <button type="button" class="bg-dark" (click)="guessNameLightControl=undefined">close</button>   
+                    </td>
+                  </tr>
+                </ng-container>
+              </ng-container>
+            </tbody>
+          </table>
+        </div>
+        <br />
+        <div class="text-center">
+          <a type="button" (click)="guessNameLightControl=!guessNameLightControl" class="text-xs"
+            [class.bg-dark]="(lightControl.loadCount$ | async) || (lightControl.control.loadCount$ | async)"
+            [attr.disabled]="(lightControl.loadCount$ | async) || (lightControl.control.loadCount$ | async)"
+          >
+            <span *ngIf="(lightControl.loadCount$ | async) || (lightControl.control.loadCount$ | async)" 
+              class="pos-rel pad-right"
+            >
+              <span class="pos-abs animate__animated animate__heartBeat animate__infinite">⏱️</span>&nbsp;
+            </span>
+            review suggestions
+          </a>
+        </div>
+  
+        <br />
+  
+        <div class="flex-wrap">
+          <button type="button" class="flex1"
+            [class.bg-calm]="lightControl.showGamesUsing"
+            [class.bg-dark]="!lightControl.showGamesUsing"
+            (click)="lightControl.showGamesUsing = !lightControl.showGamesUsing"
+          >👾 SHOW ROMS USING</button>
+  
+          <button type="button" class="flex1 bg-energized"
+            [style.outline]="lightControl.debug && 'inset'"
+            (click)="lightControl.debug = !lightControl.debug"
+          >🐞 DEBUG</button>
+  
+          <button type="button" class="flex1 bg-dark"
+            (click)="ledblinkyLayouts.closeModal()"
+          >🅧 CLOSE</button>
+        </div>
+  
+        <!-- debug -->
+        <div *ngIf="lightControl.debug">
+          <h3>control.element.outerHTML</h3>
+          <textarea readonly class="width-full min-height-200" wrap="off"
+          >{{ lightControl.control.xml.element.outerHTML }}</textarea>
+          
+          <h3>control.xml.details | json</h3>
+          <textarea readonly class="width-full min-height-200" wrap="off"
+          >{{ lightControl.control.xml.details | json }}</textarea>
+  
+          <ng-container *ngIf="lightControl.player; else noPlayer">
+            <h3>lightControl.player.xml.element.outerHTML</h3>
+            <textarea readonly class="width-full min-height-400" wrap="off"
+            >{{ lightControl.player.xml.element.outerHTML }}</textarea>
+  
+            <h3>lightControl.player.xml.details | json</h3>
+            <textarea readonly class="width-full min-height-200" wrap="off"
+            >{{ lightControl.player.xml.details | json }}</textarea>
+            </ng-container>
+          <ng-template #noPlayer>
+            <div class="text-red">NO PLAYER on lightControl!!!!</div>
+          </ng-template>
+        </div>
+        
+        <div *ngIf="lightControl.showGamesUsing" [@fadeInOutUp]="1" class="margin-top-xxs">
+          <light-control-same-roms
+            [lightControl]="lightControl"
+            (useChange)="lightControl.showGamesUsing = false"
+          ></light-control-same-roms>
+        </div>
+  
+        <ng-template #offerAddControl>
+          <div *ngIf="addControl.step > 0" [@fadeInOutUp]="1">
+            <br />
+            <h4>Add control form</h4>
+            <div class="flex-wrap gap">
+              <div class="flex1">
+                <label for="">Player</label>
+                <div>
+                  <select [(ngModel)]="addControl.playerIndex" class="width-full">
+                    <option [value]="playerIndex" *ngFor="let item of romControl.players;let playerIndex=index"
+                    >{{playerIndex === 0 ? 'Common' : playerIndex}}</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div class="flex1">
+                <label for="">Input Code</label>
+                <div>
+                  <input-code-select
+                    class="flex flex1"
+                    [(model)]="addControl.inputCode"
+                  ></input-code-select>        
+                </div>
+              </div>
+              
+              <div class="flex1">
+                <label for="">Color</label>
+                <div>
+                  {{lightControl.control | typeof}}
+                  <ng-container *ngIf="lightControl.control">
+                    <light-control-color-select [control]="lightControl.control" class="flex-wrap"></light-control-color-select>
+                  </ng-container>
+                </div>
+              </div>
+  
+              <div class="flex1">
+                <label for="">Name</label>
+                <div>
+                  <select [(ngModel)]="addControl.name">
+                    <option [value]="addControl.name">{{addControl.name}}</option>
+                    <ng-container *ngIf="(session.ledBlinky.controls$ | async) as controls">
+                      <ng-container *ngIf="controls.availMap && controls.availMap[ addControl.playerIndex ]">
+                        <option *ngFor="let code of controls.availMap[ addControl.playerIndex ]"
+                          [value]="code.name"
+                        >{{code.name}}</option>
+                      </ng-container>
+                    </ng-container>
+                  </select>
+                  <div class="pos-rel">
+                    <div class="pos-abs width-full overflow text-xxs flex gap">
+                      <a *ngIf="!addControl.recommended; else showRecommended"
+                        (click)="loadNameRecommendations()"
+                      >load recommendations</a>
+                      
+                      <!--
+                        <loading-icon [show]="addControl.load"></loading-icon>
+                      -->
+  
+                      <ng-template #showRecommended>
+                        <a *ngFor="let name of addControl.names"
+                          (click)="addControl.name = name"
+                        >{{name}}</a>
+                      </ng-template>
+                    </div>
+                  </div>  
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          <br />
+          <div [ngClass]="addControl.step > 0 ? 'flex-wrap' : 'flex'">
+            <button type="button" class="flex1 radius-right-0"
+              [class.bg-positive]="addControl.step === 0"
+              [class.bg-balanced]="addControl.step > 0"
+              (click)="addControl.step > 0 && addPlayerControl(romControl.players[addControl.playerIndex], addControl)"
+            >⨁ ADD CONTROL</button>
+            <button *ngIf="addControl.step > 0" type="button" class="bg-dark flex1 radius-left-0"
+              [class.radius-right-0]="addControl.step === 0"
+              (click)="addControl.step=0"
+            >⨁ CANCEL ADD</button>
+            <div *ngIf="addControl.step > 0" class="width-full">&nbsp;</div>
+            <button type="button" class="bg-dark flex1"
+              [ngClass]="addControl.step > 0 ? 'width-full' : 'radius-left-0'"
+              (click)="ledblinkyLayouts.closeModal()"
+            >🅧 CLOSE</button>
+          </div>
+        </ng-template>
+      </ng-template>
+    </ledblinky-controls-layouts>
+  
+    <!-- rom settings -->
+    <div class="pad-xs bg-grey flex-wrap gap">
+      <div>
+        <input type="checkbox"
+          name="rom_jukebox" id="rom_jukebox"
+          (click)="romControl.xml.details.jukebox == '1' ? romControl.xml.addDetails({jukebox: '0'}) : romControl.xml.addDetails({jukebox: '1'})"
+          [checked]="romControl.xml.details.jukebox == '1'"
+        />
+        <label for="rom_jukebox">&nbsp;🎶 Jukebox</label>
+      </div>
+
+      <div
+        title="Check the 'Alternating' option if a game uses one set of controls and alternates the players. Note: Checking the 'Alternating' option will change the 'Player Tabs' to only display Common and Player 1 regardless of the 'Num Players' setting."
+      >
+        <input type="checkbox"
+          name="rom_alternating" id="rom_alternating"
+          (click)="romControl.xml.details.alternating == '1' ? romControl.xml.addDetails({alternating: '0'}) : romControl.xml.addDetails({alternating: '1'})"
+          [checked]="romControl.xml.details.alternating == '1'"
+        />
+        <label for="rom_alternating">&nbsp;👥 Alternating</label>
+      </div>
+    </div>
+  </div>
+  
+  <!-- bottom buttons -->
+  <div class="flex-wrap gap-xs" *ngIf="!layoutOnly" [@fadeInOutUp]="1">
+    <a *ngIf="externalFeatures" type="button" class="flex1 bg-calm"
+      [routerLink]="urlRelativeToLedBlinkyRoot + '../' + routeMap.layouts.path"
+    >🗺 edit layouts</a>
+    
+    <button type="button" class="flex1 bg-orange"
+      (click)="getCopyPlayerElm().showModal()"
+    >👥 copy player</button>
+  
+    <ng-container *ngIf="emulator && romExists">
+      <button type="button" class="flex1 bg-assertive"
+        (click)="romControl.xml.delete()"
+      >🗑️ delete rom light config</button>  
+    </ng-container>
+  </div>
+
+  <div class="flex-wrap pad-top-xxs gap-xs" *ngIf="!layoutOnly" [@fadeInOutUp]="1">
+    <a *ngIf="externalFeatures" type="button" class="flex1 bg-calm"
+      [routerLink]="urlRelativeToLedBlinkyRoot + launchBoxRouteMap.games.path"
+      [queryParams]="{platform: emulator.xml.details.emuname, rom: romControl.xml.details.groupName}"
+    >🧰 Goto LaunchBox Game</a>
+
+    <a *ngIf="romExists" type="button" class="flex1 bg-calm"
+      onclick="shareConfigLinkModal.showModal()"
+      (click)="configShareLink()"
+    >🔗 share config link</a>
+
+    <a *ngIf="romExists" type="button" class="flex1 bg-orange"
+      [routerLink]="urlRelativeToLedBlinkyRoot + '↩'"
+      [queryParams]="{file:'LEDBlinkyControls.xml'}"
+      title="View file backups for LEDBlinkyControls.xml"
+    >↩️ file backups</a>
+
+    <button type="button" class="flex1 bg-energized"
+      (click)="debugChange.emit(debug = !debug)"
+      [style.outline]="debug && 'inset'"
+    >🐞 debug</button>
+  </div>
+</div>
+
+<!-- debug buttons -->
+<div *ngIf="debug" class="margin-top-xs">
+  <h3>🐞 Debug panel</h3>
+  <div class="flex-wrap gap-xs">
+    <button type="button" [class.bg-energized]="emulator.viewJson" class="flex1"
+      (click)="emulator.viewJson = !emulator.viewJson"
+    >view emulator json</button>
+  
+    <button type="button" [class.bg-energized]="emulator.viewXml" class="flex1"
+      (click)="emulator.viewXml = !emulator.viewXml"
+    >view emulator xml</button>
+    
+    <button type="button" [class.bg-energized]="viewJson" class="flex1"
+    (click)="viewJson = !viewJson"
+    >view json</button>
+    
+    <button type="button" [class.bg-energized]="viewXml" class="flex1"
+    (click)="viewXml = !viewXml"
+    >view xml</button>
+  </div>
+</div>
+
+<div class="flex-wrap gap">
+  <div *ngIf="emulator?.viewJson" class="flex4"
+    [@fadeInOutUp]="1"
+  >
+    <strong>emulator.xml.details</strong>
+    <textarea class="width-full" rows="12" wrap="off">{{emulator.xml.details | json}}</textarea>
+  </div>
+  
+  <div *ngIf="emulator?.viewXml" class="flex4"
+    [@fadeInOutUp]="1"
+  >
+    <strong>emulator.element</strong>
+    <textarea class="width-full" rows="12" wrap="off"
+    >{{ emulator.xml.element.outerHTML}}</textarea>
+  </div>
+  
+  <div *ngIf="viewJson" [@fadeInOutUp]="1" class="flex4">
+    <strong>romControl.xml.details</strong>
+    <textarea class="width-full" rows="12" wrap="off">{{romControl.xml.details | json}}</textarea>
+
+    <div *ngFor="let player of romControl.players;let playerIndex=index">
+      <br />
+      <h3>romControl.players[{{playerIndex}}].controls</h3>
+      <div class="flex-wrap gap">
+        <div *ngFor="let control of player.controls;let controlIndex=index" class="radius-10 bg-white text-black pad-xs flex1">
+          <pre class="text-sm">{{control.xml.details | json}}</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- this is a circular ref and browser becomes stuck
+    <div *ngIf="viewJson" [@fadeInOutUp]="1" class="flex4">
+      <strong>romControl.players</strong>
+      <textarea class="width-full" rows="12" wrap="off">{{romControl.players | json}}</textarea>
+    </div>
+  -->
+  
+  <div *ngIf="viewXml && romControl.xml.element" class="flex4" [@fadeInOutUp]="1">
+    <strong>romControl.xml.element</strong>
+    <textarea class="width-full" rows="12" wrap="off" readonly
+    >{{romControl.xml.element.outerHTML}}</textarea>
+  </div>
+</div>
+
+<dialog
+  [id]="'copyPlayerModal_'+uid"
+  style="width: 80vw;max-width: 1200px;padding:0;"
+  onclick="var r = this.getBoundingClientRect();(r.top<=event.clientY&&event.clientY<=r.top+r.height&&r.left<=event.clientX&&event.clientX<=r.left+r.width) || this.close()"
+  ondragstart="const {e,dt,t} = {t:this,e:event,dt:event.dataTransfer};const d=t.drag=t.drag||{x:0,y:0};d.initX=d.x;d.startX=event.clientX-t.offsetLeft;d.startY=event.clientY-t.offsetTop;t.ondragover=e.target.ondragover=(e)=>e.preventDefault();dt.effectAllowed='move';dt.dropEffect='move'"
+  ondrag="const {t,e,dt,d}={e:event,dt:event.dataTransfer,d:this.drag}; if(e.clientX===0) return;d.x = d.x + e.offsetX - d.startX; d.y = d.y + e.offsetY - d.startY; this.style.left = `${d.x}px`; this.style.top = `${d.y}px`;"
+  ondragend="const {t,e,d}={t:this,e:event,d:this.drag};if (d.initX === d.x) {d.x=d.x+e.offsetX-(d.startX-d.x);d.y=d.y+e.offsetY-(d.startY-d.y);this.style.transform=`translate3d(${d.x}px, ${d.y}px, 0)`};this.draggable=false"
+>
+  <div style="padding:.25em" onmousedown="this.parentNode.draggable=true" class="bg-dark text-white">
+    <h2>Copy Player {{copyPlayer.player?.playerIndex}}</h2>
+  </div>
+  
+  <div class="pad">
+    <div *ngIf="copyPlayer.player; else selectPlayer" [@fadeInOutUp]="1">
+      <p>Select players to paste <strong>onto</strong>:</p>
+      <div *ngIf="copyPlayer.couldPastePlayers.length <= 2" class="pad bg-dark color-white">
+        No additional players to choose from. Add more players
+      </div>
+      <div class="flex-stacked gap margin">
+        <div *ngFor="let pastePlayer of copyPlayer.pastePlayers"
+          [@fadeInOutUp]="1"
+        >
+          <div>
+            <input type="checkbox" [id]="'paste_player_' + pastePlayer.player.playerIndex"
+              (click)="addRemoveCopyPlayer(pastePlayer.player)"
+              checked
+            />
+            <label [for]="'paste_player_' + pastePlayer.player.playerIndex" class="cursor-pointer">
+              Paste to 👤 player {{pastePlayer.player.playerIndex}}
+            </label>
+            <div *ngIf="pastePlayer.player.controls.length" class="pad-left text-sm">
+              <div *ngIf="!pastePlayer.merge" [@fadeInOutUp]="1" class="color-assertive">
+                ⚠️ This will overwrite {{pastePlayer.player.controls.length}} existing controls of player {{pastePlayer.player.playerIndex}}
+              </div>
+              <div class="pad-left text-sm">
+                <input type="checkbox" [id]="'merge_player_' + pastePlayer.player.playerIndex"
+                  [checked]="pastePlayer.merge"
+                  (click)="toggleCopyPlayerMerge(pastePlayer.player)"
+                />
+                <label [for]="'merge_player_' + pastePlayer.player.playerIndex">
+                  &nbsp;merge instead of overwrite  
+                </label>
+              </div>
+            </div>        
+          </div>
+        </div>
+  
+        <hr />
+        
+        <div *ngFor="let player of copyPlayer.couldPastePlayers"
+          [@fadeInOutUp]="1"
+        >
+          <ng-container *ngIf="player.playerIndex > 0 && player.playerIndex !== copyPlayer.player.playerIndex">
+            <input type="checkbox" [id]="'paste_player_' + player.playerIndex"
+              (click)="addRemoveCopyPlayer(player)"
+            />
+            <label [for]="'paste_player_' + player.playerIndex" class="cursor-pointer">
+              Paste to 👤 player {{player.playerIndex}}
+            </label>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  
+    <ng-template #selectPlayer>
+      <p>Select player to copy <strong>from</strong>:</p>
+      <div class="flex-wrap child-margin-xxs">
+        <ng-container *ngFor="let player of romControl.players; let playerIndex=index">
+          <button *ngIf="playerIndex > 0"
+            (click)="copyPlayerBy(player)"
+            class="flex1"
+          >
+            Select 👤 Player {{playerIndex}}
+          </button>
+        </ng-container>
+      </div>
+    </ng-template>
+  
+    <br />
+    
+  </div>
+  <div class="flex-wrap child-margin-xxs">
+    <ng-container *ngIf="copyPlayer.romControl">
+      <button type="button" class="flex1 bg-calm"
+        (click)="addPlayer(copyPlayer.romControl)"
+      >👤 add player</button>
+    
+      <button *ngIf="copyPlayer.pastePlayers.length" type="button" class="flex1 bg-balanced"
+        [@fadeInOutUp]="1"
+        (click)="getCopyPlayerElm().close();completeCopyPlayer()"
+      >📋 paste {{copyPlayer.pastePlayers.length}}x</button>
+    </ng-container>
+
+    <button type="button" class="flex1 bg-dark"
+      (click)="getCopyPlayerElm().close();copyPlayer.player = undefined"
+    >🅧 cancel</button>
+  </div>
+</dialog>
+
+<ng-template #playerLabel let-xml="xml" let-controls="controls">
+  <ng-container *ngIf="xml.details.number === '0';else playerLabel0">
+    <sup class="pull-right text-xxs opacity-80">
+      {{controls.length}}
+    </sup>
+    Common
+  </ng-container>
+  <ng-template #playerLabel0>
+    <sup class="pull-right text-xxs opacity-80">
+      {{controls.length}}
+    </sup>
+    Player {{ xml.details.number }} 🕹
+  </ng-template>
+</ng-template>
+
+<!-- 🔗 share rom config -->
+<dialog id="shareConfigLinkModal" style="padding:0"
+  onmousedown="var r = this.getBoundingClientRect();(r.top<=event.clientY&&event.clientY<=r.top+r.height&&r.left<=event.clientX&&event.clientX<=r.left+r.width) || this.close()"
+  ondragstart="const {e,dt,t} = {t:this,e:event,dt:event.dataTransfer};const d=t.drag=t.drag||{x:0,y:0};d.initX=d.x;d.startX=event.clientX-t.offsetLeft;d.startY=event.clientY-t.offsetTop;t.ondragover=e.target.ondragover=(e)=>e.preventDefault();dt.effectAllowed='move';dt.dropEffect='move'"
+  ondrag="const {t,e,dt,d}={e:event,dt:event.dataTransfer,d:this.drag}; if(e.clientX===0) return;d.x = d.x + e.offsetX - d.startX; d.y = d.y + e.offsetY - d.startY; this.style.left = `${d.x}px`; this.style.top = `${d.y}px`;"
+  ondragend="const {t,e,d}={t:this,e:event,d:this.drag};if (d.initX === d.x) {d.x=d.x+e.offsetX-(d.startX-d.x);d.y=d.y+e.offsetY-(d.startY-d.y);this.style.transform=`translate3d(${d.x}px, ${d.y}px, 0)`};this.draggable=false"
+>
+  <div class="pad-xs bg-dark text-white" onmousedown="this.parentNode.draggable=true"
+  >🔗 Share ROM Light Config</div>
+  <div *ngIf="shareRomLink">
+    <div class="text-right opacity-40 text-xxs"
+      [class.text-danger]="shareRomLink.length > 2000"
+    >
+      link characters: {{shareRomLink.length}}
+    </div>
+
+    <div class="pad max-width-600">
+      <div *ngIf="shareRomDecoded.issues.length">
+        <h2 class="text-red">Cannot continue due to following issues:</h2>
+        <ul>
+          <li *ngFor="let item of shareRomDecoded.issues">{{item.description}}</li>
+        </ul>            
+      </div>
+
+      <ng-container *ngIf="!shareRomDecoded.issues.length">
+        <p>Tap the copy button below and then paste where you want to share with your friends.</p>
+
+        <div class="flex">
+          <button *ngIf="shareRomLink" class="flex1 bg-positive" type="button"
+            onclick="shareConfigLinkModal.close()"
+            (click)="session.copyUrl(shareRomLink);shareRomDecoded.debug=false"
+          >📋 copy url link</button>
+        </div>
+      </ng-container>
+    </div>
+
+    <br />
+    
+    <div *ngIf="shareRomDecoded.debug">
+      <h3>url</h3>
+      <textarea id="shareRomLink" name="shareRomLink" wrap="off"
+        style="min-width:30vw"
+        class="width-full min-width-300 min-height-300" [ngModel]="shareRomLink" readonly
+      ></textarea>
+      
+      <br />
+
+      <h3>Original object</h3>
+      <textarea wrap="off"
+        style="min-width:30vw"
+        class="width-full min-width-300 min-height-300" [ngModel]="shareRomDecoded.original" readonly
+      ></textarea>
+  
+      <br />
+      
+      <h3>Encoded string</h3>
+      <div class="text-right opacity-40 text-xxs">
+        characters: {{shareRomDecoded.string.length}}
+      </div>
+      <textarea wrap="off"
+        style="min-width:30vw"
+        class="width-full min-width-300 min-height-300" [ngModel]="shareRomDecoded.string" readonly
+      ></textarea>
+      
+      <br />
+      
+      <h3>Decoded back to Object</h3>
+      <textarea wrap="off"
+        style="min-width:30vw"
+        class="width-full min-width-300 min-height-300" readonly
+      >{{shareRomDecoded.decoded | json}}</textarea>
+    </div>
+  </div>
+
+  <div class="flex-wrap">
+    <button class="radius-0 flex1" type="button"
+      (click)="decodeSharedUrl();shareRomDecoded.debug = !shareRomDecoded.debug"
+      [class.bg-energized]="shareRomDecoded.debug"
+    >🐞 debug</button>
+    
+    <button class="radius-0 flex1 bg-dark" type="button"
+      onclick="shareConfigLinkModal.close();"
+      (click)="shareRomDecoded.debug=false"
+    >🅧 close</button>
+  </div>
+
+</dialog>

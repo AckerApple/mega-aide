@@ -1,0 +1,171 @@
+
+<!-- control name -->
+<td class="flex1">
+  <div class="hide-gt-md"><strong>🕹️ 🎮 control</strong></div>
+
+  <div *ngIf="!control.edit">
+    {{ details.name }}
+    <div class="flex-wrap gap flex-apart text-xxs">
+      <div *ngIf="control.xml.details.primaryControl === '1'">
+        ⭐️ primary control
+      </div>
+      <div *ngIf="control.xml.details.alwaysActive === '1'">
+        🎚️ always active
+      </div>
+    </div>
+  </div>
+  <div *ngIf="control.edit">
+    <!--todo need on changes-->
+    <select [(ngModel)]="details.name"
+      (ngModelChange)="control.edited = true;control.xml.updateXml();updated.emit()"
+      [title]="'🕹️ Controls specific to player ' + (player ? player.playerIndex : 'N/A')"
+    >
+      <ng-container *ngIf="(control.usedCodes$ | async) as usedCodes">
+        <ng-container *ngIf="(session.ledBlinky.controls$ | async) as controls">
+          <ng-container *ngIf="controls.availMap && controls.availMap[ playerIndex ]">
+            <option *ngFor="let code of controls.availMap[ playerIndex ]"
+              [value]="code.name"
+              [disabled]="code.name !== details.name && usedCodes.includes(code.name)"
+            >
+              {{code.name}}
+              {{ code.name !== details.name && usedCodes.includes(code.name) ? ' - used' : '' }}
+            </option>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+    </select>
+
+    <div class="flex-wrap flex-apart gap text-xs">
+      <label [for]="'primaryControl-' + uid">
+        <input type="checkbox"
+          [name]="'primaryControl-' + uid"
+          [id]="'primaryControl-' + uid"
+          [checked]="control.xml.details.primaryControl === '1'"
+          (click)="control.xml.addDetails({primaryControl: control.xml.details.primaryControl==='1' ? '0' : '1'})"
+        />&nbsp;{{ control.xml.details.primaryControl === '1' ? '⭐️' : '☆' }} primary control
+      </label>
+
+      <label [for]="'alwaysActive-' + uid">
+        <input type="checkbox"
+          [name]="'alwaysActive-' + uid"
+          [id]="'alwaysActive-' + uid"
+          [checked]="control.xml.details.alwaysActive === '1'"
+          (click)="control.xml.addDetails({alwaysActive: control.xml.details.alwaysActive==='1' ? '0' : '1'})"
+        />&nbsp;🎚️ always active
+      </label>
+    </div>
+  </div>
+</td>
+
+<!-- 🔊 voice -->
+<td class="flex1">
+  <div class="hide-gt-md"><strong>🔊 voice</strong></div>
+
+  <!--todo need on changes-->
+  <div *ngIf="!control.edit" [(contentModel)]="details.voice"
+    (contentModelChange)="control.edited=true"
+  ></div>
+  <div *ngIf="control.edit">
+    <input type="text" class="width-full min-width-200" maxLength="125"
+      placeholder="🔊 voice"
+      [(ngModel)]="details.voice"
+      (ngModelChange)="control.edited = true;updated.emit()"
+    />
+  </div>
+</td>
+
+<!-- 🎨 color [style.background-color]="control.cssColor$ | async" -->
+<td class="text-shadow-grey-blur flex1">
+  <div class="hide-gt-md"><strong>🎨 color</strong></div>
+
+  <a *ngIf="!control.edit" (click)="control.edit = true">
+    <span class="inline-block width-15 height-15"
+      [style.background-color]="control.cssColor$ | async"
+    ></span>&nbsp;{{ details.color }}
+  </a>
+  <div *ngIf="control.edit">
+    <light-control-color-select [control]="control" class="flex-wrap"
+      (changed)="control.xml.updateXml();updated.emit()"
+    ></light-control-color-select>
+  </div>
+</td>
+
+<!--inputCodes-->
+<td class="flex1">
+  <div class="hide-gt-md"><strong>🤖 input codes</strong></div>
+  
+  <ng-container *ngTemplateOutlet="controlCodes;context:{
+    control: control,
+    details: details,
+    inputCodes: control.getInputCodes()
+  }"></ng-container>
+
+  <!-- add input code -->
+  <button *ngIf="!control.getInputCodes().length" type="button"
+    (click)="control.xml.details.inputCodes = control.xml.details.inputCodes + ', ';updated.emit()"
+    class="radius-left-0 radius-right-0 bg-balanced"
+  >✚</button>
+</td>
+
+<td class="flex1">
+  <div class="hide-gt-md"><strong>&nbsp;</strong></div>
+
+  <button *ngIf="control.edit" type="button"
+    class="bg-assertive"
+    (click)="control.delete();updated.emit();deleted.emit()"
+  >🗑️ delete</button>
+</td>
+
+<!--action-->
+<td *ngIf="showEdit === undefined || showEdit">
+  <div class="hide-gt-md"><strong>&nbsp;</strong></div>
+  
+  <button type="button"
+    [ngClass] = "control.edit ? 'bg-energized' : control.edited ? 'bg-orange' : 'bg-calm'"
+    (click)="control.edit = !control.edit"
+  >✏️ {{ control.edited ? 'edited' : 'edit' }}</button>
+</td>
+
+<ng-template #controlCodes
+  let-details="details"
+  let-control="control"
+  let-inputCodes="inputCodes"
+>
+  <div *ngIf="!control.edit && inputCodes"
+    [class.opacity-half]="!control.xml.details.inputCodes"
+  >
+    {{ inputCodes.join('\n') || 'unassigned' }}
+  </div>
+  <div *ngIf="control.edit" class="flex-wrap gap">
+    <!--todo need on changes-->
+    <div *ngFor="let controlCode of inputCodes; let codeIndex = index"
+      class="text-xs"
+    >
+      <div class="flex">
+        <input-code-select class="flex flex1"
+          className="radius-right-0"
+          [model]="controlCode"
+          (modelChange)="control.updateInputCodeAt($event, codeIndex);updated.emit();"
+        ></input-code-select>
+        
+        <button *ngIf="controlCode && codeIndex === inputCodes.length - 1" type="button"
+          (click)="control.addInputCode(codeIndex);updated.emit()"
+          class="bg-success radius-0" title="add input code"
+        >➕</button>
+
+        <button *ngIf="controlCode" type="button"
+          (click)="control.removeInputCodeByIndex(codeIndex);updated.emit()"
+          class="bg-dark radius-left-0" title="clear input code"
+        >🅧</button>
+      </div>
+      
+      <div>
+        <remap-buttons
+          classes="pad-xxs"
+          (mouseChange)="applyMouseListen($event, inputCodes, codeIndex)"
+          (keyChange)="applyKeyListen($event, inputCodes, codeIndex)"
+        ></remap-buttons>
+      </div>
+    </div>
+  </div>
+</ng-template>

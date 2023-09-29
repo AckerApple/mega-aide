@@ -8,13 +8,16 @@
     <tHead>
       <ng-container *ngIf="columnSchema.length > 1">
         <ng-container *ngFor="let schema of columnSchema; let columnIndex=index">
-          <th *ngIf="columnIndex > 0">
-            <ng-container *ngIf="$any(schema).label; guessLabelInLoop">
+          <th style="text-align: left;cursor:pointer;"
+            (click)="sortBy(schema)"
+            class="pad-h-xs"
+          >
+            <ng-container *ngIf="$any(schema).label; else guessLabelInLoop">
               {{$any(schema).label}}
             </ng-container>
           </th>
           <ng-template #guessLabelInLoop>
-            <ng-template #guessLabel let-schema="schema"></ng-template>
+            <ng-container *ngTemplateOutlet="guessLabel;context:{schema:schema}"></ng-container>
           </ng-template>
         </ng-container>
       </ng-container>
@@ -22,18 +25,18 @@
     <tbody>
       <tr *ngFor="let item of columns[columns.length - 1]; let index=index"
         [@fadeInOutUp]="1"
-        class="pad-xxs hover-bg-energized" [class.bg-grey]="index % 2"
+        class="hover-bg-energized" [class.bg-grey]="index % 2"
       >
         <!-- when no schema, one column with just name -->
         <ng-container *ngIf="!columnSchema?.length">
-          <td class="pad-xxs width-full">
+          <td class="pad-v-xxs pad-h-xs width-full">
             <ng-container *ngTemplateOutlet="nameTemplate;context:{item:item, schema:{name:'name'}}"></ng-container>
           </td>
         </ng-container>
         
         <!-- when schema-->
         <ng-container *ngFor="let schema of columnSchema; let columnIndex=index">
-          <td class="pad-xxs nowrap" [class.width-full]="columnIndex===0">
+          <td class="pad-v-xxs pad-h-xs nowrap" [class.width-full]="columnIndex===0">
             <ng-container [ngSwitch]="$any(schema).type">
               <ng-container *ngSwitchCase="'name'">
                 <ng-container *ngTemplateOutlet="nameTemplate;context:{item:item, schema}"></ng-container>
@@ -64,7 +67,7 @@
       <ng-container *ngSwitchCase="size">size</ng-container>
     -->
     <ng-container *ngSwitchDefault>
-      {{$any(schema).name}}
+      {{$any(schema).name || $any(schema).type}}
     </ng-container>
   </ng-container>
 </ng-template>

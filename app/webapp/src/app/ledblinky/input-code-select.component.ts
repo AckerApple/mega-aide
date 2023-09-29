@@ -15,5 +15,4 @@ import { SessionProvider } from "../session.provider";
   constructor(
     public session: SessionProvider,
   ) {}
-
 }

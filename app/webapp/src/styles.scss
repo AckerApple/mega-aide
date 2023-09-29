@@ -9,6 +9,7 @@ select, textarea, button, input, [type=button] {
   border-bottom-right-radius: .5em;
 }
 
+[type=button].bg-royal { @extend .bg-royal }
 [type=button].bg-orange { @extend .bg-orange }
 [type=button].bg-stable { @extend .bg-stable }
 [type=button].bg-assertive { @extend .bg-assertive }
@@ -19,6 +20,7 @@ select, textarea, button, input, [type=button] {
 [type=button].bg-info { @extend .bg-info }
 [type=button].bg-dark { @extend .bg-dark }
 [type=button].bg-grey { @extend .bg-grey }
+[type=button].bg-success { @extend .bg-success }
 [type=button].bg-grey-2x { @extend .bg-grey-2x }
 [type=button].bg-grey-3x { @extend .bg-grey-3x }
 [type=button].bg-grey-4x { @extend .bg-grey-4x }
@@ -53,10 +55,10 @@ button.active, [type=button].active {
 
 
 * {box-sizing:border-box;/*line-height:1.5em*/}
-html, body{width:100%;height:100%;padding:0;margin:0;}
-html {scroll-behavior:smooth;font-size:calc(22px + .4vw);}
-input[type="checkbox"], input[type="radio"] {width:1em;height:1em;}
-summary {cursor: pointer;}
+html, body{width:100%;height:100%;padding:0;margin:0}
+html {scroll-behavior:smooth;font-size:calc(22px + .4vw)}
+input[type="checkbox"], input[type="radio"] {width:1em;height:1em}
+a, summary {cursor: pointer}
 
 h1, h2, h3, h4 {
   margin-top: 0.1rem;margin-bottom: 0.1rem

@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "description": "Things learned and things to remember for my Megacade",
   "scripts": {
-    "neu:update": "neu update",
+    "neu:update": "echo 'Will not update neu due to how it overwrites /bin files'",
+    "neu:update:old": "neu update",
     "build": "npm run build:webapp && npm run neu:update && npm run build:neutralino",
     "build:neutralino": "neu build --release && npm run dist:rename:mac && npm run dist:move",
     "build:webapp": "cd webapp && npm run build && cd ../ && npm run build:resources",
@@ -11,18 +12,18 @@
     "build:resources": "npm run resources:copy && npm run resources:write",
     "resources:copy": "cp -r resources/js resources/webapp/neutralino",
     "resources:write": "node resources-write.js",
-    "dist:rename:mac": "mv dist/mega-aide/mega-aide-mac_x64 dist/mega-aide/mega-aide-mac_x64.app",
+    "dist:rename:mac": "mv dist/mega-aide/mega-aide-mac_x64 dist/mega-aide/mega-aide-mac_x64.app && mv dist/mega-aide/mega-aide-mac_universal dist/mega-aide/mega-aide-mac_universal.app && mv dist/mega-aide/mega-aide-mac_arm64 dist/mega-aide/mega-aide-mac_arm64.app",
     "start": "neu run",
     "clear:webapp": "cd webapp && npm run clear",
     "start:webapp": "cd webapp && npm run start",
     "dist:clear": "rm -rf dist/mega-aide/mac && rm -rf dist/mega-aide/windows && rm -rf dist/mega-aide/linux",
     "dist:folders": "mkdir dist/mega-aide/mac && mkdir dist/mega-aide/windows && mkdir dist/mega-aide/linux",
-    "dist:move": "npm run dist:clear && npm run dist:folders && npm run dist:linux && npm run dist:mac && npm run dist:win && npm run dist:resources && npm run dist:dll",
+    "dist:move": "npm run dist:clear && npm run dist:folders && npm run dist:linux && npm run dist:mac && npm run dist:win && npm run dist:resources",
     "dist:linux": "mv dist/mega-aide/mega-aide-linux_x64 dist/mega-aide/linux/mega-aide-linux_x64 && mv dist/mega-aide/mega-aide-linux_arm64 dist/mega-aide/linux/mega-aide-linux_arm64 && mv dist/mega-aide/mega-aide-linux_armhf dist/mega-aide/linux/mega-aide-linux_armhf",
-    "dist:mac": "mv dist/mega-aide/mega-aide-mac_x64.app dist/mega-aide/mac/mega-aide-mac_x64.app",
+    "dist:mac": "mv dist/mega-aide/mega-aide-mac_x64.app dist/mega-aide/mac/mega-aide-mac_x64.app && mv dist/mega-aide/mega-aide-mac_universal.app dist/mega-aide/mac/mega-aide-mac_universal.app && mv dist/mega-aide/mega-aide-mac_arm64.app dist/mega-aide/mac/mega-aide-mac_arm64.app",
     "dist:win": "mv dist/mega-aide/mega-aide-win_x64.exe dist/mega-aide/windows/mega-aide-win_x64.exe",
+    "dist:webapp": "cp -R webapp/dist/webapp dist/mega-aide/webapp",
     "dist:resources": "cp dist/mega-aide/resources.neu dist/mega-aide/windows/resources.neu && cp dist/mega-aide/resources.neu dist/mega-aide/mac/resources.neu && cp dist/mega-aide/resources.neu dist/mega-aide/linux/resources.neu && rm dist/mega-aide/resources.neu",
-    "dist:dll": "cp dist/mega-aide/WebView2Loader.dll dist/mega-aide/windows/WebView2Loader.dll && cp dist/mega-aide/WebView2Loader.dll dist/mega-aide/mac/WebView2Loader.dll && cp dist/mega-aide/WebView2Loader.dll dist/mega-aide/linux/WebView2Loader.dll && rm dist/mega-aide/WebView2Loader.dll",
     "dist:readme": "cp download-README.md dist/mega-aide/README.md"
   }
 }

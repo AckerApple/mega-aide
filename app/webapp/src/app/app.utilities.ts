@@ -10,20 +10,23 @@ export function get(name: string): string | undefined {
 
 export async function getStorage() {
   if ( typeof Neutralino==='object' ) {
-    const string = await Neutralino.storage.getData('medaaide')
+    const string = await Neutralino.storage.getData('megaaide')
     return JSON.parse(string)
   }
   
   if ( localStorage['megaaide'] ) {
-    return JSON.parse(localStorage['megaaide'])
+    const data = JSON.parse(localStorage['megaaide'])
+    console.info('💿 Previous local storage found', data)
+    return data
   }
 
+  console.warn('💿 No previous local storage found')
   return {}
 }
 
 export function saveStorage(config: any) {
   if ( typeof Neutralino==='object' ) {
-    Neutralino.storage.setData('medaaide', JSON.stringify(config))
+    Neutralino.storage.setData('megaaide', JSON.stringify(config))
   }
 
   localStorage['megaaide'] = JSON.stringify(config)
@@ -41,4 +44,22 @@ export function findFolder(
   items: LikeFile[]
 ) {
   return items.find(item => item.kind === 'directory' && item.name === name)
+}
+
+export function copyToClipboard(text: string) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+
+  // Append the textarea to the document
+  document.body.appendChild(textArea);
+
+  // Select the text in the textarea
+  textArea.select();
+  textArea.setSelectionRange(0, 99999); // For mobile devices
+
+  // Copy the selected text to the clipboard
+  document.execCommand("copy");
+
+  // Remove the textarea from the document
+  document.body.removeChild(textArea)
 }

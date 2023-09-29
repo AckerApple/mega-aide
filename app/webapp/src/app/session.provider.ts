@@ -1,81 +1,30 @@
-import { EventEmitter, Injectable } from '@angular/core'
+import { EventEmitter, Injectable, NgZone } from '@angular/core'
 import { DirectoryManager } from 'ack-angular-components/directory-managers/DirectoryManagers'
-import { getOs, getStorage, saveStorage } from './app.utilities'
-import { getControlGamepadCode } from './inputs/platform-player-control.component'
-import { ControllerSupport, LaunchBox } from './launchbox/LaunchBox.class'
+import { copyToClipboard, getOs, getStorage, saveStorage } from './app.utilities'
+import { LaunchBox } from './launchbox/LaunchBox.class'
 import { LedBlinky } from './ledblinky/LedBlinky.class'
 import { PlatformsMapping } from './platforms'
 import packageJson from '../../package.json'
-import { openAnchor } from './app.component'
 import { get } from './app.utilities'
-import { Tips } from './tips.class'
+import { TipOptions, Tips } from './tips.class'
 
 import platforms from './platform.map.json'
 import { Mame } from './ledblinky/mame.class'
-import { BehaviorSubject, map, Observable, shareReplay } from 'rxjs'
+import { BehaviorSubject, map, shareReplay } from 'rxjs'
+import { getControlGamepadCode } from './ledblinky/LedBlinky.utils'
+import { fillGaps, getPerformance, openAnchor, WriteFile } from './session.utils'
+import { EmulatorControls } from './ledblinky/EmulatorControls'
 import { DmFileReader } from 'ack-angular-components/directory-managers/DmFileReader'
+import { xmlDocToString } from './xml.functions'
+import { Emulator } from './ledblinky/Emulator.class'
 
 @Injectable()
 export class SessionProvider {
-  tips = new Tips()
-  
-  loads = 0
-  load$ = new BehaviorSubject( this.loads )
-  loading$ = this.load$.pipe(
-    map(amount => this.loads = this.loads + amount),
-    shareReplay(1),
-  )
-  
-  os = getOs()
-  
-  platforms: PlatformsMapping = platforms as any
-  launchBox = new LaunchBox(this)
-  ledBlinky = new LedBlinky(this)
-  mame = new Mame(this)
-  // xarcade loaded directly (TODO: move to a class like ledblink and launchbox)
-  xarcadeDirectory?: DirectoryManager
-  
-  filePreview?: WriteFile
-  toSaveFiles: WriteFile[] = []
-  $filesSaved = new EventEmitter<WriteFile[]>()
-  filesReadyToSave: WriteFile[] = []
-
-  config = {
-    showWarn: true,
-    backupFolderNames: ['_backups', '_backup', '[backup]'],
-    xarcadeXinput: {
-      path: this.os === 'Darwin' ? '' : (this.os ? 'C:\\Users\\Administrator\\LaunchBox\\Tools\\xarcade-xinput' : ''),
-    },
-    ledBlinky: {
-      path: this.os === 'Darwin' ? '' : (this.os ? 'C:\\Users\\Administrator\\LaunchBox\\Tools\\LEDBlinky' : ''),
-    },
-    mame: {
-      path: this.os === 'Darwin' ? '' : (this.os ? 'C:\\Users\\Administrator\\LaunchBox\\Emulators\\MAME' : ''),
-    },
-    launchBox: {
-      path: this.os === 'Darwin' ? '' : (this.os ? 'C:\\Users\\Administrator\\LaunchBox\\' : ''),
-      dataFolderName: 'Data',
-      bigBoxFileName: 'BigBoxSettings.xml'
-    },
-  }
-
-  debugData: any = {
-    version: packageJson.version,
-    navigator: navigator.userAgent,
-    NL_OS: get('NL_OS'),
-    NL_APPID: get('NL_APPID'),
-    NL_PORT: get('NL_PORT'),
-    NL_VERSION: get('NL_VERSION'),
-    NL_CVERSION: get('NL_CVERSION'),
-  }
-  openAnchor = openAnchor // due to native os, we need to open <a> href links this way
-  reportIssueLink = `https://github.com/AckerApple/mega-aide/issues/new?title=Mega-aide app issue: &body=My issue is:${encodeURIComponent('\n\n\nMy debug info is:\n' + JSON.stringify(this.debug, null, 2))}`
-  
-  performance: any = getPerformance() // performance as any // may not be available in all browsers
-
-  constructor() {
+  constructor(
+    private ngZone: NgZone
+  ) {
     this.reloadPlatforms()
-    this.loadConfig()
+    this.loadLocalStorage()
 
     this.$filesSaved.subscribe(files => {
       files.forEach(file => {
@@ -97,9 +46,81 @@ export class SessionProvider {
     }, 2000)
   }
 
+  tips = new Tips()
+  
+  loads = 0
+  load$ = new BehaviorSubject( this.loads )
+  loading$ = this.load$.pipe(
+    map(amount => this.loads = this.loads + amount),
+    shareReplay(1),
+  )
+  
+  os = getOs()
+  
+  platforms: PlatformsMapping = platforms as any
+  mame = new Mame(this)
+  // xarcade loaded directly (TODO: move to a class like ledblink and launchbox)
+  xarcadeDirectory?: DirectoryManager
+  
+  filePreview?: WriteFile
+  toSaveFiles: WriteFile[] = []
+  $filesSaved = new EventEmitter<WriteFile[]>()
+  filesReadyToSave: WriteFile[] = []
+
+  appDirectory$ = new EventEmitter<DirectoryManager>()
+
+  // Default storage
+  config = {
+    showWarn: true,
+    backupFolderNames: ['_backups', '_backup', '[backup]'],
+    appFolder: {
+      path: '', // backup folder explorer
+    },
+    xarcadeXinput: {
+      path: this.os === 'Darwin' ? '' : (this.os ? 'C:\\Users\\Administrator\\LaunchBox\\Tools\\xarcade-xinput' : ''),
+    },
+    ledBlinky: {
+      path: this.os === 'Darwin' ? '' : (this.os ? 'C:\\Users\\Administrator\\LaunchBox\\Tools\\LEDBlinky' : ''),
+      curve: 0,
+    },
+    mame: {
+      path: this.os === 'Darwin' ? '' : (this.os ? 'C:\\Users\\Administrator\\LaunchBox\\Emulators\\MAME' : ''),
+    },
+    launchBox: {
+      path: this.os === 'Darwin' ? '' : (this.os ? 'C:\\Users\\Administrator\\LaunchBox\\' : ''),
+      dataFolderName: 'Data',
+      bigBoxFileName: 'BigBoxSettings.xml'
+    },
+  }
+
+  config$ = new BehaviorSubject(this.config)
+
+  debugData: any = {
+    version: packageJson.version,
+    navigator: navigator.userAgent,
+    NL_OS: get('NL_OS'),
+    NL_APPID: get('NL_APPID'),
+    NL_PORT: get('NL_PORT'),
+    NL_VERSION: get('NL_VERSION'),
+    NL_CVERSION: get('NL_CVERSION'),
+  }
+  openAnchor = openAnchor // due to native os, we need to open <a> href links this way
+  reportIssueLink = `https://github.com/AckerApple/mega-aide/issues/new?title=Mega-aide app issue: &body=My issue is:${encodeURIComponent('\n\n\nMy debug info is:\n' + JSON.stringify(this.debugData, null, 2))}`
+  
+  performance: any = getPerformance() // performance as any // may not be available in all browsers
+
+  // Must be last
+  launchBox = new LaunchBox(this)
+  ledBlinky = new LedBlinky(this, this.ngZone)
+
+  requestToSave() {
+    this.toSaveFiles = [...this.filesReadyToSave]
+  }
+
   addFileToSave(file: WriteFile) {
     let findIndex = this.filesReadyToSave.findIndex(x => x.file === file.file)
     if ( findIndex >= 0 ) {
+      this.info(`File has changes. Ready to save at bottom of page. Saved file ${file.file.directory.path}/${file.file.name}`)
       this.filesReadyToSave[findIndex].string = file.string
       return // already ready to save, just update string
     }
@@ -107,6 +128,17 @@ export class SessionProvider {
     this.filesReadyToSave.push(file)
     this.info(`File has changes. Ready to save at bottom of page. Saved file ${file.file.directory.path}/${file.file.name}`)
   }
+
+  saveFileXml(
+    file: DmFileReader,
+    xml: Document
+  ) {
+    const rawString = xmlDocToString(xml)
+    // remove extra lines and then add a closing extra line return
+    const string = rawString.replace(/\n\s+\n/g,'\n') + '\r'
+    this.addFileToSave({ file, string })
+  }
+
 
   reloadPlatforms() {
     this.platforms.images.forEach(image => {
@@ -118,17 +150,24 @@ export class SessionProvider {
     })
   }
 
-  async loadConfig() {
+  async loadLocalStorage() {
     try {
       const storage = await getStorage() as any
+      console.debug('🧠 storage', storage)
       const newConfig = storage || this.config
       
       fillGaps(newConfig, this.config)
 
       this.config = newConfig
+      this.config$.next(this.config)
+      console.debug('⚙️ this.config', this.config)
+
+      return this.config
     } catch (err) {
       this.error('could not load previous config', err)
     }
+
+    return getStorage()
   }
 
   error(message: string, err?: any) {
@@ -143,135 +182,91 @@ export class SessionProvider {
     this.tips.displayForTime(displayMessage, 5000)
   }
 
-  warn(message: string, err?: any) {
+  warn(
+    message: string,
+    err?: any,
+    options?: TipOptions
+  ) {
     message = '🟠 ' + message
     console.warn(message, err)
-    this.tips.displayForTime(message, 5000)
+    this.tips.displayForTime(message, 5000, {level:'warn', ...options})
   }
 
-  debug(message: string, err?: any) {
+  debug(message: string, err?: any, options?: TipOptions) {
     message = '🔵 ' + message
     console.debug(message, err)
     // this.tips.displayForTime(message, 5000)
   }
 
-  info(message: string) {
+  info(message: string, options?: TipOptions) {
     message = 'ℹ ' + message
     console.info(message)
-    this.tips.displayForTime(message, 5000)
+    this.tips.displayForTime(message, 5000, options)
   }
 
-  save() {
+  saveStorage() {
     saveStorage(this.config)
   }
-}
 
-function fillGaps (toFill: any, fillFrom: any) {
-  // default to this.config for missing entries
-  Object.keys(fillFrom).forEach(key => {
-    if ( toFill[key] === undefined ) {
-      toFill[key] = (fillFrom as any)[key]
+  checkFileStreamingSupport() {
+    const hasFileStreaming = window.showDirectoryPicker as unknown
+    if ( hasFileStreaming ) {
+      return // support is good
     }
 
-    if ( toFill[key] && typeof toFill[key] === 'object' ) {
-      fillGaps(toFill[key], fillFrom[key])
-    }
-  })
-}
-
-export interface WriteFile {
-  file: DmFileReader
-  string: string
-  
-  // todo: we need streams
-  // read$: Observable<string> // needs to be a read stream that closes
-}
-
-export interface AdditionalApp {
-  details: AdditionalAppDetails // AdditionalAppDetails?
-  
-  // elements
-  element: Element
-  
-  nameElement?: Element
-  autoRunAfterElement?: Element
-  autoRunBeforeElement?: Element
-  commandLineElement?: Element
-  applicationPathElement?: Element
-}
-
-export interface PlatformInsights {
-  xml: Document
-  id: string // fileName with no extension
-  fileName: string
-  file: DmFileReader
-  
-  games$: Observable<GameInsight[]>
-  getGameById: (id: string) => Promise<GameInsight | undefined>
-  additionalApps$: Observable<AdditionalApp[]>
-  controllerSupports$: Observable<ControllerSupport[]>
-}
-
-export interface XInputGameInsight {
-  app: AdditionalApp,
-  mapping: string
-}
-
-export interface GameInsight {
-  element: Element
-  details: GameDetails
-  
-  
-  xInput?: XInputGameInsight
-  
-  // ui controls
-  editMapping?: boolean
-  
-  additionalApps?: AdditionalApp[]
-  controllerSupports$: Observable<ControllerSupport[]>
-}
-
-export interface GameDetails {
-  id: string
-  title: string
-  favorite: boolean
-  applicationPath: string
-}
-
-export enum AdditionalAppType {
-  XINPUT = 'xinput',
-  XINPUT_KILL = 'xinput-kill',
-  OTHER = 'other',
-}
-
-export interface AdditionalAppDetails {
-  commandLine: string
-  type: AdditionalAppType
-  autoRunAfter?: string
-  autoRunBefore?: string
-  name?: string
-  applicationPath?: string
-}
-
-
-function getPerformance() {
-  if ( !performance ) {
-    console.warn('cannot track performance')
-    return
+    const message = 'Your 🌎 web browser does not support 💾 file streaming.\n\nYou may experience degraded performance or lack of functionality..\n\n👉 This app is best supported by Google Chrome, Opera, or Microsoft Edge'
+    this.warn(message, null, {
+      showFor: 10000,
+      links: [{
+        label: 'support chart',
+        url: 'https://caniuse.com/?search=window.showDirectoryPicker',
+        target: '_blank'
+      }]
+    })
   }
 
-  const memory = (performance as any).memory
-
-  if ( !memory ) {
-    console.warn('cannot track memory')
-    return
+  copyToClipboard(text: string) {
+    copyToClipboard(text)
+    this.info(`📋 Copied ${text.length} characters to clipboard`)
   }
-  
-  return {
-    memory: {
-      jsHeapSizeLimit: memory.jsHeapSizeLimit,
-      totalJSHeapSize: memory.totalJSHeapSize,
-      usedJSHeapSize: memory.totalJSHeapSize,
+
+  copyUrl(url: string) {
+    copyToClipboard(url)
+    
+    this.info(`📋 Copied 🔗 to URL`, {
+      links: [{
+        url, label: 'visit copied url here',
+      }]
+    })
+  }
+
+  getRelativeUrl(relativeUrl: string) {
+    return createRelativeURL(relativeUrl)
+  }
+}
+
+function createRelativeURL(relativePath: string) {
+  // Get the current URL
+  const currentURL = window.location.href;
+  const currentEmojiURL = decodeURIComponent(currentURL);
+
+  // Split the current URL by "/"
+  let urlParts = currentEmojiURL.split('/');
+
+  // Split the relative path by "/"
+  let relativeParts = relativePath.split('/');
+
+  // Remove empty parts and handle "../" in the relative path
+  for (let i = 0; i < relativeParts.length; i++) {
+    if (relativeParts[i] === "..") {
+      urlParts.pop(); // Go up one level
+    } else if (relativeParts[i] !== "") {
+      urlParts.push(relativeParts[i]); // Add non-empty parts
     }
   }
+
+  // Combine the parts to create the new URL
+  let newURL = urlParts.join('/');
+
+  return newURL;
 }

@@ -1,0 +1,45 @@
+<ng-container *ngIf="(session.appDirectory$ | async) as directory; else selectDirectory">
+  <directory-backups [directory]="directory"
+    [path]="path"
+    [fileName]="fileName"
+  ></directory-backups>
+</ng-container>
+
+<ng-template #selectDirectory>
+  <div class="text-right">
+    <robust-select-directory label=""
+      pickerId="AppFolder"
+      [reloadPath]="session.config.appFolder.path"
+      [directoryManager]="$any(session.appDirectory$ | async)"
+      (directoryManagerChange)="session.checkFileStreamingSupport();session.appDirectory$.emit($event);"
+      (error)="session.error('could not load app path', $event)"
+    ></robust-select-directory>
+  </div>
+  
+  <br />
+  
+  <div *ngIf="!(session.appDirectory$ | async)" [@fadeInOutUp]="1">
+    <br />
+    <div class="text-center pad">
+      ⬆️ Select folder above to unlock the following features
+    </div>
+    <br />
+    <details class="pad">
+      <summary class="opacity-80">📁 read more about this app and what it does with folder access</summary>
+      <div class="bg-dark pad">
+        <p>
+          Once you select your LaunchBox folder, files will be read to offer helpful support.
+        </p>      
+        Such support features include:
+        <ul>
+          <li>Manage LEDBlinky</li>
+          <li>Detect common issues</li>
+          <li>Prevent BigBox wheel from disappearing</li>
+          <li>Manage the LaunchBox tool XAracde XInput</li>
+          <li>Detect important files having no or out of date backups</li>
+          <li>and more...</li>
+        </ul>
+      </div>
+    </details>
+  </div>  
+</ng-template>

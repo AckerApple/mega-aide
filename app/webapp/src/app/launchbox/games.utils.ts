@@ -1,4 +1,4 @@
-import { AdditionalApp, AdditionalAppType, GameInsight, PlatformInsights } from "../session.provider"
+import { AdditionalApp, AdditionalAppType, GameInsight, PlatformInsights } from "../session.utils"
 
 function newTextElementOn(type: string, text: string, on: Element) {
   const element = createElement(type)
@@ -7,7 +7,7 @@ function newTextElementOn(type: string, text: string, on: Element) {
   return { text, element }
 }
 
-function createElement(tagName: string): Element {
+export function createElement(tagName: string): Element {
   const doc = new DOMParser().parseFromString(`<${tagName}></${tagName}>`, 'text/xml')
   return doc.children[0]
 }

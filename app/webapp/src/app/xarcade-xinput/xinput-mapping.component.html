@@ -193,7 +193,9 @@
     <button type="button" class="flex1 bg-calm" (click)="viewJson = !viewJson"
     >🔬view file json</button>
     
-    <a *ngIf="mapDir" routerLink="../../↩" type="button" class="flex1"
+    <a *ngIf="mapDir"
+      routerLink="../../↩"
+      type="button" class="flex1"
       [queryParams]="{path:mapDir.path, file:fileName}"
     >↩️ goto backups</a>
 

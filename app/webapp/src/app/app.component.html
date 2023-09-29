@@ -58,7 +58,7 @@
   <!--
   <div *ngIf="session.config.showWarn" [@fadeInOutUp]="1" class="margin-v pos-rel">
     <span class="pos-abs right-0 top-0" style="z-index: 1;">
-      <a (click)="session.config.showWarn = false;session.save()" class="cursor-pointer">🅧&nbsp;</a>
+      <a (click)="session.config.showWarn = false;session.saveStorage()" class="cursor-pointer">🅧&nbsp;</a>
     </span>
     
     <ng-container *ngTemplateOutlet="warnTemplate"></ng-container>
@@ -78,7 +78,9 @@
 
   <br />
   
-  <div style="min-width:70vw" class="flex-stacked">
+  <div style="min-width:85vw" class="flex-stacked"
+    [style]="routeState.current.config && routeState.current.config.data && routeState.current.config.data['style'] || {minWidth:'85vw'}"
+  >
     <div [ngClass]="routeState.current.config && routeState.current.config.data && routeState.current.config.data['wrapClass']"
       [@slideInOutLeftKids]="{value:fx.id, params:{time:'500ms'}}"
       [@absoluteKids]="{value:fx.id, params:{time:'500ms'}}"
@@ -92,11 +94,11 @@
       <fx-tracker #fx="FxTracker" [activatedRoute]="routeState.activated"></fx-tracker>      
     </div>
 
-    <div *ngIf="session.filesReadyToSave.length" [@fadeInOutUp]="1">
+    <div *ngIf="session.filesReadyToSave.length" [@fadeInOutUp]="1" class="margin-top-xs">
       <button type="button"
         class="bg-balanced width-full"
-        (click)="session.toSaveFiles = session.filesReadyToSave"
-      >💾 SAVE {{session.filesReadyToSave.length}} FILES</button>
+        (click)="session.requestToSave()"
+      >💾 SAVE {{session.filesReadyToSave.length}} FILE{{ session.filesReadyToSave.length > 1 ? 'S' : ''}}</button>
     </div>
 
     <div *ngIf="routeState.current.config?.path !== 'menu'"
@@ -109,44 +111,78 @@
     </div>
   </div>
 
-  <br /><br />
+  <br />
+  
+  <div class="text-xs">
+    <div class="pad bg-dark">
+      <a class="nowrap text-white" target="_blank"
+        onclick="reportIssueDialog.showModal()"
+      >🐞 report an issue</a>
+    </div>
+
+    <dialog id="reportIssueDialog" style="padding:0"
+      onmousedown="var r = this.getBoundingClientRect();(r.top<=event.clientY&&event.clientY<=r.top+r.height&&r.left<=event.clientX&&event.clientX<=r.left+r.width) || this.close()"
+      ondragstart="const {e,dt,t} = {t:this,e:event,dt:event.dataTransfer};const d=t.drag=t.drag||{x:0,y:0};d.initX=d.x;d.startX=event.clientX-t.offsetLeft;d.startY=event.clientY-t.offsetTop;t.ondragover=e.target.ondragover=(e)=>e.preventDefault();dt.effectAllowed='move';dt.dropEffect='move'"
+      ondrag="const {t,e,dt,d}={e:event,dt:event.dataTransfer,d:this.drag}; if(e.clientX===0) return;d.x = d.x + e.offsetX - d.startX; d.y = d.y + e.offsetY - d.startY; this.style.left = `${d.x}px`; this.style.top = `${d.y}px`;"
+      ondragend="const {t,e,d}={t:this,e:event,d:this.drag};if (d.initX === d.x) {d.x=d.x+e.offsetX-(d.startX-d.x);d.y=d.y+e.offsetY-(d.startY-d.y);this.style.transform=`translate3d(${d.x}px, ${d.y}px, 0)`};this.draggable=false"
+    >
+      <div class="bg-dark text-white" onmousedown="this.parentNode.draggable=true"
+      >🐞 Report Mega-aide Issue</div>
+      <div class="max-width-900">
+        <div class="pad">
+          <p>Are you having a software issue here? Gee gosh that's just terrible.</p>
+          <p>You can report an issue by using the link below. It will take you to GitHub, a popular place where software engineers put code. You can signup using a GMail or any common email service but you will need an account to report an issue (please do).</p>
+          <div class="text-center">
+            <a class="nowrap" target="_blank"
+              [attr.href]="session.reportIssueLink"
+              (click)="session.openAnchor($event)"
+            >🐞 report an issue</a>              
+          </div>
+        </div>
+        <div class="flex-wrap">
+          <button type="button" onclick="reportIssueDialog.close()"
+            class="flex1 radius-0 bg-dark"
+          >🅧 close</button>
+        </div>
+      </div>
+    </dialog>
+  </div>
+
+  <br />
   
   <div class="text-center text-white text-xs child-margin-xs">
     <div class="bg-black pad radius-10">
       <div>
         <div class="opacity-half">🔗 helpful links</div>
       </div>
-      <a class="text-white nowrap" target="_blank"
-        href="https://github.com/AckerApple/mega-aide/tree/main/app/dist/mega-aide"
-        (click)="openAnchor($event)"
-      >📦 This apps download page</a>
+      <div class="flex-wrap flex-center gap-2x">
+        <a class="text-white nowrap" target="_blank"
+          href="https://github.com/AckerApple/mega-aide"
+          (click)="openAnchor($event)"
+        >🐈 Github Code Base</a>
 
-      <sup class="pad-h-xs text-3x">.</sup>
-
-      <a class="text-white nowrap" target="_blank"
-        href="https://github.com/AckerApple/mega-aide"
-        (click)="openAnchor($event)"
-      >📕 Acker's problem solving docs</a>
-      
-      <sup class="pad-h-xs text-3x">.</sup>
-      
-      <a class="nowrap" href="https://extremehomearcades.com/"
-        style="color:#07e843"
-        (click)="openAnchor($event)"
-      >Extreme Home Arcades</a>
-      
-      <sup class="pad-h-xs text-3x">.</sup>
-      
-      <a class="text-white nowrap" href="https://www.facebook.com/groups/573694766593010"
-        (click)="openAnchor($event)"
-      >🏘 EHA Unite Group</a>
-      
-      <sup class="pad-h-xs text-3x">.</sup>
-
-      <a class="nowrap text-white" target="_blank"
-        [attr.href]="session.reportIssueLink"
-        (click)="session.openAnchor($event)"
-      >🐞 report issue with this app</a>
+        <!--
+        <a class="text-white nowrap" target="_blank"
+          href="https://github.com/AckerApple/mega-aide/tree/main/app/dist/mega-aide"
+          (click)="openAnchor($event)"
+        >📦 This apps download page</a>
+        --->
+  
+        <a class="text-white nowrap" target="_blank"
+          href="https://github.com/AckerApple/mega-aide"
+          (click)="openAnchor($event)"
+        >📕 Acker's problem solving docs</a>
+        
+        
+        <a class="nowrap" href="https://extremehomearcades.com/"
+          style="color:#07e843"
+          (click)="openAnchor($event)"
+        >🟩 Extreme Home Arcades</a>
+                
+        <a class="text-white nowrap" href="https://www.facebook.com/groups/573694766593010"
+          (click)="openAnchor($event)"
+        >🏘 EHA Unite Group</a>          
+      </div>
     </div>
 
     <!-- memory usage -->
@@ -183,8 +219,23 @@
 
 <div class="pos-fixed right-0 top-0 pad-xs text-xxs max-width-600" style="z-index:7">
   <div class="flex-stacked gap">
-    <div class="bg-dark radius-10 pad opacity-80" *ngFor="let item of session.tips.tips" [@fadeInOutUp]="1">
-      {{ item.message }}
+    <div *ngFor="let item of session.tips.tips"
+      class="radius-10 pad opacity-80"
+      [ngClass]="item.level === 'warn' ? 'bg-orange' : 'bg-dark'"
+      [@fadeInOutUp]="1"
+    >
+      <ng-container *ngIf="item.message.split('\n') as messages">
+        <div *ngFor="let message of messages;let mIndex = index">
+          {{ message }}
+          <br *ngIf="mIndex != messages.length - 1" />
+        </div>
+      </ng-container>
+      <div *ngIf="item.links" class="flex-wrap gap pad-top-xs">
+        <a *ngFor="let link of item.links" class=" text-white"
+          [href]="link.url"
+          [target]="link.target"
+        >{{link.label}}</a>
+      </div>
     </div>
   </div>
 </div>
@@ -197,7 +248,11 @@
 >
   <div class="flex-center flex-valign-center overflow">
     <div class="pad bg-grey radius-5">
-      <save-files [(toWrite)]="session.toSaveFiles" (saved)="session.$filesSaved.emit($event)"></save-files>
+      <save-files
+        [(toWrite)]="session.toSaveFiles"
+        (saved)="session.$filesSaved.emit($event)"
+        (canceled)="session.toSaveFiles.length=0"
+      ></save-files>
     </div>
   </div>
 </ack-modal>

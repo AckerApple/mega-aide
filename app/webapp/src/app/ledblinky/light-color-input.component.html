@@ -1,0 +1,14 @@
+<ng-container *ngIf="(light.details$ | async) as details">
+  <input type="color"
+    [ngModel]="light.cssColor$ | async"
+    (ngModelChange)="light.updateToCssColor($event);changed.emit(light)"
+    [style.background-color]="light.cssColor$ | async"
+    style="height:auto"
+  />
+  <div class="flex1">
+    <input type="number" class="width-full"
+      [(ngModel)]="details.colorDec"
+      (ngModelChange)="light.updateToColorDec(details.colorDec);changed.emit(light)"
+    />
+  </div>
+</ng-container>

@@ -1,0 +1,9 @@
+<span *ngIf="control.xml.details as details" class="flex-stacked flex1">
+  <color-inputs
+    [cssColor] = "control.cssColor$ | async"
+    [color]="details.color"
+    (colorNameChange) = "control.edited=true;control.updateToColorName($event);changed.emit(control)"
+    (modelChange) = "control.edited=true;control.updateToCssColor($event);changed.emit(control)"
+    (paste) = "control.edited=true;control.updateToColor($event);changed.emit(control)"
+  ></color-inputs>
+</span>

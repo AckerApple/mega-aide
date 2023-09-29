@@ -1,10 +1,11 @@
 import { Component } from "@angular/core"
 import { ActivatedRoute, Router } from "@angular/router"
 import { animations } from "ack-angular-fx"
-import { combineLatest, BehaviorSubject, firstValueFrom, map, Observable, debounceTime, distinctUntilChanged, delay, shareReplay, Subject, ReplaySubject } from "rxjs"
-import { GameInsight, PlatformInsights, SessionProvider } from "src/app/session.provider"
+import { combineLatest, BehaviorSubject, firstValueFrom, map, Observable, shareReplay, ReplaySubject } from "rxjs"
+import { SessionProvider } from "src/app/session.provider"
+import { GameInsight, PlatformInsights } from "src/app/session.utils"
 import { xmlDocToString } from "src/app/xml.functions"
-import { ControllerSupport } from "../LaunchBox.class"
+import { ControllerSupport } from "../ControllerSupport.interface"
 
 // deprecated
 @Component({
@@ -114,7 +115,7 @@ import { ControllerSupport } from "../LaunchBox.class"
         const game = await platform.getGameById( gameId ) as GameInsight
 
         if ( !game ) {
-          console.warn('should not get here. A <ControllerSupport> has no matching game')
+          this.session.warn('should not get here. A <ControllerSupport> has no matching game')
           continue
         }
 
@@ -128,7 +129,7 @@ import { ControllerSupport } from "../LaunchBox.class"
         platform.getGameById( gameId )
           .then(game => {
             if ( !game ) {
-              console.warn('should not get here. A <ControllerSupport> has no matching game')
+              this.session.warn('should not get here. A <ControllerSupport> has no matching game')
               sub.next( undefined )
               return
             }

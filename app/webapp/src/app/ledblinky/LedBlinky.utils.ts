@@ -1,8 +1,18 @@
 import { DmFileReader } from "ack-angular-components/directory-managers/DmFileReader"
-import { BehaviorSubject, combineLatest, firstValueFrom, from, map, mergeMap, Observable, of, shareReplay } from "rxjs"
-import { hexToRgb } from "../inputs/platform.component"
-import { AvailControlsMap } from "./LedBlinky.class"
-import { LightAndControl } from "./ledblinky-layouts.component"
+import { EMPTY, Observable, combineLatest, firstValueFrom, from, map, mergeMap, of, switchMap, take } from "rxjs"
+import { LedBlinky } from "./LedBlinky.class"
+import { ControlDefault, PlayerControl, PlayerControlDetails } from "./PlayerControl.class"
+import { LightAndControl, LightControl } from "./LightAndControl.interface"
+import { LedController } from "./LEDController.class"
+import { NewPlayer, PlayerDetails } from "./Player.class"
+import { Light, LightDetails } from "./Light.class"
+import { ControlGroup, ControlGroupDetails, NewControlGroup } from "./ControlGroup.class"
+import { Emulator, EmulatorDetails, getControlsByElement } from "./Emulator.class"
+import { DirectoryManager } from "ack-angular-components/directory-managers/DirectoryManagers"
+import { Port } from "./LedPort.class"
+import { ControlGroupings } from "./ControlGroupings"
+import { Control } from "../platforms"
+import { elmAttributesToObject, getElementsByTagName } from "./element.utils"
 
 /** 
  * Example: "P3START=189,117,65280,17" is "name=x,y,colorDec,diameter"
@@ -16,24 +26,17 @@ export async function getLightConfigByLayoutFile(
   const layout = ini['Layout']
 
   const lights = Object.entries(layout).reduce((all, now) => {
-    const details = now[1].replace(/(^,|,$)/g,'').split(',')
-    const colorDec = Number(details[2])
-    const details$ = of({
+    const detailsArray = now[1].replace(/(^,|,$)/g,'').split(',')
+    const colorDec = Number(detailsArray[2])
+    const details: LightDetails = {
       name: now[0],
-      x: Number(details[0]),
-      y: Number(details[1]),
+      x: Number(detailsArray[0]),
+      y: Number(detailsArray[1]),
       colorDec,
-      diameter: Number(details[3]),
-    }).pipe( shareReplay(1) )
-
-    const colorDec$ = new BehaviorSubject( colorDec )
-    const result: Light = {
-      colorDec$,
-      cssColor$: colorDec$.pipe(
-        map(colorDec => intToHex(colorDec))
-      ),
-      details$,
+      diameter: Number(detailsArray[3]),
     }
+
+    const result: Light = new Light(details)
     
     all.push(result)
     
@@ -80,27 +83,6 @@ export function iniToObject(
   return configObject
 }
 
-export interface LightDetails {
-  name: string // ie: "P1START" or "P1COIN" or "P1B1"
-  x: number
-  y: number
-  colorDec: number
-  diameter: number
-}
-
-export interface Light {
-  details$: Observable<LightDetails>
-  
-  // computed
-  // cssColor$: BehaviorSubject<string>
-  colorDec$: BehaviorSubject<number>
-  cssColor$: Observable<string>
-  // colorHex$: Observable<string>
-
-  startDragX?: number
-  startDragY?: number
-}
-
 interface LightsLayoutConfig {
   LEDLabelFontSize: string
   // ledLabelFontSize: number
@@ -116,8 +98,12 @@ interface LightsLayoutConfig {
 
 export interface LightsControlConfig extends LightsConfig {
   settings: LightsLayoutConfig // was "layout"
-  lightControls: LightAndControl[]
+  lightControls: LightControl[]
   file: DmFileReader
+}
+
+export interface LightsAndControlConfig extends LightsControlConfig {
+  lightControls: LightAndControl[]
 }
 
 export interface LightsConfig {
@@ -143,147 +129,23 @@ export function getFileNameByPath(path: string) {
   return path.replace(/\\/g,'/').replace(/(.+LEDBlinky\/)/g,'')
 }
 
-export interface PlayerDetails {
-  number: string
-  [index: string]: string | null
-}
-
-/* <controlGroup> */
-export interface ControlGroupDetails {
-  groupName: string
-  voice?: string
-  
-  defaultActive?: string | null
-  defaultInactive?: string | null
-  numPlayers?: string // ="1"
-  alternating?: string // ="0"
-  jukebox?: string // ="0"
-  ledwizGlobalPulse?: string // ="3"
-  
-  [index: string]: string | null | undefined
-}
-
-export interface PlayerControlDetails {
-  name: string // example: "CONTROL_TRACKBALL"
-  voice: string // example: "Trackball"
-  color: string
-  
-  inputCodes?: string
-  allowConfigPlayerNum?: string | null // "0" | "1" | "2" ... "8"
-  
-  [index: string]: string | null | undefined
-}
-
-/*interface Control {
-  element: Element
-  details: ControlDetails
-  inputCodes: string[]
-}*/
-
-export interface PlayerControl {
-  element: Element
-  
-  details$: Observable<PlayerControlDetails>
-  inputCodes$: Observable<string[]>
-  
-  edit?: boolean
-  edited?: boolean
-
-  // computed data points
-  layoutLabel$: Observable<string | undefined> // runtime conversion of player.controls[n].inputCodes into LEDBlinkyInputMap.xml ledControllers[x].ports[x].label
-  cssColor$: Observable<string>
-
-  updateToCssColor$: BehaviorSubject<string>
-  
-  delete: () => void
-  detailsChanged$: BehaviorSubject<PlayerControlDetails | undefined>
-}
-
-export interface NewControlGroup {
-  details: ControlGroupDetails
-  element?: Element
-  players: NewPlayer[]
-  
-  defaultActiveCss$: Observable<string>
-  defaultInactiveCss$: Observable<string>
-}
-
-export interface NewPlayer {
-  details: PlayerDetails
-  element?: Element
-  controls: PlayerControl[]
-
-  show?: boolean
-}
-
-export interface Player extends NewPlayer {
-  element: Element
-}
-
-export interface ControlGroup extends NewControlGroup {
-  element: Element
-  players: Player[]
-}
-
-export interface NewControlGroupings {
-  groupName: string
-  voice?: string
-  controlGroups: NewControlGroup[]
-}
-export interface ControlGroupings extends NewControlGroupings {
-  controlGroups: ControlGroup[]
-}
-
-export function elmAttributesToObject(element: Element) {
-  return element.getAttributeNames()
-    .reduce((all, name) => {
-      all[name] = element.getAttribute(name)
-      return all
-    }, {} as Record<string, string | null>)
-}
-
-export interface EmulatorDetails {
-  emuname: string
-  emuDesc?: string
-  [index: string]: string | null | undefined
-}
-
-export interface NewEmulator {
-  details: EmulatorDetails
-  controlGroups: NewControlGroupings[] // ControlGroupings
-  element?: Element
-  viewJson?: boolean
-  viewXml?: boolean
-}
-
-export interface Emulator extends NewEmulator {
-  element: Element
-  controlGroups: ControlGroupings[]// ControlGroupings[] // ControlGroupings[]
-}
-
-export function getElementsByTagName(
-  elm: Element | Document,
-  tagName: string
-): Element[] {
-  return new Array( ...elm.getElementsByTagName(tagName) as any )
-}
-
 interface ControlDefaultDetails {
   groupName: string
   [index: string]: string | null
 }
 
-export interface ControlDefault {
+// represents <controlDefaults>
+export interface ControlDefaults {
   element: Element
   details: ControlDefaultDetails,
-  controls: PlayerControl[] // Control[]
+  controls: ControlDefault[] // <control>[]
 }
 
 export interface LedBlinkyControls {
   file: DmFileReader
   inputsMap: InputsMap
   xml: Document
-  controlDefaults: ControlDefault[]
+  controlDefaults: ControlDefaults[]
   emulators: Emulator[]
   availMap?: AvailControlsMap
 }
@@ -298,10 +160,13 @@ export interface UniqueInputCode {
   labels: string[]  // ex: ['P3START']
 }
 
+// Goes with LEDBlinkyInputMap.xml
 export interface InputsMap {
   labels: UniqueInputLabel[] // SPINNER, JOYSTICK1, P1B1
   inputCodes: UniqueInputCode[]
   ledControllers: LedController[]
+  file: DmFileReader
+  xml: Document
 }
 
 export interface PortDetails {
@@ -312,11 +177,6 @@ export interface PortDetails {
   [index: string]: string | null
 }
 
-export interface Port {
-  element: Element
-  details: PortDetails
-}
-
 export interface LedControllerDetails {
   name: string
   id: string
@@ -324,13 +184,7 @@ export interface LedControllerDetails {
   [index: string] : string | null
 }
 
-export interface LedController {
-  details: LedControllerDetails
-  element: Element
-  ports: Port[]
-}
-
-function ledColorNameToCss(
+export function ledColorNameToCss(
   name: string,
   colorRgbConfig?: IniNameValuePairs,
   curve?: number
@@ -344,11 +198,16 @@ function ledColorNameToCss(
   return name
 }
 
-function ledNumberedColorToCss(
+export function ledNumberedColorToCss(
   colorNums: string,
   curve = .6
 ) {
   const colorPos = colorNums.split(',').map(x => Number(x)) as [number, number, number]
+
+  if ( colorPos.length > 3 ) {
+    colorPos.length = 3 // defaultActive is sometimes 48,48,48,48
+  }
+  
   const end = '#' + colorPos.map(num => {
     const percent = num/48
     const add = curve * (num /48)
@@ -361,47 +220,20 @@ function ledNumberedColorToCss(
 
 function mapEmulatorElement(
   element: Element,
-  inputsMap: InputsMap,
-  controlDefaults: ControlDefault[],
-  colorRgbConfig?: IniNameValuePairs,
-  curve$?: Observable<number>,
+  controlDefaults: ControlDefaults[],
+  ledBlinky: LedBlinky,
+  // colorRgbConfig?: IniNameValuePairs,
 ): Emulator {
   const emuDetails = elmAttributesToObject(element) as EmulatorDetails
-  const controlGroups: Element[] = getElementsByTagName(element, 'controlGroup')
 
   // see if LEDBlinky controls has a default listing for an entire emulator
   const controlDefault = getEmulatorControlDefaults(emuDetails, controlDefaults)
-  
-  // loop the ROMS
-  const mapped: ControlGroup[] = controlGroups.map(controlGroup => {
-    const playerElements: Element[] = getElementsByTagName(controlGroup, 'player')
-    const romDetails = elmAttributesToObject(controlGroup) as ControlGroupDetails
-    const config =  {inputsMap, controlDefault, colorRgbConfig}
-    const players = playerElements.map(element =>
-      mapPlayerElement(
-        element, config, curve$
-      )
-    )
 
-    // sort by player number
-    players.sort((a,b)=>String(a.details.number||'').toLowerCase()>String(b.details.number||'').toLowerCase()?1:-1)
-
-    curve$ = curve$ || new BehaviorSubject(0)
-
-    // load players (LEDBlinkyControls.xml <controlGroup> <player number> <control read-the-attrs>)
-    const group: ControlGroup = {
-      // TODO, read LEDBlinkyMinimizedMame.xml and attempt to convert rom name into mame title (maybe just read mame directly? Maybe too intense of a file?)
-      element: controlGroup,
-      details: romDetails,
-      players,
-      ...getRomObservables(romDetails, curve$, colorRgbConfig)
-    }
-
-    return group
-  })
+  const emulator: Emulator = new Emulator(ledBlinky, emuDetails, element)
+  const mapped: ControlGroup[] = emulator.loadControlGroups(controlDefault)
 
   const groupObject = mapped.reduce((all, now) => {
-    const groupName = now.details['groupName'] as string
+    const groupName = now.xml.details['groupName'] as string
     all[ groupName ] = all[ groupName ] || []
     all[ groupName ].push(now)
     return all
@@ -410,40 +242,35 @@ function mapEmulatorElement(
   const controlGroupsMap: ControlGroupings[] = Object.entries(groupObject).map(([groupName, controlGroups]) => ({
     groupName,
     controlGroups,
-    voice: controlGroups[0]?.details.voice
+    voice: controlGroups[0]?.xml.details.voice
   }))
 
-  const result: Emulator = {
-    element, details: emuDetails,
-    controlGroups: controlGroupsMap,
-  }
+  emulator.controlGroups.push(...controlGroupsMap)
   
-  return result
+  return emulator
 }
 
 function getEmulatorControlDefaults(
   emulator: EmulatorDetails,
-  controlDefaults: ControlDefault[],
-): ControlDefault | undefined {
+  controlDefaults: ControlDefaults[],
+): ControlDefaults | undefined {
   const findGroupName = emulator.emuname
   return controlDefaults.find(x => x.details.groupName === findGroupName)
 }
 
 export function getEmulatorsByControl(
   xml: Document,
-  inputsMap: InputsMap,
-  controlDefaults: ControlDefault[],
-  colorRgbConfig?: IniNameValuePairs,
-  curve$?: Observable<number> // curve?: number
+  controlDefaults: ControlDefaults[],
+  LedBlinky: LedBlinky,
 ): Emulator[] {
   const emulators = getElementsByTagName(xml, 'emulator')
   const mappedEmulators = emulators.map(emulator => {
     return mapEmulatorElement(
-      emulator, inputsMap, controlDefaults, colorRgbConfig, curve$
+      emulator, controlDefaults, LedBlinky,
     )
   })
 
-  mappedEmulators.sort((a,b)=>String(a.details.emuname||'').toLowerCase()>String(b.details.emuname||'').toLowerCase()?1:-1)
+  mappedEmulators.sort((a,b)=>String(a.xml.details.emuname||'').toLowerCase()>String(b.xml.details.emuname||'').toLowerCase()?1:-1)
 
   return mappedEmulators
 }
@@ -453,24 +280,22 @@ export function getEmulatorsByControl(
 */
 export function getControlDefaultsByControlXml(
   xml: Document,
-  inputsMap: InputsMap,
-  colorRgbConfig?: IniNameValuePairs,
-  curve$?: Observable<number>,
-): ControlDefault[] {
+  ledBlinky: LedBlinky,
+): ControlDefaults[] {
   return getElementsByTagName(xml,'controlDefaults').map(controlDefault => {
-    const controlElements = getElementsByTagName(controlDefault, 'control')
-    const controls: PlayerControl[] = []
+    const emulatorDetails = elmAttributesToObject(controlDefault) as EmulatorDetails
+    const emu = new Emulator(ledBlinky, emulatorDetails, controlDefault)
     
-    controls.push(
-      ...controlElements.map(element =>
-        getControlByElement(element, {colorRgbConfig, curve$, controls, inputsMap})
-      )
+    const controlGroup = new ControlGroup(
+      emu,
+      [],
+      ledBlinky
     )
-    
-    const result: ControlDefault = {
-      element: controlDefault,
-      details: elmAttributesToObject(controlDefault) as ControlDefaultDetails,
-      controls
+    const controls = getControlsByElement(controlDefault, controlGroup, ledBlinky) as ControlDefault[]
+    const details = elmAttributesToObject(controlDefault) as ControlDefaultDetails
+
+    const result: ControlDefaults = {
+      element: controlDefault, details, controls
     }
     return result
   })
@@ -478,48 +303,49 @@ export function getControlDefaultsByControlXml(
 
 export function mapPlayerElement(
   element: Element,
-  {controlDefault, inputsMap, colorRgbConfig}: {
-    controlDefault?: ControlDefault
-    inputsMap?: InputsMap
-    colorRgbConfig?: IniNameValuePairs
+  { controlGroup, controlDefault, ledBlinky, player, playerIndex }: {
+    controlDefault?: ControlDefaults
+    ledBlinky: LedBlinky,
+    player: NewPlayer,
+    playerIndex: number,
+    controlGroup: NewControlGroup,
   },
-  curve$?: Observable<number>
-) {
+): NewPlayer {
   const controls: PlayerControl[] = []
   
   const results = getElementsByTagName(element, 'control').map((element: Element) => {
-  const control = getControlByElement(element, {colorRgbConfig, curve$, controls, inputsMap})
+    const control = getControlByElement(element, {
+      controls, ledblinky: ledBlinky, player
+    }) as PlayerControl
 
     // find if we have a control default to add additional inputCodes
+    // 7-27-23: not sure if this code has benefit
     if ( controlDefault ) {
-      control.inputCodes$ = combineLatest([
-        control.inputCodes$,
-        control.details$,
-      ]).pipe(
-        mergeMap(([codes, controlDetails]) => {
-          return from(new Promise<string[]>(async (res, rej) => {
-            
-            const promises = controlDefault.controls.map(async defaultControl => {
-              const defaultDetails = await firstValueFrom(defaultControl.details$)
-              const matchFound = defaultDetails.name === controlDetails.name
-              if ( !matchFound ) {
-                return null
-              }
-              const defaultInputCodes = await firstValueFrom(defaultControl.inputCodes$)
-              return [ ...codes, ...defaultInputCodes ]
-            }) 
-            
-            const result = (await Promise.all(promises)).find(x => x)
-            
-            res(result ?? codes)
-          }))
+      const oldFunc = control.getInputCodes
+      control.getInputCodes = () => {         
+        const codes = oldFunc.call(control)
+        const mapCodes: string[][] = controlDefault.controls.map((defaultControl: ControlDefault) => {
+          const defaultDetails = defaultControl.xml.details
+          const matchFound = defaultDetails.name === control.xml.details.name
+          if ( !matchFound ) {
+            return []
+          }
+
+          const defaultInputCodes = defaultControl.getInputCodes()
+          return [ ...codes, ...defaultInputCodes ]
         })
-      )
+          
+        const result = mapCodes.find(x => x)
+        
+        return result ?? codes
+      }
     }
   
     // Do we have inputCode to match && did LEDBlinkyInputMap.xml exist
-    control.layoutLabel$ = control.inputCodes$.pipe(
-      map(inputCodes => getLabelByInputCodes(inputsMap, inputCodes))
+    control.layoutLabel$ = combineLatest([
+      ledBlinky.inputsMap$,
+    ]).pipe(
+      map(([inputsMap]) => getLabelByInputCodes(inputsMap, control.getInputCodes()))
     )
 
     return control
@@ -527,16 +353,18 @@ export function mapPlayerElement(
 
   controls.push(...results)
 
+  const details = elmAttributesToObject(element) as PlayerDetails
+  player.playerIndex = playerIndex
+  player.controlGroup = controlGroup
+  player.xml.element = element
+  player.xml.addDetails(details)
+  player.controls = controls
 
-  return {
-    element,
-    details: elmAttributesToObject(element) as PlayerDetails,
-    controls
-  }
+  return player
 }
 
 /** Typically used to figure out which layout button belongs to which game mapping */
-function getLabelByInputCodes(
+export function getLabelByInputCodes(
   inputsMap: InputsMap | undefined,
   inputCodes: string[]
 ): string | undefined {
@@ -565,6 +393,10 @@ export function castControlDetailsToCssColor(
   colorRgbConfig?: IniNameValuePairs,
   curve?: number,
 ) {
+  if ( !details.color ) {
+    return ''
+  }
+  
   return castColorDetailsToCssColor(details.color, colorRgbConfig, curve)
 }
 
@@ -583,108 +415,397 @@ export function castColorDetailsToCssColor(
 
 export function getControlByElement(
   element: Element,
-  {inputsMap, colorRgbConfig, details, curve$, controls}: {
-    inputsMap?: InputsMap,
-    colorRgbConfig?: IniNameValuePairs,
+  {
+    details, controls, ledblinky, player,
+  }: {
+    controls: (PlayerControl | ControlDefault)[],
     details?: PlayerControlDetails,
-    curve$?: Observable<number>,
-    controls: PlayerControl[],
+    ledblinky: LedBlinky,
+    player?: NewPlayer
   },
-): PlayerControl {
-  const updateToCssColor$ = new BehaviorSubject<string>('')
-
-  const detailsChanged$ = new BehaviorSubject(details)
-  const details$ = combineLatest([
-    new Observable<PlayerControlDetails>(subs => {
-      subs.next(details || elmAttributesToObject(element) as PlayerControlDetails)
-      subs.complete()
-    }),
-    updateToCssColor$,
-    detailsChanged$,
-  ])
-  .pipe(
-    map(([details, cssColor]) => {
-      if ( cssColor ) {
-        const noHashValue = cssColor.replace('#','')
-        details.color = hexToRgb(noHashValue).map(rgbNum).join(',')
-      }    
-
-      //console.log('((((details))))', details)
-      return details
-    }),
-    shareReplay(1) // ensure changes made to details are shared
-  )
-    
-  curve$ = curve$ || new BehaviorSubject(.6)
-  const cssColor$ = combineLatest([details$, curve$]).pipe(
-    map(([details, curve]) => castControlDetailsToCssColor(
-      details, colorRgbConfig, curve
-    ))
-  )
-
-  const inputCodes$ = details$.pipe(
-    map(details => details.inputCodes?.replace(/(^\||\|$)/g,'').split('|') || []),
-    shareReplay(1),
-  )
-  
-  const control: PlayerControl = {
-    element,
-    details$,
-    inputCodes$,
-    cssColor$,
-    updateToCssColor$,
-    detailsChanged$,
-    delete: () => {
-      const deleteIndex = controls.findIndex(iCon => iCon === control)
-      controls.splice(deleteIndex,1)
-    },
-    layoutLabel$: inputCodes$.pipe(
-      map(inputCodes => {
-        return getLabelByInputCodes(inputsMap, inputCodes)
-      })
-    ),
-  }
-  
+): PlayerControl | ControlDefault {  
+  details = details || elmAttributesToObject(element) as unknown as PlayerControlDetails
+  const control = player ? new PlayerControl(ledblinky, controls as PlayerControl[], player) : new ControlDefault(ledblinky, controls as ControlDefault[])
+  control.xml.element = element
+  control.xml.addDetails(details)
   return control
 }
 
-function rgbNum(x: number) {
+export function rgbNum(x: number) {
   return Math.floor(48 * (Math.floor((x/255)*100) / 100))
 }
 
 
-export function getRomObservables(
-  romDetails: ControlGroupDetails,
-  curve$: Observable<number>,
-  colorRgbConfig?: IniNameValuePairs,
-) {
-  return  {
-    defaultActiveCss$: curve$.pipe(
-      map(curve => {
-        if ( !romDetails.defaultActive ) {
-          return ''
-        }
+export async function marryPlayerControlsToLights(
+  player: NewPlayer,
+  lightConfig: LightsConfig,
+  ledBlinky: LedBlinky,
+): Promise<LightAndControl[]> {  
+  // loop all lights and remap the colors
+  const proms = lightConfig.lights.map(
+    mapLightToPlayer(player, ledBlinky)
+  )
+  const lightControls: LightAndControl[] = (
+    await Promise.all(proms)
+  ).filter(x => x) as LightAndControl[]
+    
+  return lightControls
+}
 
-        const isNumbered = romDetails.defaultActive.includes(',')
-        if ( isNumbered ) {
-          return ledNumberedColorToCss(romDetails.defaultActive, curve)
-        }
-        
-        return ledColorNameToCss(romDetails.defaultActive, colorRgbConfig)
+function mapLightToPlayer(
+  player: NewPlayer,
+  ledBlinky: LedBlinky
+): (value: Light, index: number, array: Light[]) => Promise<LightAndControl | undefined> {
+  return async (light) => {
+    let clone: Light = {...light} as any // new Light({...light.details})
+
+    // light overrides
+    clone.colorDec$.next(0) // ensure every light starts black
+
+
+    // give different instructions on how to get color
+    clone.cssColor$ = clone.colorDec$.pipe(
+      map(colorDec => intToHex(colorDec))
+    )
+
+    // give different instructions on how to get details with control included
+    clone.details$ = combineLatest([
+      light.details$,
+      clone.colorDec$,
+    ]).pipe(
+      map(([details, colorDec]) => {
+        const newDetails: LightDetails = { ...details, colorDec }
+        return newDetails
       })
-    ),
+    )
 
-    defaultInactiveCss$: curve$.pipe(
-      map(curve => {
-        if ( !romDetails.defaultInactive ) {
-          return ''
-        }
+    const lightAndControl = await remapPlayerControlsToLight(
+      player,
+      //romControl,
+      clone,
+      ledBlinky
+    )
 
-        const color = romDetails.defaultInactive
-        const isNumbered = romDetails.defaultInactive.includes(',')
-        const cssColor = isNumbered ? ledNumberedColorToCss(romDetails.defaultInactive, curve) : ledColorNameToCss(color, colorRgbConfig)
-        return cssColor
-      })
-    ),
+    return lightAndControl
   }
+}
+
+/** Primary function to connect which layout light belongs to which game light config
+ * - CAUTION: When no match, creates default
+*/
+async function remapPlayerControlsToLight(
+  player: NewPlayer,
+  light: Light,
+  ledBlinky: LedBlinky, // curve$: Observable<number>
+): Promise<LightAndControl | undefined> {  
+  let control: PlayerControl | undefined
+  const iControls = player.controls
+  const lightDetails = await firstValueFrom(light.details$)
+
+  const proms = iControls.map(async iControl => {
+    const colorDec = lightDetails.colorDec || 0
+    // reset all lights to blank
+    light.colorDec$.next(colorDec) // resetting to black
+    
+    // default to change-able color
+    light.cssColor$ = combineLatest([
+      light.colorDec$,
+      ledBlinky.curve$
+    ]).pipe(
+      map(([colorDec, curve]) => castColorDetailsToCssColor(
+        intToHex(colorDec), ledBlinky.colors, curve
+      ))
+    )
+
+    // see if we match remapping
+    const layoutLabel = await firstValueFrom(iControl.layoutLabel$)
+
+    // ✅ MATCHED! compare getLabelByInputCodes(iControl.inputCodes$) === lightDetails.name
+    if (layoutLabel === lightDetails.name ) {
+      control = iControl
+    
+      // matches need color controlled by game control layout
+      light.cssColor$ = ledBlinky.curve$.pipe(
+        map((curve) => castControlDetailsToCssColor(
+          iControl.xml.details, // details.color is what is used
+          ledBlinky.colors,
+          curve
+        ))
+      )
+    }
+  })
+
+  await Promise.all(proms)
+
+  // NOT FOUND 🤷
+  if ( !control ) {
+    return // could not be matched
+  }
+
+  return new LightAndControl(light, control, ledBlinky, player)
+}
+
+
+export interface ConfigWiz {
+  [name: string]: IniNameValuePairs;
+}
+
+export interface AvailControlsMap {
+  [playerIndex: string]: {
+    name: string;
+    inputCode: string;
+  }[];
+}
+
+export async function getAvailControlsMap(
+  inputsMap: InputsMap,
+  controlDefaults: ControlDefaults
+) {
+  const uniqueNames: {
+    [player: string]: {
+      [name: string]: string[];
+    };
+  } = {};
+
+  const promises = controlDefaults.controls.map(async (x: ControlDefault) => {
+    const details = x.xml.details;
+    const name = details.name;
+    const inputCodes = x.getInputCodes();
+
+    if (!inputCodes || name.charAt(0) === '_') {
+      return;
+    }
+
+    const playerIndex = details.allowConfigPlayerNum;
+    if (!playerIndex) {
+      return;
+    }
+
+    const uniquePlayer = (uniqueNames[playerIndex] =
+      uniqueNames[playerIndex] || {});
+    const keyCodes = (uniquePlayer[name] = uniquePlayer[name] || []);
+    const newCodes = inputCodes.filter((x: string) => !keyCodes.includes(x));
+    keyCodes.push(...newCodes);
+  });
+
+  await Promise.all(promises);
+
+  const all: AvailControlsMap = {};
+
+  Object.entries(uniqueNames).forEach(([playerIndex, controls]) => {
+    all[playerIndex] = [];
+    Object.entries(controls).forEach(([name, inputCodes]) => {
+      const isNameMatch =
+        name.slice(0, 2) === 'P' + playerIndex ||
+        name.charAt(name.length - 1) === playerIndex;
+
+      let found: UniqueInputCode | undefined = inputsMap.inputCodes.find(
+        (x) => {
+          const isPlayerMatch = x.labels.find(
+            (label) =>
+              label.slice(0, 2) === 'P' + playerIndex ||
+              label === 'JOYSTICK' + playerIndex
+          );
+
+          // const codeMatch = x.inputCode && inputCodes.find(code => code === x.inputCode)
+
+          if (isPlayerMatch && isNameMatch) {
+            return x;
+          }
+
+          const isCommon = playerIndex === '0'; // && !isPlayerMatch
+          if (isCommon) {
+            return x;
+          }
+
+          return;
+        }
+      );
+
+      if (!found) {
+        return;
+      }
+
+      const match = inputsMap.inputCodes.find(
+        (code) => code.inputCode && inputCodes.includes(code.inputCode)
+      );
+      let inputCode = '';
+      if (match) {
+        found = match;
+        inputCode = found.inputCode;
+      }
+
+      all[playerIndex].push({ name, inputCode: inputCode });
+    });
+  });
+
+  return all;
+}
+
+export function mapPortElm(element: Element) {
+  const details = elmAttributesToObject(element) as PortDetails;
+  return new Port(element, details)
+}
+
+export function registerPorts(
+  port: Port,
+  labels: UniqueInputLabel[],
+  inputCodes: UniqueInputCode[]
+) {
+  let labelIndex = labels.findIndex((x) => x.label === port.details.label);
+  if (labelIndex < 0) {
+    labels.push({ label: port.details.label, inputCodes: [] });
+    labelIndex = labels.length - 1;
+  }
+
+  if (!labels[labelIndex].inputCodes.includes(port.details.inputCodes)) {
+    labels[labelIndex].inputCodes.push(port.details.inputCodes);
+  }
+
+  let codeIndex = inputCodes.findIndex(
+    (x) => x.inputCode === port.details.inputCodes
+  );
+  if (codeIndex < 0) {
+    inputCodes.push({ inputCode: port.details.inputCodes, labels: [] });
+    codeIndex = inputCodes.length - 1;
+  }
+
+  if (!inputCodes[codeIndex].labels.includes(port.details.label)) {
+    inputCodes[codeIndex].labels.push(port.details.label);
+  }
+}
+
+export function fileTryLoadingPipes(
+  file: string,
+  directory$: Observable<DirectoryManager>
+) {
+  return directory$.pipe(
+    mergeMap((dir) => {
+      console.debug(`💾 Loading file ${file}...`)
+      return from(loadFileByDir(file, dir))
+    }),
+    switchMap((result) => {
+      if (!result.file) {
+        const directory = result.dir;
+        console.warn(`cannot find file ${directory.path} ${file}`);
+        return EMPTY; // cancel the pipe
+      }
+
+      console.debug(`💾 Loaded file object ${file}`)
+
+      return of(result.file);
+    }),
+    // take(1), // ensure Observable closes???
+  )
+}
+
+async function loadFileByDir(fileName: string, dir: DirectoryManager) {
+  const file = await dir.findFileByPath(fileName);
+  return { dir, file };
+}
+
+
+export function getNameAveragesByControls$(
+  controls: PlayerControl[],
+  inputCode: string
+) {
+  const all = {} as { [name: string]: number };
+  
+  return from(controls).pipe(
+    mergeMap((control: PlayerControl, index) => 
+      of(control.getInputCodes().includes(inputCode) ? controls[index].xml.details : null)
+    ),
+    map(details => {
+      if ( !details ) {
+        return null
+      }
+      
+      all[details.name] = all[details.name] || 0
+      all[details.name] = all[details.name] + 1
+      return null
+    }),
+    take(controls.length),
+    map(() => all),
+  )
+}
+
+export function addMissingControlsToLightControls(
+  player: NewPlayer,
+  lightAndControls: LightAndControl[],
+  ledBlinky: LedBlinky
+) {
+  player.controls.forEach((allControl, index) => {
+    const found = lightAndControls.find(lightControl => lightControl.control.xml.details.name === allControl.xml.details.name)
+    
+    if ( found ) {
+      return
+    }
+    
+    const lightDetails: LightDetails = {
+      name: 'N/A',
+      x: 20 + (player.playerIndex * index),
+      y: 20 + (player.playerIndex * index),
+      colorDec: 0,
+      diameter: 10,
+    }
+
+    const light = new Light(lightDetails)
+    
+    // provide color override
+    light.cssColor$ = ledBlinky.curve$.pipe(
+      map((curve) => castControlDetailsToCssColor(
+        allControl.xml.details, // details.color is what is used
+        ledBlinky.colors,
+        curve
+      ))
+    )
+
+    lightAndControls.push(
+      new LightAndControl(light, allControl, ledBlinky, player)
+    )
+  })
+}
+
+export async function getMissingLights(
+  lights: Light[],
+  inputsMap: InputsMap
+): Promise<Light[]> {
+  // return lights.filter(light => !inputsMap.labels.find(name => name.label === light.name))
+  const promises = lights.map(light => firstValueFrom(light.details$))
+  
+  const details = await Promise.all(promises)
+  
+  const missing = inputsMap.labels.filter(
+    label => label.label && !details.find(light => light.name === label.label)
+  )
+
+  return missing.map(miss => {
+    const details: LightDetails = {
+      name: miss.label,
+      x: 0,
+      y: 0,
+      colorDec: 0,
+      diameter: 10,
+    }
+    const light: Light = new Light(details)
+
+    return light
+  })
+}
+
+export interface LightDrag {
+  light: Light
+  startOffsetY: number
+  startOffsetX: number
+  startX: number
+  startY: number
+}
+
+export function getControlGamepadCode(control: Control) {
+  const button = control.gamepadButton
+  if ( button != undefined ) {
+    return button.toString()
+  }
+  
+  return `${control.gamepadAxis||''}${control.gamepadDirection||''}`
 }

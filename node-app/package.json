@@ -1,0 +1,35 @@
+{
+  "name": "mega-aide-node-app",
+  "version": "1.0.0",
+  "description": "Executable to launch app",
+  "main": "index.cjs",
+  "type": "module",
+  "bin": "index.cjs",
+  "scripts": {
+    "start": "node index.cjs",
+    "build": "npm run build:common && npm run build:cjs && npm run build:pkg",
+    "build:pkg": "pkg --compress GZip .",
+    "build:common": "esbuild ./index.js --bundle --platform=node --outfile=./index.cjs --define:import.meta.url=__dirname",
+    "build:cjs": "node fix-cjs.js"
+  },
+  "author": "Acker Apple",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "open": "^9.1.0"
+  },
+  "pkg": {
+    "assets": [
+      "public/**/*"
+    ],
+    "targets": [
+      "node18-linux-x64",
+      "node18-macos-x64",
+      "node14-macos-x64"
+    ],
+    "outputPath": "dist"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.3"
+  }
+}

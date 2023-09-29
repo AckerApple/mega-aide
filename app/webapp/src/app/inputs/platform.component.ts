@@ -3,23 +3,11 @@ import { animations } from 'ack-angular-fx'
 import { Control, PlatformMap } from '../platforms'
 import { SessionProvider } from '../session.provider'
 import { LastPresses } from './LastPresses.provider'
-import { LastDrag } from './platform-control-map.component'
 import { ActivatedRoute, Router } from '@angular/router'
 import { LastButtonsProvider } from './LastButtons.provider'
 
 import * as controlMap from './control-map.json'
-
-export interface PlayerMap {
-  index: number
-  showMap?: boolean
-  lastDrag?: LastDrag
-  inFx?: number | boolean
-  viewPlayerMap?: boolean
-}
-
-export interface PlayersMap {
-  [playerIndex: number]: PlayerMap
-}
+import { LastDrag, PlayerMap, PlayersMap } from './platform.utils'
 
 @Component({
   templateUrl: './platform.component.html',
@@ -330,13 +318,4 @@ export class PlatformComponent {
     event.preventDefault()
     event.stopPropagation()
   }
-}
-
-export function hexToRgb(hex: string): [number, number, number] {
-  var result: any = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  return [
-    parseInt(result[1], 16),
-    parseInt(result[2], 16),
-    parseInt(result[3], 16)
-  ]
 }

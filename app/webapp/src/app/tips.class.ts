@@ -1,7 +1,13 @@
 /** v0.0.1 */
 
 export interface TipOptions {
-  showFor?: number
+  level?: 'warn',
+  showFor?: number,
+  links?: {
+    label: string
+    url: string
+    target?: '_blank'
+  }[]
 }
 
 export interface Tip extends TipOptions {
@@ -26,7 +32,7 @@ export class Tips {
     showFor: 5000,
     options: TipOptions = {},
   ): Promise<Tip> {
-    return this.displayTip(msg, {...options, showFor})
+    return this.displayTip(msg, {showFor, ...options})
   }
 
   checkToClose() {
@@ -48,6 +54,11 @@ export class Tips {
     message: string,
     options: TipOptions = {},
   ): Tip {
+    const duplicate = this.tips.find(tip => tip.message === message)
+    if ( duplicate ) {
+      return duplicate
+    }
+
     const remove = () => {
       const index = this.tips.findIndex(x => x === tip)
       this.tips.splice(index, 1)

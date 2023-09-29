@@ -3,6 +3,7 @@ import { Control, PlatformMap } from '../platforms'
 import { LastButtons } from './LastButtons.provider'
 import { PressedObject } from './LastPresses.provider'
 import { LabelType } from './platform-filters.directive'
+import { LastDrag, Remap } from './platform.utils'
 
 @Component({
   selector: 'platform-control-map',
@@ -123,17 +124,4 @@ export class PlatformControlMapComponent {
       startOffsetX:$event.offsetX
     })
   }
-}
-
-export class LastDrag {
-  // event!: DragEvent
-  control!: Control
-  startOffsetY!: number
-  startOffsetX!: number
-}
-
-export interface Remap {
-  keyName: string // instead use this of default string
-  keyCode: number // instead use this default number
-  label: string // match by name here 'Start' === 'start'
 }

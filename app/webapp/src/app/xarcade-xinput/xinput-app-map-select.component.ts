@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output, SimpleChanges } from "@angular/core"
 import { firstValueFrom } from "rxjs"
-import { addXInputToGame } from "../launchbox/games.utils"
-import { AdditionalApp, GameInsight, PlatformInsights } from "../session.provider"
+import { addXInputToGame, createElement } from "../launchbox/games.utils"
+import { AdditionalApp, GameInsight, PlatformInsights } from "../session.utils"
 import { XArcadeXInputProvider } from "./XArcadeXInput.provider"
 
 @Component({
@@ -24,7 +24,6 @@ import { XArcadeXInputProvider } from "./XArcadeXInput.provider"
 
   ngOnChanges( _changes: SimpleChanges ){
     this.mapping = this.model ? getCommandMapByAdditionalApp(this.model) : ''
-    console.log('this.mapping', this.mapping)
   }
 
   async applyGameCommandMapping(currentValue: string) {
@@ -54,7 +53,7 @@ export function applyGameCommandMapping(
   let commandElement = app.commandLineElement
 
   if ( !commandElement ) {
-    commandElement = app.commandLineElement = document.createElement('CommandLine')
+    commandElement = app.commandLineElement = createElement('CommandLine')
     app.element.appendChild(app.commandLineElement)
   }
 

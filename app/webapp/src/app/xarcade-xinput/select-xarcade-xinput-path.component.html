@@ -1,7 +1,7 @@
 <div class="text-right">
   <robust-select-directory label="🎮 XArcade XInput" [reloadPath]="session.config.xarcadeXinput.path"
     [(directoryManager)]="session.xarcadeDirectory"
-    (directoryManagerChange)="change.emit(session.xarcadeDirectory)"
+    (directoryManagerChange)="session.checkFileStreamingSupport();change.emit(session.xarcadeDirectory)"
     (error)="session.error('could not load XArcade XInput path', $event)"
     [pickerId]="xarcadeXinputPickerId"
   ></robust-select-directory>

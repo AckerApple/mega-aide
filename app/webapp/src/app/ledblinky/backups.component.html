@@ -1,0 +1,10 @@
+<ng-container *ngIf="(session.ledBlinky.directory$ | async) as directory; else selectDirectory">
+  <directory-backups [directory]="directory"
+    [path]="path"
+    [fileName]="fileName"
+  ></directory-backups>
+</ng-container>
+
+<ng-template #selectDirectory>
+  <select-ledblinky-directory></select-ledblinky-directory>
+</ng-template>

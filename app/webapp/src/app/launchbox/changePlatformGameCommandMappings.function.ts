@@ -1,4 +1,4 @@
-import { GameInsight, PlatformInsights, XInputGameInsight } from "../session.provider"
+import { GameInsight, PlatformInsights, XInputGameInsight } from "../session.utils"
 import { applyGameCommandMapping } from "../xarcade-xinput/xinput-app-map-select.component"
 import { addXInputToGame } from "./games.utils"
 

@@ -1,10 +1,10 @@
 import { Component } from '@angular/core'
 import packageJson from '../../package.json'
-/// import animations from './animations'
 import { animations } from "ack-angular-fx"
 import { SessionProvider } from './session.provider'
+import { openAnchor } from './session.utils'
 
-export declare const Neutralino: any
+declare const Neutralino: any
 
 @Component({
   selector: 'app-root',
@@ -25,20 +25,5 @@ export class AppComponent {
 
   close() {
     Neutralino.app.exit()
-  }
-}
-
-export function openAnchor(event: Event) {
-  if ( typeof Neutralino === 'object' ) {
-    const anchor = event.target
-    const url = (anchor as Element).getAttribute('href') as string
-    openLink(url)
-    event.preventDefault() // do not allow app window to be stolen
-  }
-}
-
-export function openLink(url: string) {
-  if ( typeof Neutralino === 'object' ) {
-    Neutralino.os.open(url)
   }
 }

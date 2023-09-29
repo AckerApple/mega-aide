@@ -1,0 +1,1 @@
+export type ModalElement = Element & {close: () => void, showModal: () => void}

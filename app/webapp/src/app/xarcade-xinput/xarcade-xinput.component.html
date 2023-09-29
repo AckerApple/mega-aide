@@ -1,4 +1,4 @@
-<select-xarcade-xinput-path (change)="session.save();readDir($event)"></select-xarcade-xinput-path>
+<select-xarcade-xinput-path (change)="session.saveStorage();readDir($event)"></select-xarcade-xinput-path>
 
 <ng-template #finderOptions let-item="item" let-parent="parent">
   <a *ngIf="item.kind !== 'DIRECTORY'" (click)="removeByParent(parent,item)"

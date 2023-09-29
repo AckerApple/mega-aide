@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from "@angular/core";
 import { animations } from "ack-angular-fx";
 import { firstValueFrom } from "rxjs";
-import { AdditionalApp, GameInsight, PlatformInsights } from "../session.provider";
+import { AdditionalApp, GameInsight, PlatformInsights } from "../session.utils";
 import { XArcadeXInputProvider } from "../xarcade-xinput/XArcadeXInput.provider";
 import { changePlatformGameCommandMappings } from "./changePlatformGameCommandMappings.function";
 

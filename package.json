@@ -1,8 +1,9 @@
 {
   "name": "mega-aide",
-  "version": "0.0.79",
+  "version": "0.3.2",
   "description": "Things learned and things to remember for my Megacade",
   "scripts": {
+    "test": "cd app/webapp/ && npm run test",
     "start": "npm run start:webapp",
     "start:native": "cd app && npm run start",
     "start:webapp": "cd app && npm run start:webapp",
@@ -20,7 +21,9 @@
     "deploy:gh-pages": "npm run build:gh-pages && cd ../gh-pages && git add . && git commit -m \"update\" && git push",
     "patch:versions": "npm run patch:version && npm run patch:webapp:version",
     "patch:version": "npm --no-git-tag-version version patch",
-    "patch:webapp:version": "cd app/webapp && npm run patch:version"
+    "patch:webapp:version": "cd app/webapp && npm run patch:version",
+    "detect:cyclic": "cd app/webapp && npm run detect:cyclic",
+    "install:neutralino": "npm i -g @neutralinojs/neu"
   },
   "repository": {
     "type": "git",
@@ -33,5 +36,8 @@
     "url": "https://github.com/AckerApple/mega-aide/issues"
   },
   "homepage": "https://github.com/AckerApple/mega-aide#readme",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "ack-css-boot": "^3.0.13"
+  }
 }

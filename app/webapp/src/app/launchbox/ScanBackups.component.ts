@@ -1,9 +1,8 @@
 import { Component } from '@angular/core'
 import { animations } from 'ack-angular-fx'
 import { Subscription } from 'rxjs'
-import { getFileBackupList } from '../components/backups.component'
-import { createBackupOfFile } from '../components/save-files.component'
 import { SessionProvider } from '../session.provider'
+import { createBackupOfFile, getFileBackupList } from '../components/backups.utils'
 
 interface Scan {
   path: string

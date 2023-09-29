@@ -176,16 +176,15 @@ const content = 'hello 0123456789 world'
   async testReadFileAsUrl(test: Test, dir: DirectoryManager) {    
     try {
       const newFile = await dir.file(createFileName) // should exist from last file
-      const readResult = await newFile.readAsDataURL()
+      const result = await newFile.readAsDataURL()
       
       // const split = readResult.split(',')
       //split.shift() // application/json;base64,
       //const base = split.join(',')
+      const base64 = result.replace(/^.+,/,'') // remove data:application/json;base64,
       
-      const base = readResult
-      console.log('readResult',readResult, base)
-      const decodedString = atob(base) // Buffer.from(readResult, 'base64').toString() // atob(readResult);
-      console.log('decodedString', decodedString, content)
+      console.log('readResult',{base64,content, result})
+      const decodedString = atob(base64) // Buffer.from(readResult, 'base64').toString() // atob(readResult);
       test.pass = decodedString === content
 
       if ( !test.pass ) {

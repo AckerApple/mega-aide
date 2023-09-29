@@ -3,7 +3,7 @@
     pickerId="LaunchBox"
     [reloadPath]="session.config.launchBox.path"
     [directoryManager]="$any(session.launchBox.directory$ | async)"
-    (directoryManagerChange)="setDirectory($event);"
+    (directoryManagerChange)="session.checkFileStreamingSupport();setDirectory($event);"
     (error)="session.error('could not load LaunchBox path', $event)"
   ></robust-select-directory>
 </div>

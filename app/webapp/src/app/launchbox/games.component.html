@@ -76,6 +76,11 @@
         [class.bg-energized] = "selected.view === 'controller-support'"
       >🎮 Controller Support</button>
 
+      <a class="flex1 no-a-style bg-royal" type="button"
+        [routerLink]="'../../' + ledBlinkRouteMap.ledblinkyControls.path + '/' + selected.game.platform.id.split(' ').join('_') | uppercase"
+        [queryParams]="{search:selected.game.game.details.title}"
+      >🚦LED Blinky</a>
+
       <button type="button" class="flex1"
         (click)="selected.view === 'xml' ? undefined : viewSelectedGameXml(selected)"
         [class.bg-energized] = "selected.view === 'xml'"
@@ -127,9 +132,6 @@
       <div>
         platform xml path: {{selected.game.platform.file.directory.path}}/{{selected.game.platform.file.name}}
       </div>
-      <a class="no-a-style" [routerLink]="'../../' + ledBlinkRouteMap.ledblinkyControls.path + '/' + selected.game.platform.id.split(' ').join('_') | uppercase"
-        [queryParams]="{search:selected.game.game.details.title}"
-      ><u>🚦LED Blinky</u></a>
     </div>
     
     <br />

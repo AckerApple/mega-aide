@@ -1,10 +1,10 @@
-import { LaunchBox, mapAdditionalApp } from '../LaunchBox.class'
+import { LaunchBox } from '../LaunchBox.class'
 import { getCommandMapByAdditionalApp, getCommandMapping } from '../../xarcade-xinput/xinput-app-map-select.component'
-import { AdditionalApp, GameDetails, GameInsight, PlatformInsights, XInputGameInsight } from 'src/app/session.provider'
+import { AdditionalApp, GameInsight, PlatformInsights, XInputGameInsight } from 'src/app/session.utils'
 import { GameCommandMap } from '../xinput-games-table.component'
 import { addXInputToGame } from '../games.utils'
-import { getElementsByTagName } from 'src/app/ledblinky/LedBlinky.utils'
-import { bindCallback, connect, firstValueFrom, from, Observable, share, shareReplay } from 'rxjs'
+import { firstValueFrom } from 'rxjs'
+import { isPathXinput } from './xinput.utils'
 
 export interface MapStats {
   hasDefaultMix?: boolean
@@ -55,15 +55,6 @@ export interface XArcadeAppCommand {
 export function isAddAppXinput(app: AdditionalApp) {
   const pathString = app.details.applicationPath || ''
   return isPathXinput(pathString)
-}
-
-
-export function isPathXinput(path: string) {
-  if ( path.includes('XArcade XInput.exe') ) {
-    return true
-  }
-
-  return false
 }
 
 /** read a platforms additional apps looking for xarcade */
@@ -273,38 +264,4 @@ export function updatePlatformByGame(
 
   // recalculateMapCounts(stats, platformGames)
   recalculatePlatform(platform, stats)
-}
-
-
-export function findElementText(game: Element, tagName: string) {
-  const elements = game.getElementsByTagName(tagName)
-  return elements.length ? elements[0].textContent : ''
-}
-
-export function getGameElementTitle(game: Element) {
-  return findElementText(game, 'Title')
-  // return game.getElementsByTagName('Title')[0].textContent
-}
-
-export function getGameElementId(game: Element) {
-  return findElementText(game, 'ID')
-}
-
-/*function isAddAppElemXinput(app: Element) {
-  const path = app.getElementsByTagName('ApplicationPath')
-        
-  if ( !path.length ) {
-    return false
-  }
-
-  const pathString = path[0].textContent as string
-  return isPathXinput(pathString)
-}*/
-
-export function isPathKillXinput(path: string) {
-  if ( (path.includes('xarcade') || path.includes('xinput')) && path.includes('kill') ) {
-    return true
-  }
-
-  return false
 }

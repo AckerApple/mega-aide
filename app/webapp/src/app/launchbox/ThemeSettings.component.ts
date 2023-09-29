@@ -102,7 +102,7 @@ export class ThemeSettingsComponent {
       const includeFile = await themeDirectory.findFileByPath(include)
       
       if ( !includeFile ) {
-        console.debug(`Could not find file ${include} within ${themeDirectory.path}`)
+        this.session.warn(`Could not find file ${include} within ${themeDirectory.path}`)
         return
       }
 
@@ -215,7 +215,7 @@ export class ThemeSettingsComponent {
     const file = await themeFolder.findFileByPath( filePath )
     if ( !file ) {
       const message = `Could not read Theme of ${themeFolder.path} ${filePath}`
-      console.debug(message) // throw new Error(message)
+      this.session.warn(message) // throw new Error(message)
       return
     }
     return { file, folderPath: themeFolderPath, filePath: path.join(themeFolder.path, filePath) }

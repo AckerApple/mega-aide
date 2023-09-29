@@ -10,9 +10,13 @@
     (nextKeyCodeChange)="keyCodeChange.emit(keyCode)"
     [(nextKeyListening)]="keyListen"
     (nextKeyListeningChange)="keyListenChange.emit(keyListen)"
-  >{{ keyListen ? 'press key' : '⌨️ map'}}</button>
+  >
+    <ng-container *ngIf="keyListen;else keyButtonTemplate">press key</ng-container>
+    <ng-template #keyButtonTemplate
+    >⌨️ keymap</ng-template>
+  </button>
   
-  <ng-container *ngIf="useMouse">
+  <ng-container *ngIf="useMouse && !keyListen">
     <button
       type="button" class="flex-1" [ngClass]="classes"
       [class.bg-energized]="nextMouse.listening"
@@ -23,12 +27,18 @@
       (nextMouseChange)="mouseChange.emit(mouse)"
       [(nextMouseListening)]="mouseListen"
       (nextMouseListeningChange)="mouseListenChange.emit(mouseListen)"
-    >{{ mouseListen ? 'press mouse' : '🖱️ map'}}</button>
+    >
+      <ng-container *ngIf="mouseListen; else mouseButtonTemplate">press mouse</ng-container>
+      <ng-template #mouseButtonTemplate
+      >🖱️ mouse map</ng-template>
+    </button>
     
     <button *ngIf="nextMouse.listening" [@fadeInOutUp]="1"
       type="button" class="flex-1 bg-grey radius-left-0"
       (click)="nextMouse.stop()"
-    >any key cancels</button>
+    >
+      any key to cancel
+    </button>
   </ng-container>
 
   <button *ngIf="nextKey.listening" [@fadeInOutUp]="1"

@@ -1,12 +1,12 @@
 import { Component } from '@angular/core'
 import { SessionProvider } from '../session.provider'
-import { openAnchor } from '../app.component'
 import { XArcadeXInputProvider } from './XArcadeXInput.provider'
 import { DirectoryManager } from 'ack-angular-components/directory-managers/DirectoryManagers'
 import { animations } from 'ack-angular-fx'
 import { Prompts } from 'ack-angular'
 import { firstValueFrom } from 'rxjs'
 import { DmFileReader } from 'ack-angular-components/directory-managers/DmFileReader'
+import { openAnchor } from '../session.utils'
 
 export const xarcadeXinputPickerId = 'xarcadeXinputPicker'
 

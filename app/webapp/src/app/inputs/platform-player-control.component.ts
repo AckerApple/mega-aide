@@ -2,11 +2,11 @@ import { Component, EventEmitter, Input, Output } from '@angular/core'
 import { animations } from 'ack-angular-fx'
 import { Control, PlatformMap } from '../platforms'
 import { LastPresses } from './LastPresses.provider'
-import { LastDrag } from './platform-control-map.component'
 import { PlatformFiltersDirective } from './platform-filters.directive'
-import { hexToRgb, PlayerMap, PlayersMap } from './platform.component'
+import { LastDrag, hexToRgb, PlayerMap, PlayersMap } from './platform.utils'
 import * as controlMap from './control-map.json'
 import { LastButtonsProvider } from './LastButtons.provider'
+import { getControlGamepadCode } from '../ledblinky/LedBlinky.utils'
 
 @Component({  
   animations,
@@ -218,13 +218,4 @@ import { LastButtonsProvider } from './LastButtons.provider'
   setControlCode(control: Control) {
     control.gamepadCode = getControlGamepadCode(control)
   }
-}
-
-export function getControlGamepadCode(control: Control) {
-  const button = control.gamepadButton
-  if ( button != undefined ) {
-    return button.toString()
-  }
-  
-  return `${control.gamepadAxis||''}${control.gamepadDirection||''}`
 }

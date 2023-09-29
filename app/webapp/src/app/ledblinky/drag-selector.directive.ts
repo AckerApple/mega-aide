@@ -1,5 +1,5 @@
-import { Directive, ElementRef, EventEmitter, HostListener, Input, Output } from "@angular/core";
-import { DragSelectorTargetDirective } from "./drag-selector-target.directive";
+import { Directive, ElementRef, EventEmitter, HostListener, Input, Output } from "@angular/core"
+import { DragSelectorTargetDirective } from "./drag-selector-target.directive"
 
 interface Drawbox {
   startX: number

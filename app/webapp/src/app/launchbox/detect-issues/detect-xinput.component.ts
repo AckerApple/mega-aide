@@ -3,7 +3,8 @@ import { backups } from '../routing.backups'
 import { detectXinputIssues } from '../detectXinputIssues.routing'
 import { firstValueFrom, from, mergeMap, shareReplay, Subscription } from 'rxjs'
 import { XArcadeXInputProvider } from '../../xarcade-xinput/XArcadeXInput.provider'
-import { GameInsight, SessionProvider, WriteFile } from "src/app/session.provider"
+import { SessionProvider } from "src/app/session.provider"
+import { GameInsight, WriteFile } from "src/app/session.utils"
 import { xmlDocToString } from "src/app/xml.functions"
 import { animations } from "ack-angular-fx"
 import { MapStats, PlatformGameApp, readPlatformFile, readPlatformMap, recalculateMapCounts, updatePlatformByGame } from "./detect.utils"

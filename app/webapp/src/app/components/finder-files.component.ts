@@ -17,8 +17,29 @@ export interface FinderItem {
   @Input() columns: T[][] = []
   @Input() routerLinkBase?: string
 
-  @ContentChildren(FinderColumnComponent) columnSchema: TemplateRef<FinderColumnComponent>[] = []
+  @ContentChildren(FinderColumnComponent) columnSchema: FinderColumnComponent[] = []
   
   @Output() itemClick = new EventEmitter<T>()
   @Output() back = new EventEmitter()
+
+  sortBy(schema: FinderColumnComponent) {
+    const columnName = schema.name || schema.type || 'name'
+    const data = this.columns[ this.columns.length - 1 ]
+    const clone = [...data]
+    const good = clone.find((x, i)=>data[i]!==x)
+    
+    switch (schema.type) {
+      case 'date':
+      case 'size':
+        ;(data as any).sort((a: any, b:any)=>Number(a[columnName])-Number(b[columnName]))
+        break
+    
+      default:
+        ;(data as any).sort((a: any, b: any)=>String(a[columnName]||'').toLowerCase()>String(b[columnName]||'').toLowerCase()?1:-1)
+    }
+
+    if ( clone.every((x, i)=>data[i]===x) ) {
+      data.reverse()
+    }
+  }
 }

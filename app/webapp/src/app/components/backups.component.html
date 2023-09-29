@@ -40,7 +40,7 @@
   >
     <finder-column type="name"></finder-column>
     <finder-column name="lastModified" type="date"></finder-column>
-    <finder-column name="size" type="size"></finder-column>
+    <finder-column name="size" type="size" label="size"></finder-column>
     <finder-column [template]="finderOptions"></finder-column>
   </finder-files>
   <div class="text-xxs opacity-80 pad">
@@ -56,23 +56,34 @@
   path: {{parent.path}}
 </div>
 
+<!-- TODO: Convert to dialog -->
 <ack-modal *ngIf="toRestore" valign="center" (close)="toRestore=undefined">
-  <div class="bg-white pad radius-10 text-black">
-    Confirm restore from backup
-    <h3 class="pad flex-wrap">
-      <div>
-        {{ sourceFile?.name }}
-        <div class="text-xxs opacity-60">{{ sourceFile?.directory?.path }}</div>
-      </div>
-      &nbsp;⬅️&nbsp;
-      <div>
-        {{ toRestore.stats.name }}
-        <div class="text-xxs opacity-60">{{ toRestore.backupFolder.path }}</div>
-      </div>
-    </h3>
+  <div class="bg-white radius-10 text-black">
+    <div class="pad">
+      <h2>Confirm restore from backup</h2>
+    </div>
+    <div class="pad">
+      <h3 class="pad flex-wrap">
+        <div>
+          {{ sourceFile?.name }}
+          <div class="text-xxs opacity-60">{{ sourceFile?.directory?.path }}</div>
+        </div>
+        &nbsp;⬅️&nbsp;
+        <div>
+          {{ toRestore.stats.name }}
+          <div class="text-xxs opacity-60">{{ toRestore.backupFolder.path }}</div>
+        </div>
+      </h3>
+    </div>
     <div class="flex">
-      <button type="button" class="flex1 bg-balanced" (click)="restore()">↩️ restore</button>
-      <button type="button" class="flex1 bg-dark" (click)="toRestore=undefined">❌ cancel</button>
+      <button type="button"
+        class="flex1 radius-0 bg-balanced"
+        (click)="restore()"
+      >↩️ restore</button>
+      <button type="button"
+        class="flex1 radius-0 bg-dark"
+        (click)="toRestore=undefined"
+      >❌ cancel</button>
     </div>
   </div>
 </ack-modal>
