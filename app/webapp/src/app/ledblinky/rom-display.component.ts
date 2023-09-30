@@ -24,6 +24,8 @@ let count = 0
 }) export class RomDisplayComponent {
   uid = ++count // to ensure dialog modals are unique
 
+  @Input() zoom?: number
+  @Input() interactive = true
   @Input() layoutOnly?: boolean
   @Input() romExists = true // removes delete buttons and such
   @Input() externalFeatures = true // removes "edit layouts" and "Goto Launchbox Game"

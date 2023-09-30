@@ -14,6 +14,7 @@ let count = 0
 export class LedblinkyLayouts {
   uid = ++count
 
+  @Input() zoom?: number 
   @Input() edit?: boolean | string
   // @Input() emulator?: Emulator | NewEmulator // used for coloring non mame games
   @Input() changeWatch?: any // cause re-rendering

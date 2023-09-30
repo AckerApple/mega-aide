@@ -158,6 +158,8 @@
       (modalOpen)       = "$event.control || prepareAddControlByLight($event.light)"
       (modalClose)      = "guessNameLightControl=undefined;addControl.step=0;$event.control.edit=false"
       
+      [zoom] = "zoom"
+      [interactive] = "interactive"
       [controlGroup] = "romControl"
       [romControlLights$] = "romControlLights$"
       (lightControlChanged)  = "lightControlChanged($event, romControl)"
@@ -433,7 +435,7 @@
     </ledblinky-controls-layouts>
   
     <!-- rom settings -->
-    <div class="pad-xs bg-grey flex-wrap gap">
+    <div *ngIf="interactive" class="pad-xs bg-grey flex-wrap gap">
       <div>
         <input type="checkbox"
           name="rom_jukebox" id="rom_jukebox"

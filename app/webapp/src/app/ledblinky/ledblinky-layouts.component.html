@@ -28,14 +28,14 @@
         $implicit: light.light,
         lightControl: light,
         details: light.light.details,
-        zoom: session.ledBlinky.zoom$ | async
+        zoom: zoom || (session.ledBlinky.zoom$ | async)
       }"></ng-container>
     </div>
   </div>
 </dialog>
 
 <ng-container *ngTemplateOutlet="stage;context: {
-  zoom: session.ledBlinky.zoom$ | async,
+  zoom: zoom || (session.ledBlinky.zoom$ | async),
   lights: lights$ | async
 }"></ng-container>
 

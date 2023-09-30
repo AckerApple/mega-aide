@@ -18,6 +18,8 @@ import { ControlGroupDetails } from './ControlGroup.class'
   animations,
 })
 export class LEDBlinkyControlsComponent {
+  showMaps?: boolean
+
   constructor(
     public activatedRoute: ActivatedRoute,
     public router: Router,

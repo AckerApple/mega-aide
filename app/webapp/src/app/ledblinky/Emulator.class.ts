@@ -1,3 +1,4 @@
+import { Observable, merge, of } from "rxjs"
 import { createElement } from "../launchbox/games.utils"
 import { ControlGroup, ControlGroupDetails, NewControlGroup } from "./ControlGroup.class"
 import { ControlGroupings, NewControlGroupings } from "./ControlGroupings"
@@ -21,6 +22,27 @@ export class NewEmulator {
   controlGroups: NewControlGroupings[] = [] // ControlGroupings
   viewJson?: boolean
   viewXml?: boolean
+
+  defaultControls$ = new Observable<NewControlGroup>(sub => {
+    let defaultFound: NewControlGroup | undefined = undefined
+    
+    this.controlGroups.find(controlGroup => {
+      const result = controlGroup.controlGroups.find(controlGroup => {
+        if ( controlGroup.xml.details.groupName !== 'DEFAULT' ) {
+          return
+        }
+        return defaultFound = controlGroup
+      })
+
+      return result
+    })
+
+    if ( defaultFound ) {
+      sub.next( defaultFound )
+    }
+
+    sub.complete()
+  })
 
   constructor(
     public ledBlinky: LedBlinky,

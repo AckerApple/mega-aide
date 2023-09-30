@@ -16,11 +16,12 @@
       </div>
     </div>
 
-    <div>
-      <button type="submit" (click)="unknownMode$.next( !unknownMode$.getValue() )">
-        {{ (unknownMode$ | async) ? '☑️' : '◻️' }}&nbsp;
-        🤨 Unknown Games Mode
-      </button>
+    <div class="flex-wrap gap">
+      <button type="submit" (click)="showMaps = !showMaps"
+      >{{ showMaps ? '☑️' : '◻️' }}&nbsp;🗺️ Show mappings</button>
+
+      <button type="submit" (click)="unknownMode$.next( !unknownMode$.getValue() )"
+      >{{ (unknownMode$ | async) ? '☑️' : '◻️' }}&nbsp;🤨 Unknown Games Mode</button>
     </div>
   </div>
 
@@ -49,7 +50,7 @@
 
           <div *ngIf="emus.length"
             [@fadeInOutUp]="1"
-            class="gap-xxs child-pad-xs pad-top overflow flex-wrap flex1"
+            class="gap-xxs pad-top overflow flex-wrap flex1"
             [style.max-height.vh]="80"
           >
             <ng-container *ngFor="let emu of emus">
@@ -87,6 +88,7 @@
           <ng-container *ngFor="let item of emulator.controlGroups">
             <ng-container *ngTemplateOutlet="romLink;context:{rom:item, emu: emulator}"></ng-container>
           </ng-container>
+
           <button type="button"
             onclick="createRomDialog.showModal()"
           >+ Create ROM</button>
@@ -100,9 +102,8 @@
         <a class="no-a-style"
           (click)="showConfirmNewRom=true"
         >
-          <button type="button">
-            ✚ Add "{{ search }}" as a new ROM
-          </button>
+          <button type="button"
+          >✚ Add "{{ search }}" as a new ROM</button>
         </a>
 
         <ack-modal [(showModel)]="showConfirmNewRom" valign="center">
@@ -145,19 +146,59 @@
 
 
 <ng-template #romLink let-rom="rom" let-emu="emu">
-  <a class="no-a-style border hover-bg-calm flex1 bg-black" [@fadeInOutUp]="1"
-    [routerLink]="emu.xml.details.emuname + '/' + rom.groupName" [queryParams]="{unknownMode: unknownMode$ | async}">{{
-    rom.voice || rom.groupName }}</a>
+  <a class="no-a-style border hover-bg-calm bg-black" [@fadeInOutUp]="1"
+    [routerLink]="emu.xml.details.emuname + '/' + rom.groupName" [queryParams]="{unknownMode: unknownMode$ | async}"
+    [ngClass]="showMaps ? 'flex3' : 'flex1'"
+  >
+    <ng-container *ngIf="!showMaps;else mapTemplate">
+      {{ rom.voice || rom.groupName }}
+    </ng-container>
+    <ng-template #mapTemplate>
+      <rom-display
+        urlRelativeToLedBlinkyRoot='../'
+        [romControl] = "rom.controlGroups[0]"
+        [romControlLights$] = "rom.controlGroups[0].romControlLights$"
+  
+        [zoom]="1"
+        [emulator] = "emu"
+        [allControls] = "session.ledBlinky.controls$ | async"
+        [debug]="false"
+        [layoutOnly]="true"
+        [externalFeatures]="false"
+        [interactive]="false"
+      ></rom-display>
+    </ng-template>
+  </a>
 </ng-template>
 
 <ng-template #emulatorButton let-emu let-selected="selected">
-  <a class="border hover-bg-calm pos-rel flex2 pad-xs pad-right no-a-style"
+  <a class="border hover-bg-calm pos-rel no-a-style pad-left-xs pad-v-xs pad-right-2x"
     [routerLink]="selected ? './' : emu.xml.details.emuname" [class.flex1]="selected"
-    [ngClass]="selected ? 'bg-energized' : 'bg-black'"
-    (click)="emulator$.next( selected ? undefined : emu )">
-    {{ emu.xml.details.emuname }}
-    <sup *ngIf="emu.controlGroups.length > 1" class="opacity-80 pad-xxs pos-abs top-0 right-0">{{
-      emu.controlGroups.length }}</sup>
+    [ngClass]="{'bg-energized':selected,'bg-black':!selected, 'flex-1':!showMaps, flex3:showMaps}"
+    (click)="emulator$.next( selected ? undefined : emu )"
+  >
+    <ng-container *ngIf="!showMaps || (emulator$ | async);else mapTemplate">
+      {{ emu.xml.details.emuname }}
+      <sup *ngIf="emu.controlGroups.length > 1"
+        class="text-xxs opacity-80 pad-xxs pos-abs top-0 right-0"
+      >{{emu.controlGroups.length }}</sup>
+    </ng-container>
+
+    <ng-template #mapTemplate>
+      <rom-display *ngIf="(emu.defaultControls$ | async) as defaultControls"
+        urlRelativeToLedBlinkyRoot='../'
+        [romControl] = "$any(defaultControls)"
+        [romControlLights$] = "$any(defaultControls).romControlLights$"
+  
+        [zoom]="1"
+        [emulator] = "emu"
+        [allControls] = "session.ledBlinky.controls$ | async"
+        [debug]="false"
+        [layoutOnly]="true"
+        [externalFeatures]="false"
+        [interactive]="false"
+      ></rom-display>
+    </ng-template>
   </a>
 </ng-template>
 
