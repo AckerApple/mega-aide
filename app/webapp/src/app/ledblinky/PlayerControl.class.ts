@@ -1,5 +1,5 @@
 import { BehaviorSubject, Observable, Subscriber, combineLatest, firstValueFrom, map } from "rxjs"
-import { castControlDetailsToCssColor, getLabelByInputCodes, rgbNum } from "./LedBlinky.utils"
+import { InputsMap, castControlDetailsToCssColor, getLabelByInputCodes, rgbNum } from "./LedBlinky.utils"
 import { LedBlinky } from "./LedBlinky.class"
 import { createElement } from "../launchbox/games.utils"
 import { EmulatorRom } from "./LightAndControl.interface"
@@ -39,7 +39,6 @@ export class ControlDefault {
     public controls: ControlDefault[], // the group of controls this instance belongs to
   ) {}
   
-
   edit?: boolean
   edited?: boolean
   loadCount$ = new BehaviorSubject(0)  
@@ -53,17 +52,48 @@ export class ControlDefault {
     return this.xml.details.inputCodes?.replace(/(^\||\|$)/g,'').split('|') || []
   }
   
-  // computed data points
+  // VIP Very IMPORTANT Process: Where we educated guess match controls to lights
   // runtime conversion of player.controls[n].inputCodes into LEDBlinkyInputMap.xml ledControllers[x].ports[x].label
   layoutLabel$: Observable<string | undefined> = combineLatest([
     this.ledBlinky.inputsMap$,
   ]).pipe(
-    map(([inputsMap]) => getLabelByInputCodes(inputsMap, this.getInputCodes()))
+    map(([inputsMap]) => matchControlToLight(inputsMap, this))
   )
 
   usedCodes$: Observable<string[]> = this.xml.details$.pipe(
     map(_details => this.controls.map(control => control.xml.details.name))
   )
+
+  getDecodedName() {
+    const name = this.xml.details.name
+
+    if ( name.slice(0,5) === 'START' ) {
+      return name.replace(/^START([0-9]+)/,'P$1START')
+    }
+  
+    if ( name.slice(0,4) === 'COIN' ) {
+      return name.replace(/^COIN([0-9]+)/,'P$1COIN')
+    }
+  
+    if ( name.slice(-7) === '_PADDLE' ) {
+      return name.replace(/^P([0-9]+)_PADDLE/,'JOYSTICK$1')
+    }
+  
+    if ( name.slice(-10) === '_TRACKBALL' ) {
+      return 'TRACKBALL'
+    }
+    
+    if ( name.search(/^P([0-9]+)_JOYSTICK(.+)_.+/)>=0 ) {
+      return name.replace(/P([0-9]+)_JOYSTICK(.+)_(.+)/, 'JOYSTICK$1')
+    }
+  
+    // Conver things like: P1_BUTTON1 converted to P1B1
+    let decodedName = name
+      .replace(/^P([0-9]+)_/,'P$1') // P1_BUTTON1 converted to P1BUTTON1
+      .replace('BUTTON','B') // P1_BUTTON1 converted to P1BUTTON1
+    
+    return decodedName  
+  }
 }
 
 // represents <control> within <player>
@@ -200,4 +230,16 @@ async function romHasLight(
   }
   
   return
+}
+
+export function matchControlToLight(
+  inputsMap: InputsMap,
+  control: ControlDefault,
+) {
+  const labelByInputCode = getLabelByInputCodes(inputsMap, control.getInputCodes())
+  if ( labelByInputCode ) {
+    return labelByInputCode
+  }
+
+  return control.getDecodedName()
 }

@@ -45,7 +45,7 @@
       <div *ngIf="!(emulator$ | async)" [@fadeInOutUp]="1">
         <ng-container *ngIf="(filteredEmulators$ | async) as emus; else loadingIcon">
           <div>
-            <strong>{{emus.length}} Emulators</strong>
+            <strong>Select from {{emus.length}} Emulators</strong>
           </div>
 
           <div *ngIf="emus.length"
@@ -80,8 +80,7 @@
     <!-- select controlGroup -->
     <div *ngIf="(roms$ | async) as emulator" [@fadeInOutUp]="1" class="bg-dark pad-xs flex1">
       <div>
-        <strong>ROMs</strong>
-        <sup><small>&nbsp;{{ emulator.controlGroups.length }}</small></sup>
+        Select from&nbsp;<strong>ROMs</strong><sup><small>&nbsp;{{ emulator.controlGroups.length }}</small></sup>
       </div>
       <div class="flex1 flex-wrap pad-top">
         <div class="flex-1 flex-wrap gap child-pad-xs" [@childStag50]="emulator.controlGroups">
@@ -264,8 +263,8 @@
           maxlength="80"
         />
         <div>
-          <input type="checkbox" name="useDefault" id="useDefault" [checked]="newRom.groupName==='DEFAULT'"
-            (click)="newRom.groupName = newRom.groupName === 'DEFAULT' ? '' : 'DEFAULT'"
+          <input type="checkbox" name="useDefault" id="useDefault" [checked]="newRom.groupName.toUpperCase()==='DEFAULT'"
+            (click)="newRom.groupName = newRom.groupName.toUpperCase() === 'DEFAULT' ? '' : 'DEFAULT'"
           />
           <label for="useDefault"
             title="When checked, this new ROM will be the Emulator base light configuration for games that do not have light configurations"

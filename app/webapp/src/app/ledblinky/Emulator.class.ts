@@ -28,7 +28,7 @@ export class NewEmulator {
     
     this.controlGroups.find(controlGroup => {
       const result = controlGroup.controlGroups.find(controlGroup => {
-        if ( controlGroup.xml.details.groupName !== 'DEFAULT' ) {
+        if ( controlGroup.xml.details.groupName.toUpperCase() !== 'DEFAULT' ) {
           return
         }
         return defaultFound = controlGroup

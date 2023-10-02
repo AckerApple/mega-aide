@@ -116,7 +116,7 @@ import { EmulatorControls } from "./EmulatorControls"
   loadDefaultLayoutByRom(
     romControl: NewControlGroup
   ) {
-    if ( romControl.xml.details.groupName==='DEFAULT' ) {
+    if ( romControl.xml.details.groupName.toUpperCase()==='DEFAULT' ) {
       return // it is the default
     }
 

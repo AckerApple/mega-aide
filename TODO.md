@@ -25,6 +25,8 @@ LEDBlinky:InputMap
   - However, the selectable values most likely come from computer device lookup which would require a native web app
 
 LEDBlinky:Controls
+- Reduce number of times remapping same thing occurs
+  - Instead create one map
 - Test configuration
   - Start with message of coming soon and then work our way up into implementing it
 - Drag drop undefined n/a lights

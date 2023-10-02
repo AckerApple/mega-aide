@@ -249,7 +249,8 @@
     [style.height.px] = "details.diameter * zoom"
     [style.background-color] = "cssColor || '#000'"
     [ngClass] = "dragSelectorTarget?.selected ? 'border-2 border-white' : ''"
-    [style.box-shadow] = "control && control.xml.element.parentNode?.parentNode && rgbArray ? '0 0 .5em .2em rgba('+rgbArray[0]+','+rgbArray[1]+','+rgbArray[2]+', .8)' : '.04em .04em .04em .04em rgba(255, 255, 255, 0.3)'"
+    [style.box-shadow] = "control && control.xml.element.parentNode?.parentNode && rgbArray && '0 0 .5em .2em rgba('+rgbArray[0]+','+rgbArray[1]+','+rgbArray[2]+', .8)'"
+    style="border:1px rgba(255, 255, 255, 0.3) solid"
   ></div>
   <div [style.font-size.px]="($any(lightConfig?.settings?.LEDLabelFontSize | number) || 12) * zoom"
   >{{details.name}}</div>

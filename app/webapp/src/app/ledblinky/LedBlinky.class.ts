@@ -298,12 +298,15 @@ export class LedBlinky {
             )
           })
       
-          await Promise.all(lightProms)
+          // after all above is calculated then ghost in lights that were not matched
+          Promise.all(lightProms)
+            .then(() => {
+              // add missing controls
+              controlGroup.players.forEach(player => {
+                addMissingControlsToLightControls(player, lightAndControls, this)
+              })
+            })
           
-          // add missing controls
-          controlGroup.players.forEach(player => {
-            addMissingControlsToLightControls(player, lightAndControls, this)
-          })
       
           return lightAndControls  
         })()
@@ -471,10 +474,16 @@ export class LedBlinky {
     return this.getLayoutInDirectory(layoutName, directory)
   }
 
+  // 🧠 memory lasts while app open
+  loadedLayouts: {[layoutName: string]: LightsConfig} = {}
   async getLayoutInDirectory(
     layoutName: string, // *.lay
     directory: DirectoryManager
   ) {
+    if ( this.loadedLayouts[layoutName] ) {
+      return this.loadedLayouts[layoutName]
+    }
+
     const layoutFile = await directory.findFileByPath(layoutName as string);
 
     if (!layoutFile) {
@@ -485,6 +494,10 @@ export class LedBlinky {
     }
 
     const layoutConfig = await getLightConfigByLayoutFile(layoutFile)
+    this.loadedLayouts = {
+      [layoutName]: layoutConfig
+    }
+
     this.session.debug(`🗺 ⚙️ Loaded layoutConfig ${layoutName}`, {
       lights: layoutConfig.lights.length,
       settings: layoutConfig.settings,

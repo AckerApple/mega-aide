@@ -153,10 +153,12 @@ export class NewControlGroup {
     shareReplay(1),
   )
 
+  /*
   romRealControlLights$ = this.romControlLights$.pipe(
     map(romControlLights => romControlLights.filter(romControlLight => romControlLight.control.xml.element.parentNode?.parentNode)),
     shareReplay(1),
   )
+  */
 
   addPlayer(): NewPlayer {
     const controls: PlayerControl[] = []

@@ -1,6 +1,6 @@
 {
   "name": "Mega-aide",
-  "version": "0.3.5",
+  "version": "0.3.6",
   "scripts": {
     "ng": "ng",
     "clear": "rm -rf .angular/cache",

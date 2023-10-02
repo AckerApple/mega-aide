@@ -1,12 +1,12 @@
 import { DmFileReader } from "ack-angular-components/directory-managers/DmFileReader"
 import { EMPTY, Observable, combineLatest, firstValueFrom, from, map, mergeMap, of, switchMap, take } from "rxjs"
 import { LedBlinky } from "./LedBlinky.class"
-import { ControlDefault, PlayerControl, PlayerControlDetails } from "./PlayerControl.class"
+import { ControlDefault, PlayerControl, PlayerControlDetails, matchControlToLight } from "./PlayerControl.class"
 import { LightAndControl, LightControl } from "./LightAndControl.interface"
 import { LedController } from "./LEDController.class"
 import { NewPlayer, PlayerDetails } from "./Player.class"
 import { Light, LightDetails } from "./Light.class"
-import { ControlGroup, ControlGroupDetails, NewControlGroup } from "./ControlGroup.class"
+import { ControlGroup, NewControlGroup } from "./ControlGroup.class"
 import { Emulator, EmulatorDetails, getControlsByElement } from "./Emulator.class"
 import { DirectoryManager } from "ack-angular-components/directory-managers/DirectoryManagers"
 import { Port } from "./LedPort.class"
@@ -345,7 +345,7 @@ export function mapPlayerElement(
     control.layoutLabel$ = combineLatest([
       ledBlinky.inputsMap$,
     ]).pipe(
-      map(([inputsMap]) => getLabelByInputCodes(inputsMap, control.getInputCodes()))
+      map(([inputsMap]) => matchControlToLight(inputsMap, control))
     )
 
     return control
@@ -520,7 +520,7 @@ async function remapPlayerControlsToLight(
     // see if we match remapping
     const layoutLabel = await firstValueFrom(iControl.layoutLabel$)
 
-    // ✅ MATCHED! compare getLabelByInputCodes(iControl.inputCodes$) === lightDetails.name
+    // ✅ MATCHED! compare matchControlToLight(iControl) === lightDetails.name
     if (layoutLabel === lightDetails.name ) {
       control = iControl
     
@@ -735,16 +735,24 @@ export function addMissingControlsToLightControls(
   ledBlinky: LedBlinky
 ) {
   player.controls.forEach((allControl, index) => {
-    const found = lightAndControls.find(lightControl => lightControl.control.xml.details.name === allControl.xml.details.name)
+    const name = allControl.xml.details.name
+    const found = lightAndControls.find(lightControl => {
+      return lightControl.control.xml.details.name === name || lightControl.control.getDecodedName() === allControl.getDecodedName()
+    })
     
     if ( found ) {
+      return // control is already present, most likely as a differently named button (two configs same target)
+    }
+
+    const skipByName = ['CONTROL_JOY8WAY','CONTROL_JOY4WAY'].includes(name)
+    if ( skipByName ) {
       return
     }
     
     const lightDetails: LightDetails = {
-      name: 'N/A',
-      x: 20 + (player.playerIndex * index),
-      y: 20 + (player.playerIndex * index),
+      name: name || 'N/A',
+      x: 0, // (80 * player.playerIndex) + (player.playerIndex * index),
+      y: (player.playerIndex ? 10 : 0) + (player.playerIndex * (index * 10)),
       colorDec: 0,
       diameter: 10,
     }
