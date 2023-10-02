@@ -49,12 +49,15 @@
           </div>
 
           <div *ngIf="emus.length"
-            [@fadeInOutUp]="1"
-            class="gap-xxs pad-top overflow flex-wrap flex1"
+            class="gap-xxs flex-wrap flex1 overflow pad-top border border-red"
+
+            forIntersectionObserver
+            [array]="emus"
+            [(arrayOut)]="emusOut"
             [style.max-height.vh]="80"
           >
-            <ng-container *ngFor="let emu of emus">
-              <ng-container *ngTemplateOutlet="emulatorButton;context:{$implicit:emu}"></ng-container>
+            <ng-container *ngFor="let inter of emusOut">
+              <ng-container *ngTemplateOutlet="emulatorButton;context:{$implicit:inter.item, show:inter.show}"></ng-container>
             </ng-container>
           </div>
 
@@ -73,7 +76,6 @@
             >+ new emulator</a>
           </div>
         </ng-container>
-
       </div>
     </div>
 
@@ -83,15 +85,21 @@
         Select from&nbsp;<strong>ROMs</strong><sup><small>&nbsp;{{ emulator.controlGroups.length }}</small></sup>
       </div>
       <div class="flex1 flex-wrap pad-top">
-        <div class="flex-1 flex-wrap gap child-pad-xs" [@childStag50]="emulator.controlGroups">
-          <ng-container *ngFor="let item of emulator.controlGroups">
-            <ng-container *ngTemplateOutlet="romLink;context:{rom:item, emu: emulator}"></ng-container>
-          </ng-container>
+        <div class="flex-1 flex-wrap gap child-pad-xs overflow" [@childStag50]="emulator.controlGroups"
 
-          <button type="button"
-            onclick="createRomDialog.showModal()"
-          >+ Create ROM</button>
+          forIntersectionObserver
+          [array]="emulator.controlGroups"
+          [(arrayOut)]="romsOut"
+          [style.max-height.vh]="80"
+        >
+          <ng-container *ngFor="let item of romsOut">
+            <ng-container *ngTemplateOutlet="romLink;context:{rom:item.item, emu: emulator, show: item.show}"></ng-container>
+          </ng-container>          
         </div>
+
+        <button type="button"
+          onclick="createRomDialog.showModal()"
+        >+ Create ROM</button>
       </div>
     </div>
 
@@ -144,8 +152,8 @@
 </ul>
 
 
-<ng-template #romLink let-rom="rom" let-emu="emu">
-  <a class="no-a-style border hover-bg-calm bg-black" [@fadeInOutUp]="1"
+<ng-template #romLink let-rom="rom" let-emu="emu" let-show="show">
+  <a class="no-a-style border hover-bg-calm bg-black"
     [routerLink]="emu.xml.details.emuname + '/' + rom.groupName" [queryParams]="{unknownMode: unknownMode$ | async}"
     [ngClass]="showMaps ? 'flex3' : 'flex1'"
   >
@@ -153,7 +161,7 @@
       {{ rom.voice || rom.groupName }}
     </ng-container>
     <ng-template #mapTemplate>
-      <rom-display
+      <rom-display *ngIf="show"
         urlRelativeToLedBlinkyRoot='../'
         [romControl] = "rom.controlGroups[0]"
         [romControlLights$] = "rom.controlGroups[0].romControlLights$"
@@ -170,21 +178,21 @@
   </a>
 </ng-template>
 
-<ng-template #emulatorButton let-emu let-selected="selected">
-  <a class="border hover-bg-calm pos-rel no-a-style pad-left-xs pad-v-xs pad-right-2x"
+<ng-template #emulatorButton let-emu let-selected="selected" let-show="show">
+  <a class="border hover-bg-calm pos-rel no-a-style pad-left-xs pad-v-xs pad-right-2x flex2"
     [routerLink]="selected ? './' : emu.xml.details.emuname" [class.flex1]="selected"
     [ngClass]="{'bg-energized':selected,'bg-black':!selected, 'flex-1':!showMaps, flex3:showMaps}"
     (click)="emulator$.next( selected ? undefined : emu )"
   >
-    <ng-container *ngIf="!showMaps || (emulator$ | async);else mapTemplate">
+    <span *ngIf="!showMaps || (emulator$ | async);else mapTemplate">
       {{ emu.xml.details.emuname }}
       <sup *ngIf="emu.controlGroups.length > 1"
         class="text-xxs opacity-80 pad-xxs pos-abs top-0 right-0"
       >{{emu.controlGroups.length }}</sup>
-    </ng-container>
+    </span>
 
     <ng-template #mapTemplate>
-      <rom-display *ngIf="(emu.defaultControls$ | async) as defaultControls"
+      <rom-display *ngIf="(selected || show) && (emu.defaultControls$ | async) as defaultControls"
         urlRelativeToLedBlinkyRoot='../'
         [romControl] = "$any(defaultControls)"
         [romControlLights$] = "$any(defaultControls).romControlLights$"

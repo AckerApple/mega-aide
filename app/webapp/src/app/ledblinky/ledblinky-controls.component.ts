@@ -46,6 +46,9 @@ export class LEDBlinkyControlsComponent {
 
   search$ = new BehaviorSubject<string>('')
 
+  emusOut: any[] = []// lazy load
+  romsOut: any[] = []// lazy load
+
   emulators$ = combineLatest([
     this.session.ledBlinky.controls$,
     this.session.ledBlinky.unknownGames$,

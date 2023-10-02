@@ -72,12 +72,14 @@ import { CopyPasteComponent } from './ledblinky/copy-paste.component'
 import { RomDisplayComponent } from './ledblinky/rom-display.component'
 import { ImportRomComponent } from './ledblinky/ImportRom.component'
 import { ColorInputsComponent } from './ledblinky/color-inputs.component'
+import { ForIntersectionObserver } from './ledblinky/[forIntersectionObserver].directive'
 
 export const declarations = [
   AppComponent,
   ChangelogComponent,
   AppBackupsComponent,
 
+  ForIntersectionObserver,
   DragSelectorDirective,
   DragSelectorTargetDirective,
   

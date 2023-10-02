@@ -302,9 +302,9 @@ export class LedBlinky {
           Promise.all(lightProms)
             .then(() => {
               // add missing controls
-              controlGroup.players.forEach(player => {
+              controlGroup.players.forEach(player =>
                 addMissingControlsToLightControls(player, lightAndControls, this)
-              })
+              )
             })
           
       
