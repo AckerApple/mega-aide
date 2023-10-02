@@ -75,16 +75,12 @@ export class ControlDefault {
       return name.replace(/^COIN([0-9]+)/,'P$1COIN')
     }
   
-    if ( name.slice(-7) === '_PADDLE' ) {
-      return name.replace(/^P([0-9]+)_PADDLE/,'JOYSTICK$1')
-    }
-  
     if ( name.slice(-10) === '_TRACKBALL' ) {
       return 'TRACKBALL'
     }
     
-    if ( name.search(/^P([0-9]+)_JOYSTICK(.+)_.+/)>=0 ) {
-      return name.replace(/P([0-9]+)_JOYSTICK(.+)_(.+)/, 'JOYSTICK$1')
+    if ( name.search(/^P([0-9]+)_(JOYSTICK|PADDLE)/)>=0 ) {
+      return name.replace(/P([0-9]+)_(JOYSTICK|PADDLE).*/, 'JOYSTICK$1')
     }
   
     // Conver things like: P1_BUTTON1 converted to P1B1
