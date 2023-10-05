@@ -29,9 +29,9 @@
               <span>{{ file.name }}</span>
               <span *ngIf="file.load" [@fadeInOutUp]="1"><loading-icon show="1"></loading-icon></span>
               <span *ngIf="
-                (file.xmlStats?.supportDupsFound$ | async) ||
-                (file.xmlStats?.altNameDupsFound$ | async) ||
-                (file.xmlStats?.addAppDupsFound$ | async)
+                file.xmlStats?.supportDupsFound ||
+                file.xmlStats?.altNameDupsFound ||
+                file.xmlStats?.addAppDupsFound
               " [@fadeInOutUp]="1">
                 <div class="radius-half pad-h-xs bg-assertive text-white"
                   title="duplicate items found in this platform"
@@ -75,21 +75,21 @@
               <div>You have twice as many controller supports as you do games, in this platform. This maybe a sign of an issue</div>
             </div>
 
-            <div *ngIf="file.xmlStats?.supportDupsFound$ | async" class="bg-orange pad margin-xs">
+            <div *ngIf="file.xmlStats?.supportDupsFound" class="bg-orange pad margin-xs">
               Some of your games have the same controller support multiple times.
               <div class="text-xs pad">
                 If this number keeps increasing overtime, it is a sign of an issue.
               </div>
             </div>
 
-            <div *ngIf="file.xmlStats?.altNameDupsFound$ | async" class="bg-orange pad margin-xs">
+            <div *ngIf="file.xmlStats?.altNameDupsFound" class="bg-orange pad margin-xs">
               Some of your games have the same alternate name multiple times.
               <div class="text-xs pad">
                 If this number keeps increasing overtime, it is a sign of an issue.
               </div>
             </div>
 
-            <div *ngIf="file.xmlStats?.addAppDupsFound$ | async" class="bg-orange pad margin-xs">
+            <div *ngIf="file.xmlStats?.addAppDupsFound" class="bg-orange pad margin-xs">
               Some of your games have the same additional application multiple times.
               <div class="text-xs pad">
                 If this number keeps increasing overtime, it is a sign of an issue.
@@ -114,7 +114,7 @@
                   <div class="text-xs"><strong>{{ additionalApps }}</strong></div>
                 </div>
 
-                <div *ngIf="(file.xmlStats?.addAppDupsFound$ | async) as addAppDupsFound"
+                <div *ngIf="file.xmlStats?.addAppDupsFound as addAppDupsFound"
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-orange"
                 >
@@ -125,7 +125,7 @@
                   <div class="text-xs"><strong>{{ addAppDupsFound }}</strong></div>
                 </div>
 
-                <div *ngIf="(file.xmlStats?.addAppDupsFixed$ | async) as duplicatesFixed"
+                <div *ngIf="file.xmlStats?.addAppDupsFixed as duplicatesFixed"
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-balanced"
                 >
@@ -145,7 +145,7 @@
                   <div class="text-xs"><strong>{{ alternateNames }}</strong></div>
                 </div>
 
-                <div *ngIf="(file.xmlStats?.altNameDupsFound$ | async) as altNameDupsFound"
+                <div *ngIf="file.xmlStats?.altNameDupsFound as altNameDupsFound"
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-orange"
                 >
@@ -156,7 +156,7 @@
                   <div class="text-xs"><strong>{{ altNameDupsFound }}</strong></div>
                 </div>
 
-                <div *ngIf="(file.xmlStats?.altNameDupsFixed$ | async) as duplicatesFixed"
+                <div *ngIf="file.xmlStats?.altNameDupsFixed as duplicatesFixed"
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-balanced"
                 >
@@ -176,7 +176,7 @@
                   <div class="text-xs"><strong>{{ gameControllerSupports }}</strong></div>
                 </div>
 
-                <div *ngIf="(file.xmlStats?.supportDupsFound$ | async) as duplicatesFound"
+                <div *ngIf="file.xmlStats?.supportDupsFound as duplicatesFound"
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-orange"
                 >
@@ -187,7 +187,7 @@
                   <div class="text-xs"><strong>{{ duplicatesFound }}</strong></div>
                 </div>
 
-                <div *ngIf="(file.xmlStats?.supportDupsFixed$ | async) as duplicatesFixed"
+                <div *ngIf="file.xmlStats?.supportDupsFixed as duplicatesFixed"
                   [@fadeInOutUp]="1"
                   class="flex1 flex-stacked flex-center gap-xxs bg-balanced"
                 >
@@ -195,7 +195,8 @@
                   <div class="text-xs"><strong>{{ duplicatesFixed }}</strong></div>
                 </div>
                 
-                <button *ngIf="(file.xmlStats?.supportDupsFound$ | async) || (file.xmlStats?.altNameDupsFound$ | async)"
+                <!-- the read scan details are needed before fix dups can run -->
+                <button *ngIf="file.xmlStats?.supportDupsFound || file.xmlStats?.altNameDupsFound"
                   class="flex1"
                   type="button" (click)="fixPlatformSupports(file)"
                   [disabled]="session.loading$ | async"

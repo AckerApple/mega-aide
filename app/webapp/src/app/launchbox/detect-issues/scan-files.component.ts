@@ -22,14 +22,14 @@ interface PlatformScan {
     alternateNames: number
     additionalApps: number
     
-    supportDupsFound$: Observable<number>
-    supportDupsFixed$: Observable<number>
+    supportDupsFound: number
+    supportDupsFixed: number
     
-    altNameDupsFound$: Observable<number>
-    altNameDupsFixed$: Observable<number>
+    altNameDupsFound: number
+    altNameDupsFixed: number
     
-    addAppDupsFound$: Observable<number>
-    addAppDupsFixed$: Observable<number>
+    addAppDupsFound: number
+    addAppDupsFixed: number
   }
 }
 
@@ -74,6 +74,7 @@ interface PlatformScan {
   async fixPlatformSupports(
     platform: PlatformScan
   ) {
+    let tooMuch = false
     const backupMessage = `Please ensure you have a backup of ${platform.file.directory.path}/${platform.file.name}`
     const ifAbortMessage = `⚠️ Streaming file process. Once you hit ok, do not close application. If you abort the process or it fails before fully complete, you will have an incomplete file.`
     if (
@@ -94,14 +95,14 @@ interface PlatformScan {
     const nameReader = new ContentTagReader('AlternateName')
     const addAppReader = new ContentTagReader('AdditionalApplication')
 
-    xmlStats.supportDupsFixed$ = supportReader.duplicatesFixed$ // connect things found to the display
-    xmlStats.supportDupsFound$ = supportReader.duplicatesFound$ // connect things found to the display
+    xmlStats.supportDupsFixed = supportReader.duplicatesFixed // connect things found to the display
+    xmlStats.supportDupsFound = supportReader.duplicatesFound // connect things found to the display
 
-    xmlStats.altNameDupsFixed$ = nameReader.duplicatesFixed$ // connect things found to the display
-    xmlStats.altNameDupsFound$ = nameReader.duplicatesFound$ // connect things found to the display
+    xmlStats.altNameDupsFixed = nameReader.duplicatesFixed // connect things found to the display
+    xmlStats.altNameDupsFound = nameReader.duplicatesFound // connect things found to the display
 
-    xmlStats.addAppDupsFixed$ = addAppReader.duplicatesFixed$ // connect things found to the display
-    xmlStats.addAppDupsFound$ = addAppReader.duplicatesFound$ // connect things found to the display
+    xmlStats.addAppDupsFixed = addAppReader.duplicatesFixed // connect things found to the display
+    xmlStats.addAppDupsFound = addAppReader.duplicatesFound // connect things found to the display
 
     this.session.load$.next(1)
     ++platform.load
@@ -109,16 +110,28 @@ interface PlatformScan {
     await file.readWriteTextStream((string: string, { isLast, percent }) => {      
       platform.percentRead = percent
 
-      // rewrite GameControllerSupport
-      string = supportReader.rewriteString(string, isLast)
-      // rewrite AlternateName
-      string = nameReader.rewriteString(string, isLast)
-      // rewrite AdditionalApplication
-      string = addAppReader.rewriteString(string, isLast)
-      
-      return string
-    }, this.chunkSize)
+      if ( !tooMuch ) {
+        // rewrite GameControllerSupport
+        string = supportReader.rewriteString(string, isLast)
+        // rewrite AlternateName
+        string = nameReader.rewriteString(string, isLast)
+        // rewrite AdditionalApplication
+        string = addAppReader.rewriteString(string, isLast)
 
+        xmlStats.supportDupsFixed = supportReader.duplicatesFixed // connect things found to the display
+        xmlStats.supportDupsFound = supportReader.duplicatesFound // connect things found to the display
+    
+        xmlStats.altNameDupsFixed = nameReader.duplicatesFixed // connect things found to the display
+        xmlStats.altNameDupsFound = nameReader.duplicatesFound // connect things found to the display
+    
+        xmlStats.addAppDupsFixed = addAppReader.duplicatesFixed // connect things found to the display
+        xmlStats.addAppDupsFound = addAppReader.duplicatesFound // connect things found to the display    
+      }
+
+      return string // this is the string that will be written
+    }, this.chunkSize, { awaitEach: false })
+
+    // and then rescan again to update latest stats
     this.scanPlatform(platform)
     this.session.load$.next(-1)
     --platform.load
@@ -130,9 +143,8 @@ interface PlatformScan {
   ): Promise<void> {
     this.session.load$.next(1)
     ++platform.load
-    // const file = (platform.file as any).file
-    // const realFile = await file.getFile()
-    platform.file.stats().then(stats => platform.stats = stats)
+
+    // platform.file.stats().then(stats => platform.stats = stats)
     
     const supportReader = new ContentTagReader('GameControllerSupport')
     const nameReader = new ContentTagReader('AlternateName')
@@ -144,14 +156,14 @@ interface PlatformScan {
       alternateNames: 0,
       additionalApps: 0,
       
-      supportDupsFound$: supportReader.duplicatesFound$,
-      supportDupsFixed$: supportReader.duplicatesFixed$,
+      supportDupsFound: supportReader.duplicatesFound,
+      supportDupsFixed: supportReader.duplicatesFixed,
       
-      altNameDupsFound$: nameReader.duplicatesFound$,
-      altNameDupsFixed$: nameReader.duplicatesFixed$,
+      altNameDupsFound: nameReader.duplicatesFound,
+      altNameDupsFixed: nameReader.duplicatesFixed,
       
-      addAppDupsFound$: addAppReader.duplicatesFound$,
-      addAppDupsFixed$: addAppReader.duplicatesFixed$,
+      addAppDupsFound: addAppReader.duplicatesFound,
+      addAppDupsFixed: addAppReader.duplicatesFixed,
     }
     
     // these need to be reset before each scan
@@ -159,23 +171,57 @@ interface PlatformScan {
     xmlStats.gameControllerSupports = 0
     xmlStats.alternateNames = 0
     xmlStats.additionalApps = 0
+    let readCount = 0
+    
+    const gameRegx = /<Game>/g
+    const gameConSupRegx = /<GameControllerSupport>/g
+    const altNameRegx = /<AlternateName>/g
+    const addAppRegx = /<AdditionalApplication>/g
 
-    await platform.file.readTextStream((string, {isLast, percent}) => {
+    await platform.file.readTextStream((string, {isLast, percent, cancel}) => {
+      ++readCount
       platform.percentRead = percent
+      
       supportReader.examineString(string, isLast) // GameControllerSupport
       nameReader.examineString(string, isLast) // AlternateName
       addAppReader.examineString(string, isLast) // AdditionalApplication
 
-      const gameMatches = getMatchCount(/<Game>/g, string)
-      const supportMatches = getMatchCount(/<GameControllerSupport>/g, string)
-      const alternateNames = getMatchCount(/<AlternateName>/g, string)
-      const additionalApps = getMatchCount(/<AdditionalApplication>/g, string)
+      const gameMatches = getMatchCount(gameRegx, string)
+      const supportMatches = getMatchCount(gameConSupRegx, string)
+      const alternateNames = getMatchCount(altNameRegx, string)
+      const additionalApps = getMatchCount(addAppRegx, string)
 
       xmlStats.games = xmlStats.games + gameMatches
       xmlStats.gameControllerSupports = xmlStats.gameControllerSupports + supportMatches
       xmlStats.alternateNames = xmlStats.alternateNames + alternateNames
       xmlStats.additionalApps = xmlStats.additionalApps + additionalApps
-    }, Number(this.chunkSize))
+
+      xmlStats.supportDupsFound = supportReader.duplicatesFound
+      xmlStats.supportDupsFixed = supportReader.duplicatesFixed
+      
+      xmlStats.altNameDupsFound = nameReader.duplicatesFound
+      xmlStats.altNameDupsFixed = nameReader.duplicatesFixed
+      
+      xmlStats.addAppDupsFound = addAppReader.duplicatesFound
+      xmlStats.addAppDupsFixed = addAppReader.duplicatesFixed
+
+      // let garabage collection catchup
+      /*if ( readCount >= 100 ) {
+        const breakTime = 2000
+        return new Promise(res => {
+          console.warn(`😅 Taking a ${breakTime / 1000}s break from file streaming to allow memory clear...`)
+          setTimeout(() => {
+            readCount = 0
+            console.warn('▶️ continuing again')
+            res(null)
+          }, breakTime)
+        })
+      }*/
+
+      string = '' // try to clear memory
+
+      // return
+    }, Number(this.chunkSize), { awaitEach: false })
 
     --platform.load
     this.session.load$.next(-1)

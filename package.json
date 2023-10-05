@@ -1,6 +1,6 @@
 {
   "name": "mega-aide",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Things learned and things to remember for my Megacade",
   "scripts": {
     "test": "cd app/webapp/ && npm run test",
@@ -38,6 +38,7 @@
   "homepage": "https://github.com/AckerApple/mega-aide#readme",
   "private": true,
   "dependencies": {
+    "ack-angular-components": "^4.1.33",
     "ack-css-boot": "^3.0.13"
   }
 }
