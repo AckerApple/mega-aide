@@ -230,6 +230,12 @@ export class SessionProvider {
     this.info(`📋 Copied ${text.length} characters to clipboard`)
   }
 
+  copyUrlHere() {
+    const urlHere = this.getRelativeUrl('')
+    copyToClipboard(urlHere)
+    this.info(`📋 Copied 🔗 URL to this page`)
+  }
+
   copyUrl(url: string) {
     copyToClipboard(url)
     

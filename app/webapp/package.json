@@ -1,13 +1,12 @@
 {
   "name": "Mega-aide",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "scripts": {
     "ng": "ng",
     "clear": "rm -rf .angular/cache",
     "start": "ng serve --host 0.0.0.0 --disable-host-check",
     "watch": "npm run start",
-    "build": "ng build && npm run build:copy",
-    "build:copy": "rm -rf ../resources/webapp && cp -r ./dist/webapp ../resources/webapp",
+    "build": "ng build",
     "build:watch": "ng build --watch --configuration development",
     "test": "ng test",
     "patch:version": "npm --no-git-tag-version version patch",

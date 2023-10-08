@@ -5,9 +5,12 @@
   "scripts": {
     "neu:update": "echo 'Will not update neu due to how it overwrites /bin files'",
     "neu:update:old": "neu update",
+    "copy:webapp": "npm run copy:webapp:dist && npm run copy:webapp:node-app",
+    "copy:webapp:node-app": "rm -rf ../node-app/public && cp -r ./webapp/dist/webapp ../node-app && mv ../node-app/webapp ../node-app/public",
+    "copy:webapp:dist": "rm -rf ./resources/webapp && cp -r ./webapp/dist/webapp ./resources/webapp",
     "build": "npm run build:webapp && npm run neu:update && npm run build:neutralino",
     "build:neutralino": "neu build --release && npm run dist:rename:mac && npm run dist:move",
-    "build:webapp": "cd webapp && npm run build && cd ../ && npm run build:resources",
+    "build:webapp": "cd webapp && npm run build && cd ../ && npm run build:resources && npm run copy:webapp",
     "build:webapp:watch": "cd webapp && npm run build:watch",
     "build:resources": "npm run resources:copy && npm run resources:write",
     "resources:copy": "cp -r resources/js resources/webapp/neutralino",
