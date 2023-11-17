@@ -12,6 +12,7 @@ import { animations } from 'ack-angular-fx'
 import { Prompts } from 'ack-angular'
 import { firstValueFrom, Subscription } from 'rxjs'
 import { DmFileReader } from 'ack-angular-components/directory-managers/DmFileReader'
+import { XArcadeXInputProvider, pathToMappings } from './XArcadeXInput.provider'
 
 interface GamePadButtons {
   [index: string]: boolean // true IF is axis
@@ -44,6 +45,7 @@ interface GamePadButtons {
     public lastPresses: LastPresses,
     public lastButtons: LastButtonsProvider,
     public prompts: Prompts,
+    public xarcade: XArcadeXInputProvider,
   ){
     this.platform = session.platforms.images.find(platform => platform.label === 'Xbox' || (platform.label.includes('x') && platform.label.includes('box'))) as PlatformMap
 
@@ -91,14 +93,22 @@ interface GamePadButtons {
       this.session.warn('Please select Xarcade Input directory to continue')
       return
     }
+
     
     // fileName = fileName + '.json'
-    const path = 'xarcade-xinput/mappings'
-    this.mapDir = await this.session.xarcadeDirectory.getDirectory(path)
+    // const path = 'xarcade-xinput/mappings'
+    // this.mapDir = await this.session.xarcadeDirectory.getDirectory(path)
+    this.mapDir = await this.xarcade.findMappingsDir()
+
+    if(!this.mapDir) {
+      this.session.warn(`unable to locate "mappings" or "${pathToMappings}" 📁 folder`)
+      return
+    }
+
     this.file = await this.mapDir.findFileByPath(fileName)
     
     if ( !this.file ) {
-      this.session.warn(`Cannot find file ${path}/${fileName}`)
+      this.session.warn(`Cannot find file ${pathToMappings}/${fileName}`)
       return
     }
     

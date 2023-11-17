@@ -4,7 +4,7 @@ import { BehaviorSubject, combineLatest, EMPTY, from, map, mergeMap, Observable,
 import { SessionProvider } from "../session.provider"
 
 export const xarcadeXinputPickerId = 'xarcadeXinputPicker'
-const pathTo = 'xarcade-xinput/mappings'
+export const pathToMappings = 'xarcade-xinput/mappings'
 
 /** Used in two different sections that cannot share references
  * 1. In LaunchBox, we need the relative path to Xinput from within LaunchBox
@@ -65,7 +65,7 @@ const pathTo = 'xarcade-xinput/mappings'
       return mappings
     }
     
-    return await directory.findDirectory(pathTo)
+    return await directory.findDirectory(pathToMappings)
   }
 
   async getMappings(
@@ -74,11 +74,11 @@ const pathTo = 'xarcade-xinput/mappings'
     if(!directory) {
       return
     }
-
+    
     const mappings = await this.findMappingsDir()
-      
+
     if ( !mappings ) {
-      this.session.warn(`unable to locate "mappings" or "${pathTo}" 📁 folder(s) within ${directory.path}`)
+      this.session.warn(`unable to locate "mappings" or "${pathToMappings}" 📁 folder(s) within ${directory.path}`)
       return
     }
     
@@ -92,7 +92,7 @@ const pathTo = 'xarcade-xinput/mappings'
 
       return mappingFiles
     } catch (err) {
-      this.session.error(`Error loading XArcade mappings folder ${pathTo}`,err)
+      this.session.error(`Error loading XArcade mappings folder ${pathToMappings}`,err)
       throw err
     }
   }
