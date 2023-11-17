@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core"
 import { DirectoryManager, FileStats } from "ack-angular-components/directory-managers/DirectoryManagers"
-import { BehaviorSubject, combineLatest, EMPTY, from, map, merge, mergeAll, mergeMap, Observable, of, share, shareReplay, switchMap } from "rxjs"
+import { BehaviorSubject, combineLatest, EMPTY, from, map, mergeMap, Observable, of, shareReplay, switchMap } from "rxjs"
 import { SessionProvider } from "../session.provider"
 
 export const xarcadeXinputPickerId = 'xarcadeXinputPicker'
@@ -13,14 +13,14 @@ const pathTo = 'xarcade-xinput/mappings'
 @Injectable() export class XArcadeXInputProvider {
   directoryChange = new BehaviorSubject<DirectoryManager | undefined>( undefined )
   
-  directoryByLaunchBox$ = this.session.launchBox.directories$.pipe(
+  directoryByLaunchBox$ = this.session.launchBox.directoryChange.pipe(
     switchMap(() => {
       // are we maybe already loaded?
       const directory = this.directoryChange.getValue()
       if ( directory ) {
         return of(directory)
       }
-
+      
       // load from launch box
       if ( this.session.launchBox.xarcadeDir ) {
         this.directoryChange.next(this.session.launchBox.xarcadeDir)
@@ -28,7 +28,8 @@ const pathTo = 'xarcade-xinput/mappings'
         return of(this.session.launchBox.xarcadeDir)
       }
 
-      return EMPTY
+      return of(undefined)
+      // return EMPTY
     }), // continue if directory defined otherwise cancel pipe
     shareReplay(1),
   )
@@ -70,6 +71,10 @@ const pathTo = 'xarcade-xinput/mappings'
   async getMappings(
     directory: DirectoryManager
   ): Promise<FileStats[] | undefined> {
+    if(!directory) {
+      return
+    }
+
     const mappings = await this.findMappingsDir()
       
     if ( !mappings ) {

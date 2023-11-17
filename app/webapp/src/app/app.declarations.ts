@@ -73,6 +73,8 @@ import { RomDisplayComponent } from './ledblinky/rom-display.component'
 import { ImportRomComponent } from './ledblinky/ImportRom.component'
 import { ColorInputsComponent } from './ledblinky/color-inputs.component'
 import { ForIntersectionObserver } from './ledblinky/[forIntersectionObserver].directive'
+import { CloudSharingComponent } from './ledblinky/CloudSharing.component'
+import { LedblinkyControlSearchComponent } from './ledblinky/ledblinky-control-search.component'
 
 export const declarations = [
   AppComponent,
@@ -127,6 +129,7 @@ export const declarations = [
 
   SelectLedblinkyDirectoryComponent,
   LEDBlinkyComponent,
+  CloudSharingComponent,
   RomDisplayComponent,
   LayoutsComponent,
   LEDBlinkyControlsComponent,
@@ -142,6 +145,7 @@ export const declarations = [
   LightControlColorSelectComponent,
   ImportRomComponent,
   ColorInputsComponent,
+  LedblinkyControlSearchComponent,
   
   PlatformVisualFiltersComponent,
   PlatformFiltersDirective,

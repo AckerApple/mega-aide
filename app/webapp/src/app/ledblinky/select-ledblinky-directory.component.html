@@ -1,6 +1,6 @@
 <div class="flex-right flex-wrap gap">
   <!--class="flex1 flex"-->
-  <robust-select-directory label="🚦 LEDBlinky"
+  <robust-select-directory label="your 🚦 LEDBlinky"
     [reloadPath]="session.config.ledBlinky.path"
     [directoryManager]="$any(session.ledBlinky.directory$ | async)"
     (directoryManagerChange)="session.checkFileStreamingSupport();session.saveStorage();session.ledBlinky.directoryChange.next($event)"
@@ -49,8 +49,9 @@
         </p>      
         <p>Such support features include:</p>
         <ul>
-          <li>Game controls searching</li>
-          <li>Game controls visual assistance maps</li>
+          <li>🔍  Game controls searching</li>
+          <li>🗺️ Game controls visual assistance maps</li>
+          <li>☁️ Cloud control sharing</li>
           <li>and more...</li>
         </ul>
         <p>Features not yet supported or not fully supplort:</p>

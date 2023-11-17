@@ -1,6 +1,6 @@
 {
   "name": "mega-aide",
-  "version": "0.3.10",
+  "version": "0.3.11",
   "description": "Things learned and things to remember for my Megacade",
   "scripts": {
     "test": "cd app/webapp/ && npm run test",

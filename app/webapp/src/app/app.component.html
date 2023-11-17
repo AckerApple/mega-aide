@@ -12,9 +12,9 @@
     <h1>🕹 Mega-aide</h1>
     <div>
       <div class="child-margin-left child-margin-top-xs flex-wrap flex-valign-center">
-        <a title="copy url to here"
+        <a title="copy url to here" class="text-xxs underline"
           (click)="session.copyUrlHere()"
-        >🈁</a>
+        >🔗 share link</a>
         <sup>v{{ version }}</sup>
         <div *ngIf="session.os" title="quit">
           <a (click)="close()">🅧</a>

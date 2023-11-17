@@ -6,6 +6,7 @@ import { RomControlsComponent } from './ledblinky/rom-controls.component'
 import { LayoutsComponent } from './ledblinky/layouts.component'
 import { backups } from './ledblinky/routing.backups'
 import { ImportRomComponent } from './ledblinky/ImportRom.component'
+import { CloudSharingComponent } from './ledblinky/CloudSharing.component'
 
 export const ledblinky: Route = {
   path: '🚦',
@@ -40,6 +41,16 @@ export const inputMaps: Route = {
     description: 'Input mappings that all other LEDBlinky tools refer to for understanding of your machines button configuration.',
   },
   component: InputMapsComponent,
+}
+
+export const cloudSharing: Route = {
+  path: '🚦/☁',
+  title: 'Cloud Sharing',
+  data: {
+    emoji: '☁',
+    description: 'A place to review other hosted control configurations',
+  },
+  component: CloudSharingComponent,
 }
 
 export const ledblinkyControls: Route = {
@@ -83,6 +94,7 @@ export const rom: Route = {
 export const routeMap = {
   ledblinky, ledblinky2,
   inputMaps,
+  cloudSharing,
   importRom,
   ledblinkyControls, // emulators and their roms
   rom,

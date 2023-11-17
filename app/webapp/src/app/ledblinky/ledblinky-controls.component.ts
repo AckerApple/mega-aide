@@ -34,10 +34,9 @@ export class LEDBlinkyControlsComponent {
     this.goto = goto
   }
 
-  emulator$ = new BehaviorSubject<NewEmulator | Emulator | undefined>(undefined)
+  emulator$ = new BehaviorSubject<NewEmulator | Emulator | undefined | null>(undefined)
 
   showConfirmNewRom?: boolean
-  unknownMode$ = new BehaviorSubject(false)
   goto?: boolean | string // ?goto=true means on load goto result if only 1 (when used its reset to undefined)
   
   inputMaps?: InputsMap
@@ -45,9 +44,6 @@ export class LEDBlinkyControlsComponent {
   routes = routeMap
 
   search$ = new BehaviorSubject<string>('')
-
-  emusOut: any[] = []// lazy load
-  romsOut: any[] = []// lazy load
 
   emulators$ = combineLatest([
     this.session.ledBlinky.controls$,
@@ -67,6 +63,8 @@ export class LEDBlinkyControlsComponent {
     shareReplay(1),
   )
   
+  unknownMode$ = new BehaviorSubject(false)
+
   // filteredEmulators?: (NewEmulator | Emulator)[]
   filteredEmulators$: Observable<(Emulator | NewEmulator)[]> = combineLatest([
     this.search$,
@@ -232,6 +230,7 @@ export class LEDBlinkyControlsComponent {
     const controlGroups = emu.controlGroups as NewControlGroupings[]
     const romname = controlGroups[0].groupName
     const url = `/${this.routes.ledblinkyControls.path}/${emuname}/${romname}`
+    
     const unknownMode = this.unknownMode$.getValue()
 
     // goto dedicated page

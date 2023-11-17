@@ -1,0 +1,158 @@
+<div class="flex-wrap gap">
+  <div class="flex-valign-center pos-rel flex1">
+    <span class="pad-xs">🔎</span>
+    <input type="text"
+      [ngModel]="search"
+      (ngModelChange)="searchChange.emit($event)" class="width-full"
+      placeholder="Search emulators and roms" [focusOn]="1"
+    />
+    <div *ngIf="search" [@fadeInOutUp]="1" class="pos-abs right-0 pad-right-xxs">
+      <a (click)="searchChange.emit('')" class="text-black text-2x">🅧</a>
+    </div>
+  </div>
+
+  <div class="flex-wrap gap">
+    <button type="button" (click)="showMaps = !showMaps"
+    >{{ showMaps ? '☑️' : '◻️' }}&nbsp;🗺️ Show mappings</button>
+
+    <button *ngIf="allowUnknownMode" type="button"
+      (click)="unknownModeChange.emit(!unknownMode)"
+    >{{ unknownMode ? '☑️' : '◻️' }}&nbsp;🤨 Unknown Games Mode</button>
+  </div>
+</div>
+
+<ng-template #loadingIcon>
+  <loading-icon class="pos-abs" show="1"></loading-icon>
+</ng-template>
+<br />
+
+<div>
+  <!-- select emulator -->
+  <div class="pad-h-xs" [class.bg-dark]="emulator">
+    <div *ngIf="emulator" [@fadeInOutUp]="1">
+      <div><strong>Emulator</strong></div>
+      <!-- show selected emulator -->
+      <div class="flex-wrap flex-1">
+        <ng-container *ngTemplateOutlet="emulatorButton;context:{$implicit:emulator, selected: 1}"></ng-container>
+      </div>
+    </div>
+
+    <!-- MAIN LOOP: list of emulators -->
+    <div *ngIf="!emulator" [@fadeInOutUp]="1">
+      <ng-container *ngIf="emulators as emus; else loadingIcon">
+        <div>
+          <strong>Select from {{emus.length}} Emulators</strong>
+        </div>
+
+        <div *ngIf="emus.length"
+          class="gap-xxs flex-wrap flex1 overflow pad-top"
+
+          forIntersectionObserver
+          [array]="emus"
+          [(arrayOut)]="emusOut"
+          [style.max-height.vh]="80"
+        >
+          <ng-container *ngFor="let inter of emusOut">
+            <ng-container *ngTemplateOutlet="emulatorButton;context:{$implicit:inter.item, show:inter.show}"></ng-container>
+          </ng-container>
+        </div>
+
+        <div *ngIf="!emus.length" [@fadeInOutUp]="1">
+          <br />
+          <div class="bg-orange pad-xs width-full">
+            🤷‍♂️ No emulators found matching search
+          </div>
+        </div>
+        
+        <br />
+        
+        <div class="flex-right">
+          <a type="button" class="hover-bg-calm bg-balanced"
+            onclick="newEmulatorModal.showModal()"
+          >+ new emulator</a>
+        </div>
+      </ng-container>
+    </div>
+  </div>
+
+  <!-- select controlGroup -->
+  <div *ngIf="romClass" [@fadeInOutUp]="1" class="bg-dark pad-xs flex1">
+    <div>
+      Select from&nbsp;<strong>ROMs</strong><sup><small>&nbsp;{{ romClass.controlGroups.length }}</small></sup>
+    </div>
+    <div class="flex1 flex-wrap pad-top">
+      <div class="flex-1 flex-wrap gap child-pad-xs overflow" [@childStag50]="romClass.controlGroups"
+
+        forIntersectionObserver
+        [array]="romClass.controlGroups"
+        [(arrayOut)]="romsOut"
+        [style.max-height.vh]="80"
+      >
+        <ng-container *ngFor="let item of romsOut">
+          <ng-container *ngTemplateOutlet="romLink;context:{rom:item.item, emu: romClass, show: item.show}"></ng-container>
+        </ng-container>          
+      </div>
+
+      <button type="button"
+        onclick="createRomDialog.showModal()"
+      >+ Create ROM</button>
+    </div>
+  </div>
+</div>
+
+<ng-template #emulatorButton let-emu let-selected="selected" let-show="show">
+  <a class="border hover-bg-calm pos-rel no-a-style pad-left-xs pad-v-xs pad-right-2x flex2"
+    [routerLink]="selected ? './' : emu.xml.details.emuname" [class.flex1]="selected"
+    [ngClass]="{'bg-energized':selected,'bg-black':!selected, 'flex-1':!showMaps, flex3:showMaps}"
+    (click)="emulatorChange.emit( selected ? undefined : emu )"
+  >
+    <span *ngIf="!showMaps || emulator;else mapTemplate">
+      {{ emu.xml.details.emuname }}
+      <sup *ngIf="emu.controlGroups.length > 1"
+        class="text-xxs opacity-80 pad-xxs pos-abs top-0 right-0"
+      >{{emu.controlGroups.length }}</sup>
+    </span>
+
+    <ng-template #mapTemplate>
+      <rom-display *ngIf="(selected || show) && (emu.defaultControls$ | async) as defaultControls"
+        urlRelativeToLedBlinkyRoot='../'
+        [romControl] = "$any(defaultControls)"
+        [romControlLights$] = "$any(defaultControls).romControlLights$"
+  
+        [zoom]="1"
+        [emulator] = "emu"
+        [allControls] = "session.ledBlinky.controls$ | async"
+        [debug]="false"
+        [layoutOnly]="true"
+        [externalFeatures]="false"
+        [interactive]="false"
+      ></rom-display>
+    </ng-template>
+  </a>
+</ng-template>
+
+<ng-template #romLink let-rom="rom" let-emu="emu" let-show="show">
+  <a class="no-a-style border hover-bg-calm bg-black"
+    [routerLink]="emu.xml.details.emuname + '/' + rom.groupName" [queryParams]="{unknownMode: unknownMode}"
+    [ngClass]="showMaps ? 'flex3' : 'flex1'"
+  >
+    <ng-container *ngIf="!showMaps;else mapTemplate">
+      {{ rom.voice || rom.groupName }}
+    </ng-container>
+    <ng-template #mapTemplate>
+      <rom-display *ngIf="show"
+        urlRelativeToLedBlinkyRoot='../'
+        [romControl] = "rom.controlGroups[0]"
+        [romControlLights$] = "rom.controlGroups[0].romControlLights$"
+  
+        [zoom]="1"
+        [emulator] = "emu"
+        [allControls] = "session.ledBlinky.controls$ | async"
+        [debug]="false"
+        [layoutOnly]="true"
+        [externalFeatures]="false"
+        [interactive]="false"
+      ></rom-display>
+    </ng-template>
+  </a>
+</ng-template>

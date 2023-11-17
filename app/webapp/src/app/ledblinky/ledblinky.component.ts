@@ -1,7 +1,7 @@
 import { Component } from '@angular/core'
 import { animations } from 'ack-angular-fx'
 import { SessionProvider } from '../session.provider'
-import { inputMaps, layouts, ledblinkyControls } from '../ledblinky.routing.module'
+import { cloudSharing, inputMaps, layouts, ledblinkyControls } from '../ledblinky.routing.module'
 import { backups } from './routing.backups'
 
 @Component({
@@ -10,7 +10,9 @@ import { backups } from './routing.backups'
 })
 export class LEDBlinkyComponent {
   menu = [
-    inputMaps, ledblinkyControls, layouts, backups,
+    inputMaps, ledblinkyControls, layouts,
+    cloudSharing,
+    backups,
   ]
 
   constructor(public session: SessionProvider) {}
