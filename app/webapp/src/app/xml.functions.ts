@@ -1,6 +1,16 @@
 
 export function xmlDocToString(xmlDoc: Document | Element) {
-  const resultDoc = transformDoc(xmlDoc)
+  let resultDoc: Document | Element = transformDoc(xmlDoc)
+  
+  if(!resultDoc) {
+    console.debug('🟠 Could not transform xml doc, using alternative xml to string method, attempting to dig children for export', {resultDoc, xmlDoc})
+    resultDoc = transformDoc( xmlDoc.children[0] )
+
+    if(!resultDoc) {
+      throw 'Failed to convert xmlDoc to Document'
+    }
+  }
+
   let docString = new XMLSerializer().serializeToString(resultDoc)
 
   const xml = xmlDoc as any

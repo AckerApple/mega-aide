@@ -384,10 +384,14 @@ export class GamesComponent {
   }
 
   saveFiles() {
-    this.session.toSaveFiles = this.toSaveFiles.map(x => ({
-      file: x.platform.file,
-      string: xmlDocToString(x.platform.xml)
-    }))
+    this.session.toSaveFiles = this.toSaveFiles.map(x => {
+      const xml = x.platform.xml
+      this.session.debug('🧠 ➡️ ✍️ casting xml memory to string...', {xml})
+      return {
+        file: x.platform.file,
+        string: xmlDocToString(xml)
+      }
+    })
   }
 }
 

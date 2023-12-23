@@ -33,14 +33,14 @@ import { createBackupOfFile } from './backups.utils'
               this.session.config.backupFolderNames
             )
 
-            this.session.info(`Saved file backup ${backup.directory.path}/${backup.name}`)
+            this.session.info(`✅ ↩️ Saved file backup ${backup.directory.path}/${backup.name}`)
             
             --this.saving
           }
           
           ++this.saving
           const promise = await item.file.write(item.string)
-          this.session.info(`Saved file ${item.file.directory.path}/${item.file.name}`)
+          this.session.info(`✅ 💾 Saved file ${item.file.directory.path}/${item.file.name}`)
           --this.saving
           
           return promise  
