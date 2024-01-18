@@ -137,9 +137,18 @@
             </td>
 
             <td class="bg-grey-2x pad-xxs">
+              <!-- ⌨️ keyboard -->
               <select [(ngModel)]="keyvalue.key" (change)="changeKey(keyvalue)">
                 <option value=""></option>
-                <option *ngFor="let item of windowsKeys" [value]="item.code">{{ item.code }}</option>
+                <!--
+                  <option *ngFor="let item of windowsKeys" [value]="item.code">{{ item.code }}</option>
+                -->
+                <option *ngFor="let item of winKeysGrouped.common" [value]="item.code">{{ item.code }}</option>
+                <ng-container *ngFor="let group of winKeysGrouped | keyvalue">
+                  <optgroup *ngIf="group.key !=='common'" [label]="group.key">
+                    <option *ngFor="let item of group.value" [value]="item.code">{{ item.code }}</option>
+                  </optgroup>
+                </ng-container>
               </select>
               <button type="button" class="pad-xxs"
                 nextKey

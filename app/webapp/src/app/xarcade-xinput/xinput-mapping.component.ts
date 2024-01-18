@@ -18,13 +18,50 @@ interface GamePadButtons {
   [index: string]: boolean // true IF is axis
 }
 
+type WinKeys = {code: string, num: number, description: string}[]
+
+type WinKeysGrouped = {
+  common: WinKeys
+  [groupName: string]: WinKeys
+}
+
 @Component({
   animations,
   templateUrl: './xinput-mapping.component.html',
   providers: [ LastPresses, LastButtonsProvider ],
 }) export class XinputMappingComponent {
   fileName!: string
-  windowsKeys: { code: string, num: number, description: string}[] = windowsKeys
+  windowsKeys: WinKeys = windowsKeys
+  winKeysGrouped: WinKeysGrouped = windowsKeys.reduce((all, key) => {
+    if(['Enter','Return'].includes(key.code)) {
+      all['try one or other'].push(key)
+      return all
+    }
+
+    if( key.code.match(/^F[0-9]{1,2}$/) ) {
+      all['Fs'].push(key)
+      return all
+    }
+
+    if( key.code.match(/^D[0-9]{1,2}$/) ) {
+      all['numbers'].push(key)
+      return all
+    }
+
+    if( key.code.match(/^NumPad[0-9]{1,2}$/) ) {
+      all['numbers'].push(key)
+      return all
+    }
+
+    all.common.push(key)
+
+    return all
+  }, {
+    common: [],
+    Fs: [],
+    numbers: [],
+    'try one or other':[],
+  } as WinKeysGrouped)
   platform: PlatformMap
   nextKeyListening?: ButtonParameters
   gamepad: GamePadButtons = gamepad
